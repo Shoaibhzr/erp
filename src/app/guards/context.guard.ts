@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ActivatedRouteSnapshot, CanActivate, CanDeactivate, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
 import { StorageKey } from '../models/common';
 
 /** Services */
@@ -11,7 +11,7 @@ import { SessionStorageConstants } from '../models/common/session-storage-consta
 import { SessionStorageService } from '../services/sessions-storage.service';
 
 @Injectable()
-export class ContextGuard implements CanActivate {
+export class ContextGuard  {
 
   constructor(private userSvc: UserService, private contextSvc: ContextService,
     private storageSvc: StorageService, private router: Router,
