@@ -1,0 +1,21 @@
+:host ::ng-deep .page-item:not(:first-child) .page-link,
+:host ::ng-deep .page-item:not(:last-child) .page-link {
+    border: none !important;
+    border-radius: 8px !important;
+    line-height: 24px !important;
+}
+
+:host ::ng-deep .page-item:first-child .page-link,
+:host ::ng-deep .page-item:last-child .page-link {
+    outline: 1px solid #CBD5E1 !important;
+    background-color: #fff;
+}
+
+:host ::ng-deep .pagination {
+    align-items: center;
+    gap: 10px;
+    --vz-pagination-color: #475569;
+    --vz-pagination-active-color: #1E293B;
+    --vz-pagination-active-bg: #F8FAFC;
+    --vz-pagination-active-border-color: none;
+}

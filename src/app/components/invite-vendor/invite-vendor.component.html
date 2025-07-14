@@ -1,0 +1,416 @@
+<div class="card mb-0">
+
+  <div class="card-header align-items-center d-flex">
+
+    <h4 class="card-title mb-0 flex-grow-1">
+
+      <ng-container *ngIf="serviceRequestModel.priority !== ServiceRequestPriority.emergency">
+
+        <i class="ri-mail-line align-bottom me-1 text-primary"></i> Invite Vendor
+
+      </ng-container>
+
+      <ng-container *ngIf="serviceRequestModel.priority === ServiceRequestPriority.emergency">
+
+        <i class="ri-user-add-line align-bottom me-1 text-primary"></i> Assign Vendor
+
+      </ng-container>
+
+    </h4>
+
+    <button type="button"
+            class="btn-close"
+            (click)="close()"
+            [disabled]="isInitInProgress || isCreateInProgress">
+
+    </button>
+
+  </div>
+
+  <div class="card-body">
+
+    <ng-container *ngIf="isInitInProgress">
+
+      <div class="d-flex align-items-center justify-content-center" style="height: calc(100vh - 211px) ">
+
+        <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+          <span class="visually-hidden">Loading...</span>
+
+        </span>
+
+      </div>
+
+    </ng-container>
+
+    <ng-container *ngIf="isInitInProgress === false">
+
+      <ng-container *ngIf="vendorsPagedList.totalRecords === 0">
+        
+        <div class="d-flex align-items-center justify-content-center" style="height: calc(100vh - 211px) ">
+
+          All the vendors have already been invited to this request, or there are currently no vendors available.
+  
+        </div>
+
+      </ng-container>
+
+      <ng-container *ngIf="vendorsPagedList.totalRecords > 0">
+
+        <ng-container *ngIf="serviceRequestModel.priority !== ServiceRequestPriority.emergency">
+
+          <p class="text-muted">
+
+            Please send a request to our network of vendors on the platform, and you'll receive exceptional quotations tailored to your needs. Our streamlined process ensures you can compare options effortlessly, helping you find the best solution for your requirements.
+
+          </p>
+
+          <p class="text-muted mb-4">
+
+            Vendors which are already invited are excluded from the below given list.
+
+          </p>
+
+        </ng-container>
+
+        <ng-container *ngIf="serviceRequestModel.priority === ServiceRequestPriority.emergency">
+
+          <p class="text-muted">
+
+            As this is an emergency request, you can directly assign a vendor to this request without the quotation process. Simply select a vendor from our network, and you'll receive exceptional service tailored to your needs.
+
+          </p>
+
+        </ng-container>
+
+        <!--<div class="form-icon mb-4">
+
+          <input type="text"
+                 style="border: 1px solid #e9ebec;"
+                 class="form-control form-control-icon rounded-pill"
+                 placeholder="Search by name, email, or phone...">
+
+          <i class="mdi mdi-magnify search-widget-icon fs-16"></i>
+
+        </div>-->
+
+        <div class="col-sm-3 mb-3">
+
+          <div class="search-box">
+
+            <input type="text" class="form-control search" placeholder="Search for..." [(ngModel)]="searchTerm">
+
+            <i class="ri-search-line search-icon"></i>
+
+          </div>
+
+        </div>
+
+        <ul class="list-group mb-1">
+
+          <ng-container *ngFor="let user of filteredData(); let i=index;">
+
+            <li class="list-group-item px-2">
+
+              <div class="d-flex align-items-center">
+
+                <div class="flex-grow-1">
+
+                  <div class="d-flex align-items-center">
+
+                    <div class="form-check ms-1 me-2">
+
+                      <input class="form-check-input"
+                             type="checkbox"
+                             [checked]="isSelected(user.id)"
+                             (change)="select(user.id)">
+
+                    </div>
+
+                    <ng-container *ngIf="!user.profilePictureWebUrl">
+
+                      <div class="avatar-xs flex-shrink-0">
+
+                        <div class="avatar-title bg-info-subtle text-info rounded-circle">
+
+                          {{user | userPrefix}}
+
+                        </div>
+
+                      </div>
+
+                    </ng-container>
+
+                    <ng-container *ngIf="user.profilePictureWebUrl">
+
+                      <img [src]="user.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+
+                    </ng-container>
+
+                    <div class="flex-shrink-0 ms-2">
+
+                      <h6 class="fs-14 mb-0">
+
+                        {{user.firstName}} {{user.lastName}}
+
+                      </h6>
+
+                      <small class="text-muted">
+
+                        Since {{user.createdOn | date}}
+
+                      </small>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="flex-shrink-0">
+
+                  <ng-container *ngIf="!user.avgRating">
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                  </ng-container>
+
+                  <ng-container *ngIf="user.avgRating === 1">
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                  </ng-container>
+
+                  <ng-container *ngIf="user.avgRating === 2">
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                  </ng-container>
+
+                  <ng-container *ngIf="user.avgRating === 3">
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-line fs-16"></span>
+                    <span class="ri-star-line fs-16"></span>
+                  </ng-container>
+
+                  <ng-container *ngIf="user.avgRating === 4">
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-line fs-16"></span>
+                  </ng-container>
+
+                  <ng-container *ngIf="user.avgRating === 5">
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                    <span class="ri-star-fill fs-16" style="color:gold;"></span>
+                  </ng-container>
+
+                </div>
+
+                <!--<button type="button"
+                        (click)="toggleReviews(user.id)"
+                        class="btn btn-ghost-primary btn-icon material-shadow-none ms-1">
+
+                  <ng-container *ngIf="isVendorExpanded !== user.id">
+
+                    <i class="ri-arrow-down-s-line"></i>
+
+                  </ng-container>
+
+                  <ng-container *ngIf="isVendorExpanded === user.id">
+
+                    <i class="ri-arrow-up-s-line"></i>
+
+                  </ng-container>
+
+                </button>-->
+
+              </div>
+
+              <ng-container *ngIf="isVendorExpanded === user.id">
+
+                <div>
+
+                  <ul class="list-unstyled mb-0">
+
+                    <li class="py-2">
+
+                      <div class="border border-dashed rounded p-3">
+
+                        <div class="d-flex align-items-start mb-3">
+
+                          <div class="hstack gap-3">
+
+                            <div class="badge rounded-pill bg-success mb-0">
+
+                              <i class="mdi mdi-star"></i> 4.2
+
+                            </div>
+
+                            <div class="vr"></div>
+
+                            <div class="flex-grow-1">
+
+                              <p class="text-muted mb-0">
+
+                                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+
+                              </p>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                        <div class="d-flex align-items-end">
+
+                          <div class="flex-grow-1">
+
+                            <div class="d-flex align-items-center">
+
+                              <img src="https://themesbrand.com/velzon/html/master/assets/images/users/avatar-5.jpg" class="avatar-xxs rounded-circle" />
+
+                              <h5 class="fs-14 mb-0 ms-2">Henry Ford</h5>
+
+                              <p class="text-muted fs-13 mb-0 ms-auto">12 Jul, 21</p>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </li>
+
+                    <li class="py-2">
+
+                      <div class="border border-dashed rounded p-3">
+
+                        <div class="d-flex align-items-start mb-3">
+
+                          <div class="hstack gap-3">
+
+                            <div class="badge rounded-pill bg-success mb-0">
+
+                              <i class="mdi mdi-star"></i> 3.5
+
+                            </div>
+
+                            <div class="vr"></div>
+
+                            <div class="flex-grow-1">
+
+                              <p class="text-muted mb-0">
+
+                                It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+                              </p>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                        <div class="d-flex align-items-end">
+
+                          <div class="flex-grow-1">
+
+                            <div class="d-flex align-items-center">
+
+                              <img src="https://themesbrand.com/velzon/html/master/assets/images/users/avatar-4.jpg" class="avatar-xxs rounded-circle" />
+
+                              <h5 class="fs-14 mb-0 ms-2">Henry Ford</h5>
+
+                              <p class="text-muted fs-13 mb-0 ms-auto">12 Jul, 21</p>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </li>
+
+                  </ul>
+
+                </div>
+
+              </ng-container>
+
+            </li>
+
+          </ng-container>
+
+        </ul>
+
+      </ng-container>
+
+    </ng-container>
+
+  </div>
+
+  <div class="card-footer">
+
+    <div class="d-flex justify-content-end">
+
+      <button type="button"
+              class="btn btn-light me-2"
+              (click)="close()"
+              [disabled]="isInitInProgress || isCreateInProgress">
+
+        Close
+
+      </button>
+
+      <ng-container *ngIf="isInitInProgress === false && vendorsPagedList.totalRecords > 0">
+
+        <button type="button"
+                class="btn btn-primary"
+                (click)="invite()"
+                [disabled]="isInitInProgress || isCreateInProgress || !selectedVendorIds || selectedVendorIds.length === 0">
+
+          <ng-container *ngIf="serviceRequestModel.priority !== ServiceRequestPriority.emergency">
+
+            Invite
+
+            <ng-container *ngIf="selectedVendorIds && selectedVendorIds.length > 0">
+
+              ({{selectedVendorIds.length}})
+
+            </ng-container>
+
+          </ng-container>
+
+          <ng-container *ngIf="serviceRequestModel.priority === ServiceRequestPriority.emergency">
+
+            Assign 
+
+          </ng-container>
+
+        </button>
+
+      </ng-container>
+
+    </div>
+
+  </div>
+
+</div>

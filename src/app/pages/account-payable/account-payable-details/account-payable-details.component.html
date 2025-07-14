@@ -1,0 +1,18 @@
+<div class="position-relative">
+    <div class="d-flex align-items-center gap-4 justify-content-between my-3">
+        <div class="d-flex align-items-center gap-4 justify-content-start">
+            <button type="button" style="width: 40px; height: 40px;background-color: #fff; border: 0px none"
+                class="btn btn-light rounded-circle p-0" [routerLink]="['/accounts-payable/list']">
+                <i class="ri-arrow-left-s-line fs-20"></i>
+            </button>
+            <h4 class="text-dark m-0">{{id ? 'Edit' : 'Create'}} Payable Request</h4>
+        </div>
+        <button type="button" style="background-color: #6964e1; border: 0px none" class="btn btn-primary add-btn"
+            (click)="onShowDialog()" [disabled]="id">
+            OCR
+        </button>
+    </div>
+    <app-account-payable-request-form [details]="details$ | async" (onEmit)="onEmit($event)">
+    </app-account-payable-request-form>
+    <app-spinner *ngIf="isLoading$ | async"></app-spinner>
+</div>

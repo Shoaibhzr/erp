@@ -1,0 +1,43 @@
+import { FileModel } from './file-model';
+import { ApprovalModel } from './approval-model';
+import { QuotationModel } from './quotation-model';
+import { UserMinimalModel } from './user-minimal-model';
+import { StoreMinimalModel } from './store-minimal-model';
+import { CompanyMinimalModel } from './company-minimal-model';
+import { ServiceRequestStatus } from './service-request-status';
+import { ServiceRequestPriority } from './service-request-priority';
+import { CommentModel, CommentViewModel } from './comment-model';
+import { InvoiceModel } from './invoice-model';
+import { PaymentModel } from './payment-model';
+import { ServiceRequestType } from './service-request-type';
+import { AccountsPayableMinimalModel } from './accounts-payable-minimal-model';
+import { StoreGroupMinimal1Model } from './store-group-minimal1-model';
+
+export class ServiceRequestModel {
+  public id: string;
+  public type: ServiceRequestType;
+  public company: CompanyMinimalModel;
+  public store: StoreMinimalModel;
+  public storeGroup: StoreGroupMinimal1Model;
+  public number: number;
+  public item: string;
+  public title: string;
+  public description: string;
+  public isUrgent: boolean;
+  public priority: ServiceRequestPriority;
+  public chartOfAccountId: string;
+  public dueOn: Date;
+  public status: ServiceRequestStatus;
+  public vendorId: string;
+  public vendor: UserMinimalModel;
+  public approvedBy: UserMinimalModel;
+  public files: FileModel[];
+  public approvals: ApprovalModel[];
+  public quotations: QuotationModel[];
+  public invoice: InvoiceModel;
+  public payment: PaymentModel;
+  public comments: CommentViewModel[];
+  public createdOn: Date;
+  public createdBy: UserMinimalModel;
+  public accountsPayableDetails: AccountsPayableMinimalModel;
+}

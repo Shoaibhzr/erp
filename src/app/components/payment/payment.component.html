@@ -1,0 +1,161 @@
+<div class="card">
+
+  <div class="card-header">
+
+    <div class="d-flex align-items-center">
+
+      <div>
+
+        <h5 class="card-title flex-grow-1 mb-0">
+
+          Payment Log and Records
+
+        </h5>
+
+        <p class="text-muted small mb-0">
+
+          A Detailed Overview of All Payments Made
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card-body">
+
+    <div class="table-responsive table-card">
+
+      <table class="table table-nowrap align-middle table-borderless mb-0">
+
+        <thead class="table-light text-muted">
+
+          <tr>
+
+            <th scope="col">Method</th>
+
+            <th scope="col">Date</th>
+
+            <th scope="col">Paid By</th>
+
+            <th scope="col" *ngIf="checkIfReferenceNumberExists()">Ref. #</th>
+
+            <th scope="col" *ngIf="checkIfChequeNumberExists()">Cheque #</th>
+
+            <th scope="col" *ngIf="checkIfChequeCashedDateExists()">Cheque Cashed Date</th>
+
+            <th scope="col" *ngIf="checkIfCardNumberExists()">Card Number</th>
+
+            <th scope="col" class="text-end">Total Amount</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let item of payment.items">
+
+            <td>
+
+              {{item.paymentMethod | paymentMethod}}
+
+            </td>
+
+            <td>
+
+              {{item.paymentDate | date}}
+
+            </td>
+
+            <td>
+
+              {{item.paidBy}}
+
+            </td>
+
+            <td *ngIf="checkIfReferenceNumberExists()">
+
+              {{item.referenceNumber}}
+
+            </td>
+
+            <td *ngIf="checkIfChequeNumberExists()">
+
+              {{item.chequeNumber}}
+
+            </td>
+
+            <td *ngIf="checkIfChequeCashedDateExists()">
+
+              {{item.chequeCashedDate | date}}
+
+            </td>
+
+            <td *ngIf="checkIfCardNumberExists()">
+
+              {{item.cardNumber}}
+
+            </td>
+
+            <td class="fw-medium text-end">
+
+              ${{item.paymentAmount | number: '1.2-2'}}
+
+            </td>
+
+          </tr>
+
+          <tr class="border-top border-top-dashed">
+
+            <td [attr.colspan]="getColSpan()"></td>
+
+            <td colspan="2" class="fw-medium p-0">
+
+              <table class="table table-borderless mb-0">
+
+                <tbody>
+
+                  <tr>
+
+                    <td>Total :</td>
+
+                    <td class="text-end">${{payment.total | number: '1.2-2' }}</td>
+
+                  </tr>
+
+                  <tr>
+
+                    <td>Paid :</td>
+
+                    <td class="text-end">-${{payment.paid | number: '1.2-2'}}</td>
+
+                  </tr>
+
+                  <tr class="border-top border-top-dashed">
+
+                    <th scope="row">Remaining (USD) :</th>
+
+                    <th class="text-end">${{payment.remaining | number: '1.2-2'}}</th>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

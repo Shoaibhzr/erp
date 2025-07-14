@@ -1,0 +1,309 @@
+<div class="position-relative min-vh-100">
+    <div class="d-flex flex-column gap-4 align-items-center gap-4 justify-content-start my-3"
+        *ngIf="details$ | async as details">
+        <div class="card w-100"
+            *ngIf="[serviceRequestStatus.rejected, serviceRequestStatus.returned].includes(details.status)">
+            <div class="card-header py-2"
+                [ngClass]="details.status === serviceRequestStatus.rejected ? 'rejected' : 'returned'">
+                <div class="d-flex gap-2 align-items-center">
+                    <i
+                        [ngClass]="details.status === serviceRequestStatus.rejected ? 'ri-close-circle-fill' : 'ri-alert-fill'"></i>
+                    <h5 class="m-0">
+                        Request {{details.status === serviceRequestStatus.rejected ? 'Rejected' : 'Returned'}}
+                    </h5>
+                </div>
+            </div>
+            <div class="card-body">{{details?.reason}}</div>
+        </div>
+        <div class="card mb-3 w-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="d-flex flex-column gap-3">
+                        <h4 class="text-dark fw-bold m-0">{{details?.memo}}</h4>
+                        <div class="d-flex gap-3 flex-wrap align-items-center">
+                            <div class="color-475569">Request#
+                                <span class="fw-medium">{{details.number}}</span>
+                            </div>
+                            <div class="vr"></div>
+                            <div class="color-475569">Created On
+                                <span class="fw-medium">{{details.createdOn | date : "MMM
+                                    d,y"}}</span>
+                            </div>
+                            <div class="vr"></div>
+                            <div class="color-475569">Due Date
+                                <span class="fw-medium">{{details.dueDate | date : "MMM d, y"}}</span>
+                            </div>
+                            <div class="vr"></div>
+                            <div class="badge rounded-pill fs-12 fw-medium" [ngStyle]="details.status | statusStyle">
+                                {{details.status | ServiceRequestStatus}}
+                            </div>
+                            <div class="badge rounded-pill fs-12 fw-medium" [class.non-critical]="!details.isUrgent"
+                                [class.critical]="details.isUrgent">
+                                {{ details.isUrgent ? 'Critical' : 'Non-critical' }}
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" style="width: 40px; height: 40px;background-color: #fff;"
+                        class="btn btn-light rounded p-0" [routerLink]="['/accounts-payable/details',details.id]">
+                        <i class="ri-edit-line fs-20"></i>
+                    </button>
+                </div>
+                <div class="d-flex gap-2 justify-content-end  mb-4">
+                    <ng-container
+                        *ngIf="(showActionButtons$ | async) && details.status === serviceRequestStatus.pendingApproval && isActionNotYetPerformedByTheUser && !hideButtonsIfNonCriticalForAP2">
+                        <button class="btn btn-light px-4" (click)="onShowReasonDialog(true)"
+                            style="background-color: #fff;">
+                            <i class="ri-arrow-left-line align-bottom me-1"></i>
+                            Return</button>
+                        <button class="btn btn-outline-danger px-4" (click)="onShowReasonDialog(false)">
+                            <i class="ri-close-circle-fill align-bottom me-1"></i>
+                            Reject</button>
+                        <button class="btn btn-primary px-4" style="background-color: #6964e1; border: 0px none"
+                            (click)="onShowApproveDialog()">
+                            <i class="ri-checkbox-circle-fill align-bottom me-1"></i>
+                            Approve</button>
+                    </ng-container>
+                    <button *ngIf="canReferToAdmin" class="btn btn-primary px-4"
+                        style="background-color: #6964e1; border: 0px none" (click)="onShowReferDialog()"
+                        [disabled]="alreadyReferredToAdmin">
+                        Refer to Company Admin</button>
+                    <button *ngIf="details.status === serviceRequestStatus.approved" class="btn btn-primary px-4"
+                        style="background-color: #6964e1; border: 0px none" (click)="onIntegrate()"
+                        [disabled]="details.isNSSubmitted">
+                        Integrate with Netsuite</button>
+                </div>
+                <div class="table-responsive rounded-4 border">
+                    <table class="table align-middle table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Vendor</th>
+                                <th>Vendor Subsidiary</th>
+                                <th>Invoice Number</th>
+                                <th>Invoice Date</th>
+                                <th>Invoice Amount</th>
+                                <th>Remaning Amount</th>
+                                <th>Tax on invoice</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="list form-check-all">
+                            <tr>
+                                <td class="text-truncate">{{details.vendor.firstName}}</td>
+                                <td class="text-truncate">{{details.vendorSubsidiary.name}}
+                                </td>
+                                <td class="text-truncate">{{details.accountsPayableDetails.invoiceNumber}}</td>
+                                <td class="text-truncate">{{details.accountsPayableDetails.invoiceDate | date : "MMM d,
+                                    y"}}</td>
+                                <td class="text-truncate">{{details.accountsPayableDetails.invoiceAmount |
+                                    currency:'USD':'symbol':'1.2-2'}}
+                                </td>
+                                <td class="text-truncate">{{details.accountsPayableDetails.remainingAmount |
+                                    currency:'USD':'symbol':'1.2-2'}}</td>
+                                <td class="text-truncate">
+                                    <div class="badge rounded-pill fs-12 fw-medium" [class.bg-success]="details.hasTax"
+                                        [class.bg-danger]="!details.hasTax">
+                                        {{details.hasTax ? 'Yes' : 'No'}}
+                                    </div>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row w-100 gx-3">
+            <div class="col-md-8">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="text-dark fw-bold mb-0">Files</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0 row">
+                            <div class="col-md-4" *ngFor="let file of details.files; let i=index;">
+                                <li class="mt-2">
+                                    <div class="border rounded position-relative">
+                                        <div class="d-flex align-items-center p-2">
+                                            <div class="flex-shrink-0 me-3">
+                                                <ng-container *ngIf="file.webUrl; else thumb">
+                                                    <img height="48" width="48" class="rounded" [src]="file.webUrl" />
+                                                </ng-container>
+                                                <ng-template #thumb>
+                                                    <div
+                                                        class="avatar-sm bg-light rounded d-flex align-items-center justify-content-center">
+                                                        <i class="ri-file-line"></i>
+                                                    </div>
+                                                </ng-template>
+                                            </div>
+                                            <div class="flex-grow-1 text-truncate">
+                                                <div class="pt-1">
+                                                    <ng-container *ngIf="file">
+                                                        <h5 class="fs-14 mb-1 text-dark">
+                                                            {{file.name || 'Img'}}
+                                                        </h5>
+                                                        <p class="fs-12 text-muted mb-0">
+                                                            {{file.size / 1000}} KB
+                                                        </p>
+                                                    </ng-container>
+                                                </div>
+                                            </div>
+                                            <a class="btn btn-icon text-muted btn-sm fs-18"
+                                                (click)="fileHelper.downloadFile(file.webUrl, file.name)">
+                                                <i class="ri-download-2-line"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="text-dark fw-bold mb-0">Approvers</h6>
+                    </div>
+                    <div class="card-body">
+                        <ng-container *ngFor="let approval of details.approvals; let isLast = last">
+                            <div class="d-flex gap-3 align-items-center" [ngClass]="{'mb-3':!isLast}">
+                                <div class="flex-shrink-0">
+                                    <ng-container *ngIf="!approval.approver.profilePictureWebUrl">
+                                        <div class="avatar-xs">
+                                            <div class="avatar-title bg-info-subtle text-info rounded-circle">
+                                                {{approval.approver | userPrefix}}
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="approval.approver.profilePictureWebUrl">
+                                        <img [src]="approval.approver.profilePictureWebUrl"
+                                            class="avatar-xs rounded-circle" />
+                                    </ng-container>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="fs-13 mb-0">
+                                        <a class="text-body d-block">
+                                            {{approval.approver.firstName}} {{approval.approver.lastName}}
+                                        </a>
+                                    </h5>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <div class="d-flex align-items-center gap-1">
+                                        <div class="btn btn-light btn-sm cursor-default"
+                                            [class.btn-light]="approval.state === approvalState.pending || approval.state === approvalState.skipped"
+                                            [class.btn-success]="approval.state === approvalState.approved"
+                                            [class.btn-info]="approval.state === approvalState.returned"
+                                            [class.btn-danger]="approval.state === approvalState.rejected">
+                                            {{approval.state}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3 w-100">
+            <div class="card-header">
+                <h6 class="text-dark fw-bold mb-0">Items</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive rounded-4 border">
+                    <table class="table align-middle table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>COA Category</th>
+                                <th>Store Group(s)</th>
+                                <th>Store(s)</th>
+                                <th>Allocate Amount</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="list form-check-all">
+                            <tr *ngFor="let item of details.items;trackBy: trackByIndex;let i = index">
+                                <td class="text-truncate">{{item.chartOfAccount.name}}</td>
+                                <td class="text-truncate">
+                                    {{ item.storeGroup.name }}
+                                </td>
+                                <td class="text-truncate">{{item.store.name}}
+                                </td>
+                                <td class="text-truncate">{{item.amount | currency:'USD':'symbol':'1.2-2'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3 w-100">
+            <comment [serviceRequestId]="id" [comments]="details.comments"></comment>
+        </div>
+    </div>
+    <app-spinner *ngIf="isLoading$ | async"></app-spinner>
+</div>
+
+<ng-template #approveModal>
+    <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">Confirm Approval</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.hide()"></button>
+    </div>
+
+    <div class="modal-body">
+        <p>Are you sure you want to <strong>"Approve"</strong> this Account
+            Payable request?</p>
+    </div>
+
+    <div class="modal-footer border-0 pt-0 d-flex align-items-center gap-2">
+        <button class="btn btn-light px-4 flex-grow-1" (click)="modalRef.hide()">Cancel</button>
+        <button class="btn btn-primary px-4 flex-grow-1" style="background-color: #6964e1; border: 0px none"
+            (click)="onApprove()">Approve</button>
+    </div>
+</ng-template>
+
+<ng-template #reasonModal>
+    <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">{{returnRequest ? 'Returning' : 'Rejection'}} Reason</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.hide()"></button>
+    </div>
+
+    <div class="modal-body">
+        <textarea class="form-control border-light mb-2" rows="5" [formControl]="reasonCtrl" #reason
+            placeholder="Write reason of {{returnRequest ? 'returning' : 'rejection'}} here..."
+            [ngClass]="{'is-invalid': reasonCtrl?.invalid && (reasonCtrl?.touched || reasonCtrl?.dirty)}"></textarea>
+        <ng-container *ngIf="reasonCtrl?.invalid && (reasonCtrl?.touched || reasonCtrl?.dirty)">
+            <div class="invalid-feedback d-inline">
+                <ng-container *ngIf="reasonCtrl?.hasError('required')">
+                    Reason is required
+                </ng-container>
+                <ng-container *ngIf="reasonCtrl?.hasError('maxlength')">
+                    Maximum character limit of 512 exceeded
+                </ng-container>
+            </div>
+        </ng-container>
+        <div class="float-end fs-10">{{reason?.value?.length || 0}}/512</div>
+    </div>
+
+    <div class="modal-footer border-0 pt-0 d-flex align-items-center gap-2">
+        <button class="btn btn-light px-4 flex-grow-1" (click)="modalRef.hide()">Cancel</button>
+        <button class="btn btn-primary px-4 flex-grow-1" style="background-color: #6964e1; border: 0px none"
+            (click)="onReasonDialogClose()">Submit</button>
+    </div>
+</ng-template>
+
+<ng-template #referModal>
+    <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">Refer to Company Admin Confirmation?</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.hide()"></button>
+    </div>
+
+    <div class="modal-body">
+        <p>Are you sure you want to <strong>Submit</strong> this request to company admin?</p>
+    </div>
+
+    <div class="modal-footer border-0 pt-0 d-flex align-items-center gap-2">
+        <button class="btn btn-light px-4 flex-grow-1" (click)="modalRef.hide()">Cancel</button>
+        <button class="btn btn-primary px-4 flex-grow-1" style="background-color: #6964e1; border: 0px none"
+            (click)="onRefer()">Confirm</button>
+    </div>
+</ng-template>

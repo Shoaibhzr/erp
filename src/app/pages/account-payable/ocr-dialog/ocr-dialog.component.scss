@@ -1,0 +1,18 @@
+::ng-deep .custom-width-dialog {
+    max-width: 900px;
+}
+
+canvas {
+    width: 100%;
+    border: 1px solid #ccc;
+}
+
+.text {
+    max-height: 600px;
+    overflow: auto;
+
+    div {
+        border: 1px solid #ccc;
+        min-height: 210px;
+    }
+}

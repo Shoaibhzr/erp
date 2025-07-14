@@ -1,0 +1,23 @@
+<div class="otp-container">
+
+    <h2>Enter OTP</h2>
+    <p>Please enter the OTP sent to your email</p>
+    <div class="otp-input">
+        <input type="text" maxlength="1" (input)="moveToNext($event, 1)" (keydown)="moveToPrev($event, 1)" #otp1>
+        <input type="text" maxlength="1" (input)="moveToNext($event, 2)" (keydown)="moveToPrev($event, 2)" #otp2>
+        <input type="text" maxlength="1" (input)="moveToNext($event, 3)" (keydown)="moveToPrev($event, 3)" #otp3>
+        <input type="text" maxlength="1" (input)="moveToNext($event, 4)" (keydown)="moveToPrev($event, 4)" #otp4>
+    </div>
+
+    <div class="mb-1">
+        <div *ngIf="isResendDisabled">Resend OTP in <b>{{ getMinsFromSeconds(timer) }}</b></div>
+        <a [ngClass]="{ 'disabled': isResendDisabled }" href="javascript:void(0)" (click)="resendOTP()">Resend OTP</a>
+    </div>
+
+    <button (click)="submitOTP()" [disabled]="otpValue.length < 4" class="btn btn-primary w-sm btn-load">
+        <div class="d-flex align-items-center justify-content-center">
+            Verify OTP
+        </div>
+    </button>
+
+</div>

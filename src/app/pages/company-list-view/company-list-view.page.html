@@ -1,0 +1,210 @@
+<div style="position: relative;">
+  <div class="page-title-box d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <h4 class="mb-sm-0 md-page-heading" style="text-transform:none;">Companies</h4>
+    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-end flex-grow-1">
+      <div class="search-box flex-grow-1" style="max-width: 500px;">
+        <input type="text" class="form-control search" placeholder="Search" [(ngModel)]="searchTerm"
+          (ngModelChange)="searchByKeyword()">
+
+        <i class="ri-search-line search-icon"></i>
+      </div>
+      <ng-container *ngIf="checkIfUserHasRole(RoleConstant.globalAdminId)">
+        <button type="button" style="background-color: #6964e1; border: 0px none" [routerLink]="['/company/create']"
+        class="btn btn-primary add-btn">
+        <i class="ri-add-line align-bottom me-1"></i> Create Company
+      </button>
+      </ng-container>
+      
+    </div>
+  </div>
+
+  <div class="row">
+    <ng-container *ngIf="isHttpRequestInProcess && !companyPagedListModel">">
+    <div class="d-flex justify-content-center align-items-center"
+      style="height: calc(100vh - 238px)">
+      <span class="spinner-border flex-shrink-0 ms-2" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </span>
+    </div>
+  </ng-container>
+    <div class="col-lg-12">
+      <div class="card" style="min-height: 300px;">
+        
+          <ng-container *ngIf="companyPagedListModel?.items && companyPagedListModel?.items?.length; else noData">
+            <div class="card-body">
+              <div class="table-responsive table-card">
+                <table class="table align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Name</th>
+                      <th>Contact</th>
+                      <th>Address</th>
+                      <th>Created On</th>
+                      <th class="text-center">Actions</th>
+                    </tr>
+                  </thead>
+
+                  <tbody class="list form-check-all">
+                    <tr *ngFor="let company of companyPagedListModel.items; trackBy: trackByFn; let i = index">
+                      <td class="py-3 text-truncate cursor-pointer fw-bold" style="max-width: 300px; color:#0F172A">
+
+                        <div class="d-flex align-items-center">
+                          <div class="avatar-sm">
+                            <img [src]="company.logoUrl" class="rounded-circle object-fit-cover mt-2"
+                              style="width: 32px; height: 32px;" alt="" />
+                          </div>
+                          <span class="text-truncate" style="font-weight: 600;">{{ company.name }}</span>
+                        </div>
+
+                      </td>
+
+                      <td class="py-3 phone cursor-pointer">
+                        {{company.contactName ? company.contactName : '-'}}
+                      </td>
+                      <td class="py-3 phone cursor-pointer">
+                        {{company.address}}
+                      </td>
+                      <td class="py-3 phone cursor-pointer">
+                        {{company.createdOn | date : "MMM d, y, h:mm a"}}
+                      </td>
+
+
+                      <td class="py-3 text-center">
+                        <div class="dropdown" dropdown style="margin-left: -15px;">
+                          <button type="button" dropdownToggle class="btn dropdown dropdown-btn" aria-expanded="false">
+                            <i class="ri-more-line"></i>
+                          </button>
+                          <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-end" role="menu"
+                            aria-labelledby="button-basic">
+                            <li role="menuitem">
+                              <button (click)="select(company)"
+                                class="dropdown-item cursor-pointer d-flex gap-2 align-items-center">
+                                <span>View Company</span>
+                              </button>
+                            </li>
+                            <li role="menuitem">
+                              <button class="dropdown-item cursor-pointer d-flex gap-2 align-items-center" 
+                              [routerLink]="['/company', company.id, 'edit']">
+                                <span>Edit Company</span>
+                              </button>
+                            </li>
+                            <li role="menuitem">
+                              <button class="dropdown-item cursor-pointer d-flex gap-2 align-items-center text-danger"
+                              (click)="openModal(confirmModal, company)">
+                                <span>Delete Company</span>
+                              </button>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+
+              <div class="d-flex align-items-center pagination-wrap">
+              <div *ngIf="isHttpRequestInProcess === false">
+                <pagination [totalItems]="companyPagedListModel.totalRecords" [(ngModel)]="companySearchRequestModel.page"
+                  [maxSize]="5" [disabled]="isHttpRequestInProcess" [itemsPerPage]="companySearchRequestModel.pageSize"
+                  (pageChanged)="onPageChanged($event)">
+                </pagination>
+              </div>
+            </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noData>
+            <ng-container *ngIf="!(isLoading$ | async)">
+              <div class="card-body p-4 m-4">
+                <div class="noresult">
+                  <div class="text-center">
+                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                    <p class="text-muted mb-0">
+                      We did not find any company for you search.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </ng-template>
+
+
+        
+      </div>
+    </div>
+  </div>
+  <app-spinner *ngIf="isLoading$ | async"></app-spinner>
+</div>
+
+<ng-template #confirmModal>
+  <div class="delete-modal">
+    <div class="modal-body">
+      <p>Are you sure you want to <strong>"Delete"</strong> this company group <strong>"{{selectedCompanyModel?.name}}"</strong>?</p>
+      <p class="disclaimer"><span>Disclaimer:</span> All the requests/activity will be automatically deleted if you delete this comapny.</p>
+      <button class="btn modal-cancel-btn"
+        (click)="modalRef?.hide()">Not Now</button>
+      <button class="btn modal-delete-btn"
+        (click)="onConfirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #companyDetailTemplate>
+  <div class="modal-content h-100">
+    <div class="modal-header border-bottom">
+      <div class="d-flex align-items-center">
+        <div class="avatar-sm mb-3">
+          <img [src]="selectedCompanyModel.logoUrl" class="rounded-circle object-fit-cover mt-2"
+            style="width: 50px; height: 50px;" alt="" />
+        </div>
+        <span class="text-truncate mx-3" style="font-weight: 600;">{{ selectedCompanyModel.name }}</span>
+      </div>
+
+      <button type="button" class="btn-close" (click)="modalRef?.hide()"></button>
+    </div>
+    <div class="modal-body p-4">
+
+
+      <div class="table-responsive">
+        <table class="table table-borderless mb-0">
+          <tbody>
+            <tr>
+              <th class="ps-0" scope="row">Name :</th>
+              <td class="text-muted">{{selectedCompanyModel.name}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Address :</th>
+              <td class="text-muted"> {{selectedCompanyModel.address}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Website :</th>
+              <td class="text-muted">
+                <a href="{{selectedCompanyModel.website}}" target="_blank"
+                  class="link-primary text-decoration-underline">
+
+                  {{selectedCompanyModel.website}}
+
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Contact Name :</th>
+              <td class="text-muted">{{selectedCompanyModel.contactName}}</td>
+            </tr>
+
+            <tr>
+              <th class="ps-0" scope="row">Contact Email :</th>
+              <td class="text-muted">{{selectedCompanyModel.contactEmail}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Detail :</th>
+              <td class="text-muted">{{selectedCompanyModel.detail}}</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>

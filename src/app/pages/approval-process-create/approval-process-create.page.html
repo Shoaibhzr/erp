@@ -1,0 +1,471 @@
+<ng-container *ngIf="isInitInProgress == undefined || isInitInProgress == true">
+
+  <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+
+    <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+      <span class="visually-hidden">Loading...</span>
+
+    </span>
+
+  </div>
+
+</ng-container>
+
+<ng-container *ngIf="isInitInProgress == false">
+
+  <!-- <ng-container *ngIf="id && !approvalProcessModel">
+
+    <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+
+      <div class="container-fluid">
+
+        <div class="row justify-content-center">
+
+          <div class="col-xl-4 text-center">
+
+            <div class="error-500 position-relative">
+
+              <img src="assets/images/error500.png" alt="" class="img-fluid error-500-img error-img">
+
+              <h1 class="title text-muted">500</h1>
+
+            </div>
+
+            <div>
+
+              <h4>Internal Server Error!</h4>
+
+              <p class="text-muted w-75 mx-auto">
+
+                The company you're trying to edit does not exist, or something else went wrong. Please try again later.
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </ng-container> -->
+
+  <ng-container *ngIf="!id || approvalProcessModel">
+
+    <div class="row">
+
+      <div class="col-lg-6">
+
+        <div class="page-title-box d-sm-flex align-items-center">
+          <img src="assets/images/svg/back-button-form.svg" alt="" (click)="goBack()" style="cursor: pointer;">
+          <h4 class="mb-sm-0 mx-2" style="text-transform:none;">
+
+            <ng-container *ngIf="!id">
+
+              Create
+
+            </ng-container>
+
+            <ng-container *ngIf="id">
+
+              Update
+
+            </ng-container>
+
+            Approval Process
+
+          </h4>
+        </div>
+
+      </div>
+
+    </div>
+
+    <form (ngSubmit)="openCreateModal(createApprovalModal)" [formGroup]="form">
+
+      <div class="row">
+
+        <div class="col-lg-12">
+
+          <div class="card">
+
+            <div class="card-header">
+
+              <h5 class="card-title mb-0">
+
+                Approval Process
+
+              </h5>
+
+            </div>
+
+            <div class="card-body">
+
+              <div class="row">
+                <!-- Company -->
+                <div class="col-lg-6">
+                  <div class="mb-3">
+                    <label class="form-label">
+                      Company
+                      <span class="text-danger">*</span>
+                    </label>
+                    <ng-select [items]="companies" bindLabel="name" bindValue="id" dropdownPosition="bottom"
+                      [clearable]=false placeholder="Select company" formControlName="companyId"
+                      [ngClass]="{ 'is-invalid': form.controls['companyId'].invalid && (form.controls['companyId'].dirty || form.controls['companyId'].touched) }">
+                    </ng-select>
+
+                    <div
+                      *ngIf="form.controls['companyId']?.invalid && (form.controls['companyId'].dirty || form.controls['companyId'].touched)"
+                      class="invalid-feedback">
+                      <div *ngIf="form.controls['companyId'].errors?.['required']">This field is
+                        required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                  <!-- Store Group -->
+                  <div class="mb-3">
+
+                    <label class="form-label">
+                      Store Group
+                      <span class="text-danger">*</span>
+                    </label>
+                    <ng-select [items]="storeGroupsArray" bindLabel="name" bindValue="id" dropdownPosition="bottom"
+                      [clearable]=false placeholder="Select store group" formControlName="storeGroupId"
+                      [ngClass]="{ 'is-invalid': form.controls['storeGroupId'].invalid && (form.controls['storeGroupId'].dirty || form.controls['storeGroupId'].touched) }">
+                    </ng-select>
+
+                    <div
+                      *ngIf="form.controls['storeGroupId']?.invalid && (form.controls['storeGroupId'].dirty || form.controls['storeGroupId'].touched)"
+                      class="invalid-feedback">
+                      <div *ngIf="form.controls['storeGroupId'].errors?.['required']">This field is
+                        required.
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <!-- Store -->
+                  <div class="mb-3">
+
+                    <label class="form-label">
+                      Store
+                      <span class="text-danger">*</span>
+                    </label>
+                    <ng-select [items]="storesArray" bindLabel="name" bindValue="id" dropdownPosition="bottom"
+                      [clearable]=false placeholder="Select store" formControlName="storeId"
+                      [ngClass]="{ 'is-invalid': form.controls['storeId'].invalid && (form.controls['storeId'].dirty || form.controls['storeId'].touched) }">
+                    </ng-select>
+
+                    <div
+                      *ngIf="form.controls['storeId']?.invalid && (form.controls['storeId'].dirty || form.controls['storeId'].touched)"
+                      class="invalid-feedback">
+                      <div *ngIf="form.controls['storeId'].errors?.['required']">This field is
+                        required.
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                <!-- Category Multi-select Dropdown -->
+                <div class="col-lg-6">
+                  <div class="mb-3">
+                    <label class="form-label">
+                      Category
+                      <span class="text-danger">*</span>
+                    </label>
+                    <ng-select [items]="categories" bindLabel="name" bindValue="id" dropdownPosition="bottom"
+                      [closeOnSelect]="true" (change)="onCategorySelect()" placeholder="Select category"
+                      formControlName="categoryId" [multiple]="true" [disabled]="true"
+                      [ngClass]="{ 'is-invalid': form.controls['categoryId'].invalid && (form.controls['categoryId'].dirty || form.controls['categoryId'].touched) }">
+                    </ng-select>
+
+                    <div
+                      *ngIf="form.controls['categoryId']?.invalid && (form.controls['categoryId'].dirty || form.controls['categoryId'].touched)"
+                      class="invalid-feedback">
+                      <div *ngIf="form.controls['categoryId'].errors?.['required']">This field is required.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="mb-3">
+
+                    <label class="form-label required">
+
+                      Approval Process Name
+
+                    </label>
+
+                    <input type="text" class="form-control" formControlName="name"
+                      placeholder="Enter approval process name" maxlength="50"
+                      [ngClass]="{'is-invalid': form.controls && form.controls['name']?.touched && form.controls['name']?.errors}" />
+
+                    <ng-container
+                      *ngIf="!form.controls || !form.controls['name']?.touched || !form.controls['name']?.errors">
+
+                      <small class="form-text text-muted">
+
+                        This will be used in all communications and displays.
+
+                      </small>
+
+                    </ng-container>
+
+                    <ng-container
+                      *ngIf="form.controls && form.controls['name']?.touched && form.controls['name']?.errors">
+
+                      <div class="invalid-feedback">
+
+                        <ng-container *ngIf="form.controls['name']?.errors['required']">
+
+                          Name is required
+
+                        </ng-container>
+
+                        <ng-container *ngIf="form.controls['name']?.errors['maxlength']">
+
+                          Please keep the name to {{form.controls['name']?.errors['maxlength'].requiredLength}}
+                          characters or less. You entered {{form.controls['name']?.errors['maxlength'].actualLength}}
+                          characters.
+
+                        </ng-container>
+
+                      </div>
+
+                    </ng-container>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-12">
+                  <div class="mb-3">
+
+                    <label class="form-label required">
+
+                      Detail
+
+                    </label>
+
+                    <textarea class="form-control" rows="5" formControlName="description" maxlength="1024"
+                      placeholder="Enter details"
+                      [ngClass]="{'is-invalid': form.controls && form.controls['description']?.touched && form.controls['description']?.errors}"></textarea>
+                    <!-- Character count -->
+                    <div class="float-end fs-10">
+                      {{ description.length }}/1024
+                    </div>
+
+                    <ng-container
+                      *ngIf="form.controls && form.controls['description']?.touched && form.controls['description']?.errors">
+
+                      <div class="invalid-feedback">
+
+                        <ng-container *ngIf="form.controls['description']?.errors['required']">
+
+                          Detail is required
+
+                        </ng-container>
+
+                        <ng-container *ngIf="form.controls['description']?.errors['maxlength']">
+
+                          Please keep the detail to {{form.controls['description']?.errors['maxlength'].requiredLength}}
+                          characters or less. You entered
+                          {{form.controls['description']?.errors['maxlength'].actualLength}} characters.
+
+                        </ng-container>
+
+                      </div>
+
+                    </ng-container>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- <pre>{{form.value | json}}</pre> -->
+            </div>
+
+          </div>
+
+          <!-- Dynamically Generated Cards for Selected Categories -->
+          <div *ngFor="let catId of selectedCategoryIds" class="card mt-3">
+            <div class="card-header">
+              <h5 class="card-title">{{ getCategoryName(catId) }}</h5>
+            </div>
+            <div class="card-body mb-5">
+
+              <!-- Role Dropdown -->
+              <div class="mb-3">
+                <label class="form-label required">Role</label>
+                <div class="d-flex align-items-center">
+                  <ng-select [items]="roles" bindValue="id" [(ngModel)]="categoryRoles[catId]"
+                    [ngModelOptions]="{ standalone: true }" [placeholder]="'Select role'" [clearable]="false"
+                    [searchable]="true" class="flex-grow-1">
+                    <ng-template ng-label-tmp let-item="item">
+                      {{ item?.userName }} | {{ item?.roleName }}
+                    </ng-template>
+
+                    <ng-template ng-option-tmp let-item="item">
+                      <div [class.text-muted]="isRoleAlreadySelected(catId, item.id)"
+                        [class.disabled]="isRoleAlreadySelected(catId, item.id)">
+                        {{ item.userName }} | {{ item.roleName }}
+                      </div>
+                    </ng-template>
+                  </ng-select>
+
+                  <button class="btn btn-primary ms-2" type="button" (click)="onRoleSelect(catId)">
+                    <img src="assets/images/svg/arrow-icon.svg" width="8px" />
+                  </button>
+                </div>
+              </div>
+
+
+
+              <!-- Approval Table -->
+              <div class="table-responsive table-card rounded mx-0 mt-2">
+                <table class="table align-middle table-fixed" style="table-layout: fixed; width: 100%;">
+
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 30%;">Name</th>
+                      <th style="width: 20%;">Approval Order</th>
+                      <th style="width: 30%;">Role</th>
+                      <th class="text-center" style="width: 20%;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngIf="!approvalCriteria[catId] || approvalCriteria[catId].length === 0">
+                      <td colspan="4" class="text-center">No approval criteria added</td>
+                    </tr>
+                    <tr *ngFor="let item of approvalCriteria[catId]; let i = index">
+                      <td class="text-truncate" style="overflow: hidden;">{{ item.name }}</td>
+                      <td class="text-truncate">
+                        <span class="badge rounded-pill px-3 py-2 fw-semibold"
+                          [ngClass]="getBadgeColorClass(item.order)">
+                          {{ item.order }}{{ getOrdinalSuffix(item.order) }}
+                        </span>
+
+                      </td>
+                      <td class="text-truncate">
+                        <span class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                          {{item.role }}
+                        </span>
+                      </td>
+                      <td>
+
+                        <div>
+                          <img src="assets/images/svg/edit-icon.svg" class="cursor-pointer"
+                            (click)="editApprover(catId, i)">
+                          <img src="assets/images/svg/remove-icon.svg" class="ms-2 cursor-pointer"
+                            (click)="deleteApprover(catId, i)">
+                        </div>
+
+                      </td>
+
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+
+
+          <div class="text-end mb-4">
+
+            <button type="button" [disabled]="isCreateRequestInProgress" class="btn btn-light waves-effect me-2"
+              routerLink="/approval-processes/list">
+
+              Close
+
+            </button>
+
+            <button class="btn btn-primary w-sm btn-load" style="background-color: #6964E1; border:0px none;"
+              [disabled]="
+                !form.valid || 
+                isCreateRequestInProgress || 
+                !allSelectedCategoriesHaveApprovalCriteria()
+              " type="submit">
+
+              <div class="d-flex align-items-center justify-content-center">
+
+                <ng-container *ngIf="!id || id == undefined">
+
+                  Create Process
+
+                </ng-container>
+
+                <ng-container *ngIf="id">
+
+                  Update Process
+
+                </ng-container>
+
+                <ng-container *ngIf="isCreateRequestInProgress">
+
+                  <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+                    <span class="visually-hidden">Loading...</span>
+
+                  </span>
+
+                </ng-container>
+
+              </div>
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </form>
+
+  </ng-container>
+
+  <ng-template #createApprovalModal>
+    <div class="modal-header">
+      <h5 class="modal-title" *ngIf="!id">Approval Creation Confirmation</h5>
+      <h5 class="modal-title" *ngIf="id">Approval Updation Confirmation</h5>
+      <button type="button" class="btn-close" (click)="modalRef.hide()"></button>
+    </div>
+    <div class="modal-body">
+      <p *ngIf="!id">Are you sure you want to Create this Approval?</p>
+      <p *ngIf="id">Are you sure you want to Update this Approval?</p>
+      <div class="d-flex">
+        <button type="button" class="btn modal-cancel-btn" (click)="modalRef.hide()">Cancel</button>
+        <button type="button" class="btn modal-confirm-btn" (click)="confirmCreate()" *ngIf="!id">Create</button>
+        <button type="button" class="btn modal-confirm-btn" (click)="confirmCreate()" *ngIf="id">Update</button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #duplicateCattemplate>
+    <div class="modal-header">
+      <h5 class="modal-title">Approval Process Already Exists</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+    </div>
+    <div class="modal-body">
+      <p [innerHTML]="duplicateCatMsg"></p>
+      <div class="d-flex justify-content-end">
+        <button type="button" class="btn modal-confirm-btn" (click)="closeModal()">Ok</button>
+      </div>
+    </div>
+  </ng-template>

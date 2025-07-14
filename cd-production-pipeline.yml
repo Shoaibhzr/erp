@@ -1,0 +1,27 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: Npm@1
+    displayName: 'Install dependencies'
+    inputs:
+      command: 'custom'
+      workingDir: '$(System.DefaultWorkingDirectory)'
+      customCommand: 'install --force'
+  - task: Npm@1
+    displayName: 'Build'
+    inputs:
+      command: 'custom'
+      workingDir: '$(System.DefaultWorkingDirectory)'
+      customCommand: 'run production'
+  - task: AzureStaticWebApp@0
+    displayName: 'Deploy'
+    inputs:
+      app_location: '/dist/app.web'
+      workingDirectory: '$(System.DefaultWorkingDirectory)'
+      skip_app_build: true
+      skip_api_build: true
+      is_static_export: false
+      azure_static_web_apps_api_token: '28cd9d996e924edf0467d7490896383346ee9adc95d901e9ecab22ce0488b46a5-f9f89d15-546e-4515-8f25-9fad87c9c1a7010374741'

@@ -1,0 +1,253 @@
+<div class="row">
+  <div class="col-12">
+    <div
+      class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+      <h4 class="mb-sm-0 md-page-heading" style="text-transform:none;">
+        Users
+      </h4>
+      <ng-container *ngIf="!isHttpRequestInProcess || userPagedListModel">
+        <div class="card-header border-0 col-lg-3">
+          <div class="d-flex md-search-box justify-content-end">
+            <div class="search-box">
+              <input type="text" class="form-control search"
+                placeholder="Search for..." [(ngModel)]="searchTerm"
+                (ngModelChange)="searchByKeyword()">
+              <i class="ri-search-line search-icon"></i>
+            </div>
+            <div class="hstack gap-2">
+              <button type="button"
+                routerLink="/user/create"
+                class="btn btn-primary add-btn md-add-btn">
+                <i class="ri-add-line align-bottom me-1"></i> Add User
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <ng-container *ngIf="isHttpRequestInProcess && !userPagedListModel">
+    <div class="d-flex justify-content-center align-items-center"
+      style="height: calc(100vh - 238px)">
+      <span class="spinner-border flex-shrink-0 ms-2" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </span>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!isHttpRequestInProcess || userPagedListModel">
+    <div class="col-lg-12">
+      <div class="card  bg-transparent shadow-none">
+        <div class="card-body">
+          <div class="table-responsive table-card">
+            <ng-container *ngIf="userPagedListModel.totalRecords == 0">
+              <div class="noresult">
+                <div class="text-center">
+                  <h5 class="mt-2">Sorry! No Result Found</h5>
+                  <p class="text-muted mb-0">We've searched more than 150+
+                    companies We did not find any companies for you search.</p>
+                </div>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="userPagedListModel.totalRecords > 0">
+              <table class="table align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Requestor</th>
+                    <th>Role(s)</th>
+                    <th>Company</th>
+                    <th>StoreGroup(s)</th>
+                    <th>Store(s)</th>
+                    <th>Created On</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                  <tr *ngFor="let user of userPagedListModel.items">
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <ng-container *ngIf="!user.profilePictureWebUrl">
+                          <div class="avatar-xs flex-shrink-0">
+                            <div
+                              class="avatar-title bg-info-subtle text-info rounded-circle">
+                              {{user | userPrefix}}
+                            </div>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="user.profilePictureWebUrl">
+                          <img [src]="user.profilePictureWebUrl"
+                            class="avatar-xs rounded-circle" />
+                        </ng-container>
+                        <div class="ms-2 requester-name">
+                          {{user.firstName}} {{user.lastName}}
+                          <div class="small text-muted">
+                            {{user.email}}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="badge-gray">
+                        {{user.userRoles | userRolesToRole}}
+                      </div>
+                    </td>
+                    <td>
+                      {{user.userRoles | userRolesToCompany}}
+                    </td>
+                    <td>
+                      {{user.userRoles | userStoreGroupToCompany}}
+                    </td>
+                    <td>
+                      {{user.userRoles | userStoreToCompany}}
+                    </td>
+                    <td class="date">
+                      {{user.createdOn | date : "MMM d, y, h:mm a"}}
+                    </td>
+                    <td class="text-center">
+                      <div class="dropdown" dropdown
+                        style="margin-left: -15px;">
+                        <button type="button" dropdownToggle
+                          class="btn dropdown dropdown-btn"
+                          aria-expanded="false">
+                          <i class="ri-more-line"></i>
+                        </button>
+                        <ul id="dropdown-basic" *dropdownMenu
+                          class="dropdown-menu dropdown-menu-end" role="menu"
+                          aria-labelledby="button-basic">
+                          <li role="menuitem">
+                            <button
+                              class="dropdown-item cursor-pointer d-flex gap-2 align-items-center"
+                              (click)="select(user)">
+                              <span>View User</span>
+                            </button>
+                          </li>
+                          <li role="menuitem">
+                            <button
+                              class="dropdown-item cursor-pointer d-flex gap-2 align-items-center"
+                              [routerLink]="['/user', user.id, 'edit']">
+                              <span>Edit User</span>
+                            </button>
+                          </li>
+                          <li role="menuitem">
+                            <button
+                              class="dropdown-item cursor-pointer d-flex gap-2 align-items-center text-danger"
+                              (click)="openModal(confirmModal, user)">
+                              <span>Delete User</span>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </ng-container>
+          </div>
+          <div class="d-flex align-items-center pagination-wrap">
+            <!-- <div>
+              Showing {{userSearchRequestModel.page > 1 ?
+              ((userSearchRequestModel.page - 1) *
+              userSearchRequestModel.pageSize) : 1}} to
+              {{(userSearchRequestModel.page * userSearchRequestModel.pageSize)
+              > userPagedListModel.totalRecords ?
+              userPagedListModel.totalRecords : (userSearchRequestModel.page *
+              userSearchRequestModel.pageSize)}} of
+              {{userPagedListModel.totalRecords}} results
+            </div> -->
+            <div *ngIf="isHttpRequestInProcess === false">
+              <pagination [totalItems]="userPagedListModel.totalRecords"
+                [(ngModel)]="userSearchRequestModel.page"
+                [maxSize]="5"
+                [disabled]="isHttpRequestInProcess"
+                [itemsPerPage]="userSearchRequestModel.pageSize"
+                (pageChanged)="onPageChanged($event)">
+              </pagination>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<ng-template #confirmModal>
+  <div class="delete-modal">
+    <div class="modal-body">
+      <p>Are you sure you want to <strong>"Delete"</strong> this User named <strong>"{{selectedUserModel?.firstName}} {{selectedUserModel?.lastName}}"</strong>?</p>
+      <p class="disclaimer"><span>Disclaimer:</span> All the requests/activity will be automatically deleted if you delete this user.</p>
+      <button class="btn modal-cancel-btn"
+        (click)="modalRef?.hide()">Not Now</button>
+      <button class="btn modal-delete-btn"
+        (click)="onConfirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</ng-template>
+<ng-template #userDetailTemplate>
+  <div class="modal-content h-100">
+    <div class="modal-header border-bottom">
+      <div class="d-flex align-items-center">
+        <h5 class="modal-title">User Details</h5>
+      </div>
+      <button type="button" class="btn-close" (click)="modalRef?.hide()"></button>
+    </div>
+    <div class="modal-body p-4">
+      <div class="text-center mb-4">
+        <div class="profile-user position-relative d-inline-block">
+          <ng-container *ngIf="!selectedUserModel.profilePictureWebUrl">
+            <div class="avatar-lg">
+              <div class="avatar-title bg-info-subtle text-info rounded-circle fs-1">
+                {{selectedUserModel | userPrefix}}
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="selectedUserModel.profilePictureWebUrl">
+            <img [src]="selectedUserModel.profilePictureWebUrl" class="rounded-circle avatar-lg img-thumbnail user-profile-image" />
+          </ng-container>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-borderless mb-0">
+          <tbody>
+            <tr>
+              <th class="ps-0" scope="row">Full Name :</th>
+              <td class="text-muted">{{selectedUserModel.firstName}} {{selectedUserModel.lastName}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Email :</th>
+              <td class="text-muted">{{selectedUserModel.email}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Role(s) :</th>
+              <td class="text-muted">{{selectedUserModel.userRoles | userRolesToRole}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Company :</th>
+              <td class="text-muted">{{selectedUserModel.userRoles | userRolesToCompany}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">StoreGroups :</th>
+              <td class="text-muted">{{selectedUserModel.userRoles | userStoreGroupToCompanyDetail}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Store(s) :</th>
+              <td class="text-muted">{{selectedUserModel.userRoles | userStoreToCompanyDetail}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Auditor1 StoreGroups :</th>
+              <td class="text-muted">{{selectedUserModel.userRoles | userStoreGroupToCompanyAuditor1Detail}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Auditor1 Store(s) :</th>
+              <td class="text-muted">{{selectedUserModel.userRoles | userStoreToCompanyAuditorDetail}}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Created On :</th>
+              <td class="text-muted">{{selectedUserModel.createdOn | date : "MMM d, y, h:mm a"}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>

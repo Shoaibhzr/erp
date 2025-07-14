@@ -1,0 +1,457 @@
+<div class="card">
+
+  <div class="card-header align-items-center d-flex">
+
+    <h6 class="fw-bold mb-0" style="color: #334155;">
+
+      Comments
+
+    </h6>
+
+  </div>
+
+  <div class="card-body">
+
+    <ng-container *ngIf="!comments">
+
+      <div class="d-flex align-items-center">
+
+        <i class="ri-information-line text-info me-2"></i> No one has commented yet. Be the first to add a comment!
+
+      </div>
+
+    </ng-container>
+
+    <ng-container *ngIf="comments && comments.length > 0">
+
+      <div class="px-3 mx-n3 mb-2">
+
+        <ng-container *ngFor="let comment of comments">
+
+          <div class="d-flex mb-4">
+
+            <div class="flex-shrink-0">
+
+              <ng-container *ngIf="!comment.createdBy.profilePictureWebUrl">
+
+                <div class="avatar-xs flex-shrink-0">
+
+                  <div class="avatar-title bg-info-subtle text-info rounded-circle">
+
+                    {{comment.createdBy | userPrefix}}
+
+                  </div>
+
+                </div>
+
+              </ng-container>
+
+              <ng-container *ngIf="comment.createdBy.profilePictureWebUrl">
+
+                <img [src]="comment.createdBy.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+
+              </ng-container>
+
+            </div>
+
+            <div class="flex-grow-1 ms-3">
+
+              <h5 class="fs-13">
+
+                {{comment.createdBy.firstName}} {{comment.createdBy.lastName}}
+
+                <small class="text-muted ms-2">
+
+                  {{comment.createdOn | date: "MMM d, y"}} - {{comment.createdOn | date: "h:mm a"}}
+
+                </small>
+
+              </h5>
+
+              <p class="text-muted" [innerHTML]="comment.body">
+
+              </p>
+
+              <ng-container *ngIf="comment.files && comment.files.length > 0">
+
+                <div class="row g-3 mb-3">
+
+                  <div class="col-xxl-3 col-lg-6" *ngFor="let file of comment.files">
+
+                    <div class="border rounded border-dashed p-2">
+
+                      <div class="d-flex align-items-center">
+
+                        <div class="flex-shrink-0 me-3">
+
+                          <div class="avatar-xs">
+
+                            <div class="avatar-title bg-light text-secondary rounded fs-24">
+
+                              <i class="{{file.contentType | contentTypeToRiIcon}}"></i>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                        <div class="flex-grow-1 overflow-hidden">
+
+                          <h5 class="fs-11 mb-1">
+
+                            <a class="text-body text-truncate d-block">
+
+                              {{file.name}}
+
+                            </a>
+
+                          </h5>
+
+                          <div class="fs-10">
+
+                            {{file.size / 1000}} KB
+
+                          </div>
+
+                        </div>
+
+                        <div class="flex-shrink-0 ms-2">
+
+                          <div class="d-flex gap-1">
+
+                            <a class="btn btn-icon text-muted btn-sm fs-18"
+                              (click)="FileHelper.downloadFile(file.webUrl, file.name)">
+
+                              <i class="ri-download-2-line"></i>
+
+                            </a>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </ng-container>
+
+              <a class="badge text-muted bg-light cursor-pointer" (click)="reply(comment)"><i class="mdi mdi-reply"></i>
+                Reply</a>
+
+              <ng-container *ngIf="comment.replies && comment.replies.length > 0">
+
+                <ng-container *ngFor="let reply of comment.replies">
+
+                  <div class="d-flex mt-4">
+
+                    <div class="flex-shrink-0">
+
+                      <ng-container *ngIf="!reply.createdBy.profilePictureWebUrl">
+
+                        <div class="avatar-xs flex-shrink-0">
+
+                          <div class="avatar-title bg-info-subtle text-info rounded-circle">
+
+                            {{reply.createdBy | userPrefix}}
+
+                          </div>
+
+                        </div>
+
+                      </ng-container>
+
+                      <ng-container *ngIf="reply.createdBy.profilePictureWebUrl">
+
+                        <img [src]="reply.createdBy.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+
+                      </ng-container>
+
+                    </div>
+
+                    <div class="flex-grow-1 ms-3">
+
+                      <h5 class="fs-13">{{reply.createdBy.firstName}} {{reply.createdBy.lastName}} <small
+                          class="text-muted ms-2">{{reply.createdOn | date: "MMM d, y"}} - {{reply.createdOn | date:
+                          "h:mm a"}}</small></h5>
+
+                      <p class="text-muted" [innerHTML]="reply.body">
+
+                      </p>
+
+                      <ng-container *ngIf="reply.files && reply.files.length > 0">
+
+                        <div class="row g-3 mb-3">
+
+                          <div class="col-xxl-3 col-lg-6" *ngFor="let replyFile of reply.files">
+
+                            <div class="border rounded border-dashed p-2">
+
+                              <div class="d-flex align-items-center">
+
+                                <div class="flex-shrink-0 me-3">
+
+                                  <div class="avatar-xs">
+
+                                    <div class="avatar-title bg-light text-secondary rounded fs-24">
+
+                                      <i class="{{replyFile.contentType | contentTypeToRiIcon}}"></i>
+
+                                    </div>
+
+                                  </div>
+
+                                </div>
+
+                                <div class="flex-grow-1 overflow-hidden">
+
+                                  <h5 class="fs-11 mb-1">
+
+                                    <a class="text-body text-truncate d-block">
+
+                                      {{replyFile.name}}
+
+                                    </a>
+
+                                  </h5>
+
+                                  <div class="fs-10">
+
+                                    {{replyFile.size / 1000}} KB
+
+                                  </div>
+
+                                </div>
+
+                                <div class="flex-shrink-0 ms-2">
+
+                                  <div class="d-flex gap-1">
+
+                                    <a class="btn btn-icon text-muted btn-sm fs-18"
+                                      (click)="FileHelper.downloadFile(replyFile.webUrl, replyFile.name)">
+
+                                      <i class="ri-download-2-line"></i>
+                                    </a>
+
+                                  </div>
+
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </ng-container>
+
+                    </div>
+
+                  </div>
+
+                </ng-container>
+
+              </ng-container>
+
+            </div>
+
+          </div>
+
+        </ng-container>
+
+      </div>
+
+    </ng-container>
+
+
+
+    <ng-container *ngIf="replyTo">
+
+      <div class="d-flex align-items-center"
+        style="border: 1px #ccc dotted; padding-top: 10px; padding-bottom: 10px; padding-left: 10px; padding-right: 10px; background: #eeeeee40;">
+
+        <div class="flex-shrink-0">
+
+          <ng-container *ngIf="!replyTo.createdBy.profilePictureWebUrl">
+
+            <div class="d-flex align-items-center">
+
+              <i class="ri-reply-line me-2 fs-16"></i>
+
+              <div class="avatar-xs flex-shrink-0">
+
+                <div class="avatar-title bg-info-subtle text-info rounded-circle">
+
+                  {{replyTo.createdBy | userPrefix}}
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </ng-container>
+
+          <ng-container *ngIf="replyTo.createdBy.profilePictureWebUrl">
+
+            <div class="d-flex align-items-center">
+
+              <i class="ri-reply-line me-2 fs-16"></i>
+
+              <img [src]="replyTo.createdBy.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+
+            </div>
+
+          </ng-container>
+
+        </div>
+
+        <div class="flex-grow-1 ms-3">
+
+          <h5 class="fs-13">
+
+            {{replyTo.createdBy.firstName}} {{replyTo.createdBy.lastName}}
+
+            <small class="text-muted ms-2">
+
+              {{replyTo.createdOn | date: "MMM d, y"}} - {{replyTo.createdOn | date: "h:mm a"}}
+
+            </small>
+
+          </h5>
+
+          <p class="text-muted mb-0" [innerHTML]="truncate(replyTo.body)">
+
+          </p>
+
+        </div>
+
+        <div class="flex-shrink-0">
+
+          <button type="button" class="btn btn-ghost-secondary btn-icon waves-effect me-1" (click)="removeReply()">
+
+            <i class="ri-close-circle-line fs-16"></i>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </ng-container>
+
+    <form class="mt-4" (ngSubmit)="create()" [formGroup]="form">
+
+      <div class="row g-3">
+
+        <div class="col-12">
+
+          <label class="form-label text-body">
+
+            <ng-container *ngIf="!replyTo">
+
+              Leave a Comment
+
+            </ng-container>
+
+            <ng-container *ngIf="replyTo">
+
+              Reply to a Comment
+
+            </ng-container>
+
+          </label>
+
+          <textarea class="form-control bg-light border-light" rows="3" formControlName="body"
+            placeholder="Enter your comment..."></textarea>
+
+        </div>
+
+        <div class="col-12 text-end">
+
+          <div class="d-flex align-items-center">
+
+            <div class="text-muted me-1 d-flex align-items-center" *ngIf="files && files.length > 0">
+
+              {{files.length}}
+
+              <ng-container *ngIf="files.length === 1">
+
+                file
+
+              </ng-container>
+
+              <ng-container *ngIf="files.length > 1">
+
+                files
+
+              </ng-container>
+
+              attached
+
+              <i class="ri-close-circle-line cursor-pointer ms-1" (click)="removeAttachments()"></i>
+
+            </div>
+
+            <div class="ms-auto">
+
+              <input #attachment type="file" multiple (change)="onAttachmentsChanged($event)" style="display:none;" />
+
+              <button type="button" (click)="attachment.click()" [disabled]="isCreateInProgress"
+                class="btn btn-ghost-secondary btn-icon waves-effect me-1">
+
+                <i class="ri-attachment-line fs-16"></i>
+
+              </button>
+
+              <button class="btn btn-primary btn-load" style="background-color: #6964E1; border:0px none;"
+                [disabled]="!form.valid || isCreateInProgress" type="submit">
+
+                <div class="d-flex align-items-center justify-content-center">
+
+                  <ng-container *ngIf="!replyTo">
+
+                    Post Comment
+
+                  </ng-container>
+
+                  <ng-container *ngIf="replyTo">
+
+                    Reply to a Comment
+
+                  </ng-container>
+
+                  <ng-container *ngIf="isCreateInProgress">
+
+                    <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+                      <span class="visually-hidden">Loading...</span>
+
+                    </span>
+
+                  </ng-container>
+
+                </div>
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>

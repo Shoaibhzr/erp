@@ -1,0 +1,950 @@
+<ng-container *ngIf="form">
+
+  <form (ngSubmit)="create()" [formGroup]="form">
+
+    <div class="row">
+
+      <div class="col-lg-12">
+
+        <div class="card">
+
+          <div class="card-header">
+
+            <h5 class="card-title mb-0">
+
+              Request Details
+
+            </h5>
+
+          </div>
+
+          <div class="card-body">
+
+            <div class="row mb-3">
+
+              <div class="col">
+
+                <label class="form-label">
+
+                  Vendor
+
+                  <span class="text-danger">*</span>
+
+                </label>
+
+                <select class="form-select" formControlName="vendorId">
+
+                  <option [value]="vendor.id" *ngFor="let vendor of vendors">
+
+                    {{vendor.firstName}} {{vendor.lastName}}
+
+                  </option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+              <div class="col">
+
+                <label class="form-label">
+
+                  Memo
+
+                </label>
+
+                <input type="text" class="form-control" formControlName="memo"
+                  [ngClass]="{'is-invalid': form.controls && form.controls['memo']?.errors}" />
+
+                <ng-container *ngIf="form.controls && form.controls['memo']?.dirty && form.controls['memo']?.errors">
+
+                  <div class="invalid-feedback">
+
+                    <ng-container *ngIf="form.controls['memo']?.errors['minlength']">
+
+                      Please keep the memo to {{form.controls['memo']?.errors['minlength'].requiredLength}} characters
+
+                      or more. You entered {{form.controls['memo']?.errors['minlength'].actualLength}} characters.
+
+                    </ng-container>
+
+                    <ng-container *ngIf="form.controls['memo']?.errors['maxlength']">
+
+                      Please keep the memo to {{form.controls['memo']?.errors['maxlength'].requiredLength}} characters
+
+                      or less. You entered {{form.controls['memo']?.errors['maxlength'].actualLength}} characters.
+
+                    </ng-container>
+
+                  </div>
+
+                </ng-container>
+
+              </div>
+
+              <div class="col">
+
+                <label class="form-label">
+
+                  Vendor Subsidiary
+
+                  <span class="text-danger">*</span>
+
+                </label>
+
+                <select class="form-select" formControlName="vendorSubsidiary">
+
+                  <option value="1a9203b4-8cf7-494d-9232-06ca960f36fe">
+
+                    Bajco Group
+
+                  </option>
+
+                </select>
+
+                <!-- <label class="form-label">
+
+                  Vendor Subsidiary
+
+                </label>
+
+                <input type="text" class="form-control" formControlName="vendorSubsidiary"
+                       [ngClass]="{'is-invalid': form.controls && form.controls['vendorSubsidiary']?.errors}" /> -->
+
+                <ng-container
+                  *ngIf="form.controls && form.controls['vendorSubsidiary']?.dirty && form.controls['vendorSubsidiary']?.errors">
+
+                  <div class="invalid-feedback">
+
+                    <ng-container *ngIf="form.controls['vendorSubsidiary']?.errors['maxlength']">
+
+                      Please keep the Vendor Subsidiary to
+                      {{form.controls['vendorSubsidiary']?.errors['maxlength'].requiredLength}} characters
+
+                      or less. You entered {{form.controls['vendorSubsidiary']?.errors['maxlength'].actualLength}}
+                      characters.
+
+                    </ng-container>
+
+                  </div>
+
+                </ng-container>
+
+              </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+              <div class="col">
+
+                <label class="form-label">
+
+                  Invoice Number
+
+                  <span class="text-danger">*</span>
+
+                </label>
+
+                <input type="text" (keydown)="validateInvoiceNumber($event)" class="form-control"
+                  formControlName="invoiceNumber"
+                  [ngClass]="{'is-invalid': form.controls && form.controls['invoiceNumber']?.dirty && form.controls['invoiceNumber']?.errors}" />
+
+                <ng-container
+                  *ngIf="form.controls && form.controls['invoiceNumber']?.dirty && form.controls['invoiceNumber']?.errors">
+
+                  <div class="invalid-feedback">
+
+                    <ng-container *ngIf="form.controls['invoiceNumber']?.errors['required']">
+
+                      Invoice number is required
+
+                    </ng-container>
+
+                    <ng-container *ngIf="form.controls['invoiceNumber']?.errors['maxlength']">
+
+                      Please keep the invoice number to
+                      {{form.controls['invoiceNumber']?.errors['maxlength'].requiredLength}}
+
+                      characters or less. You entered
+                      {{form.controls['invoiceNumber']?.errors['maxlength'].actualLength}}
+
+                      characters.
+
+                    </ng-container>
+
+                  </div>
+
+                </ng-container>
+
+              </div>
+
+              <div class="col">
+
+                <label class="form-label">
+
+                  Invoice Date
+
+                  <span class="text-danger">*</span>
+
+                </label>
+
+                <div class="input-group">
+
+                  <input type="text" formControlName="invoiceDate" class="form-control" [placement]="'top'"
+                    (bsValueChange)="onInvoiceDateChange($event)" [bsConfig]="{ containerClass: 'theme-dark-blue' }"
+                    [maxDate]="maxDate"
+                    [ngClass]="{'is-invalid': form.controls && form.controls['invoiceDate']?.dirty && form.controls['invoiceDate']?.errors}"
+                    bsDatepicker />
+
+                  <div class="input-group-append">
+
+                    <span class="input-group-text">
+
+                      <i class="ri-calendar-2-line"></i>
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+                <ng-container
+                  *ngIf="form.controls && form.controls['invoiceDate']?.dirty && form.controls['invoiceDate']?.errors">
+
+                  <div class="invalid-feedback">
+
+                    <ng-container *ngIf="form.controls['invoiceDate']?.errors['invoiceDate']">
+
+                      Invoice Date is required
+
+                    </ng-container>
+
+                  </div>
+
+                </ng-container>
+
+              </div>
+
+              <div class="col">
+
+                <label class="form-label">
+
+                  Category
+
+                  <span class="text-danger">*</span>
+
+                </label>
+
+                <select class="form-select" formControlName="categoryId">
+
+                  <option [value]="category.id" *ngFor="let category of categories">
+
+                    {{category.name}}
+
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="col">
+
+                <label class="form-label">
+
+                  Due Date
+
+                  <span class="text-danger">*</span>
+
+                </label>
+
+                <div class="input-group">
+
+                  <input type="text" formControlName="dueDate" class="form-control" [placement]="'top'"
+                    [minDate]="minDate" [bsConfig]="{ containerClass: 'theme-dark-blue' }"
+                    [ngClass]="{'is-invalid': form.controls && form.controls['dueDate']?.dirty && form.controls['dueDate']?.errors}"
+                    bsDatepicker />
+
+                  <div class="input-group-append">
+
+                    <span class="input-group-text">
+
+                      <i class="ri-calendar-2-line"></i>
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+                <ng-container
+                  *ngIf="form.controls && form.controls['dueDate']?.dirty && form.controls['dueDate']?.errors">
+
+                  <div class="invalid-feedback">
+
+                    <ng-container *ngIf="form.controls['dueDate']?.errors['dueDate']">
+
+                      Due Date is required
+
+                    </ng-container>
+
+                  </div>
+
+                </ng-container>
+
+              </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+              <div class="col-3">
+
+                <label class="form-label">
+
+                  Invoice Amount
+
+                  <span class="text-danger">*</span>
+
+                </label>
+
+                <input type="number" placeholder="$ 0.00" min="0" class="form-control" formControlName="invoiceAmount"
+                  [ngClass]="{'is-invalid': form.controls && form.controls['invoiceAmount']?.dirty && form.controls['invoiceAmount']?.errors}" />
+
+                <ng-container
+                  *ngIf="form.controls && form.controls['invoiceAmount']?.dirty && form.controls['invoiceAmount']?.errors">
+
+                  <div class="invalid-feedback">
+
+                    <ng-container *ngIf="form.controls['invoiceAmount']?.errors['required']">
+
+                      Invoice Amount is required
+
+                    </ng-container>
+
+                  </div>
+
+                </ng-container>
+
+              </div>
+
+              <!-- <div class="col-3">
+
+                <label class="form-label">
+
+                  Remaining Amount
+
+                  <span class="text-danger">*</span>
+
+                </label>
+
+                <input type="number" placeholder="$ 0.00" min="0" class="form-control" formControlName="remainingAmount" [ngClass]="{'is-invalid': form.controls && form.controls['remainingAmount']?.dirty && form.controls['remainingAmount']?.errors}" />
+
+                <ng-container *ngIf="form.controls && form.controls['remainingAmount']?.dirty && form.controls['remainingAmount']?.errors">
+
+                  <div class="invalid-feedback">
+
+                    <ng-container *ngIf="form.controls['remainingAmount']?.errors['required']">
+
+                      Remaining Amount is required
+
+                    </ng-container>
+
+                  </div>
+
+                </ng-container>
+
+              </div> -->
+
+            </div>
+
+            <div class="row mb-3">
+
+              <div class="col-3">
+
+                <label class="form-label">
+
+                  Tax on Invoice
+
+                </label>
+
+                <div>
+
+                  <button class="btn btn-sm mx-0" style="border: 1px solid #E3E8EF" type="button"
+                    [ngStyle]="{ 'background-color': form.get('hasTax').value === true ? '#6964E1' : 'white', 'color': form.get('hasTax').value === true ? 'white' : 'black'}"
+                    (click)="form.get('hasTax').setValue(true)">
+
+                    Yes
+
+                  </button>
+
+                  <button class="btn btn-sm mx-0" style="border: 1px solid #E3E8EF" type="button"
+                    [ngStyle]="{ 'background-color': form.get('hasTax').value === false ? '#6964E1' : 'white', 'color': form.get('hasTax').value === false ? 'white' : 'black'}"
+                    (click)="form.get('hasTax').setValue(false)">
+
+                    No
+
+                  </button>
+
+                </div>
+
+              </div>
+
+              <div class="col-3">
+
+                <label class="form-label">
+
+                  Is Urgent
+
+                </label>
+
+                <div>
+
+                  <button class="btn btn-sm mx-0" style="border: 1px solid #E3E8EF" type="button"
+                    [ngStyle]="{ 'background-color': form.get('isUrgent').value === true ? '#6964E1' : 'white', 'color': form.get('isUrgent').value === true ? 'white' : 'black'}"
+                    (click)="form.get('isUrgent').setValue(true)">
+
+                    Yes
+
+                  </button>
+
+                  <button class="btn btn-sm mx-0" type="button" style="border: 1px solid #E3E8EF"
+                    [ngStyle]="{ 'background-color': form.get('isUrgent').value === false ? '#6964E1' : 'white', 'color': form.get('isUrgent').value === false ? 'white' : 'black'}"
+                    (click)="form.get('isUrgent').setValue(false)">
+
+                    No
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="card-header">
+
+            <h5 class="card-title mb-0">
+
+              Files
+
+            </h5>
+
+          </div>
+
+          <div class="card-body">
+
+            <p class="text-muted">
+
+              Attach your invoices, purchase orders, and receipts to complete your accounts payable request.
+
+            </p>
+
+            <div>
+
+              <input class="form-control" type="file" multiple #fileUploadCtrl
+                (change)="onFilesSelected($event, fileUploadCtrl)" />
+
+              <ng-container *ngIf="files">
+
+                <ul class="list-unstyled mb-0">
+
+                  <ng-container *ngFor="let file of files; let i=index;">
+
+                    <li class="mt-2 dz-processing dz-image-preview dz-success dz-complete">
+
+                      <div class="border rounded">
+
+                        <div class="d-flex align-items-center p-2">
+
+                          <div class="flex-shrink-0 me-3">
+
+                            <div class="avatar-sm bg-light rounded d-flex align-items-center justify-content-center">
+
+                              <i class="ri-file-line"></i>
+
+                            </div>
+
+                          </div>
+
+                          <div class="flex-grow-1 text-truncate">
+
+                            <div class="pt-1">
+
+                              <ng-container *ngIf="!file">
+
+                                Profile Picture
+
+                              </ng-container>
+
+                              <ng-container *ngIf="file">
+
+                                <h5 class="fs-14 mb-1">
+
+                                  {{file.name}}
+
+                                </h5>
+
+                                <p class="fs-13 text-muted mb-0">
+
+                                  <strong>{{file.size / 1000}}</strong> KB
+
+                                </p>
+
+                              </ng-container>
+
+                            </div>
+
+                          </div>
+
+                          <div class="flex-shrink-0 ms-3">
+
+                            <button type="button" class="btn btn-sm" (click)="removeFile(i)">
+
+                              <i class="ri-delete-bin-line fs-5"></i>
+
+                            </button>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </li>
+
+                  </ng-container>
+
+                  <ng-container
+                    *ngIf="serviceRequestModel && serviceRequestModel.files && serviceRequestModel.files.length > 0">
+
+                    <ng-container *ngFor="let file of serviceRequestModel.files; let i=index;">
+
+                      <li class="mt-2 dz-processing dz-image-preview dz-success dz-complete">
+
+                        <div class="border rounded">
+
+                          <div class="d-flex align-items-center p-2">
+
+                            <div class="flex-shrink-0 me-3">
+
+                              <div class="avatar-sm bg-light rounded d-flex align-items-center justify-content-center">
+
+                                <i class="ri-file-line"></i>
+
+                              </div>
+
+                            </div>
+
+                            <div class="flex-grow-1 text-truncate">
+
+                              <div class="pt-1">
+
+                                <h5 class="fs-14 mb-1">
+
+                                  {{file.name}}
+
+                                </h5>
+
+                                <p class="fs-13 text-muted mb-0">
+
+                                  <strong>{{file.size / 1000}}</strong> KB
+
+                                </p>
+
+                              </div>
+
+                            </div>
+
+                            <div class="flex-shrink-0 ms-3">
+
+                              <button type="button" class="btn btn-sm btn-danger" (click)="deleteFile(i)">
+
+                                Delete
+
+                              </button>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </li>
+
+                    </ng-container>
+
+                  </ng-container>
+
+                </ul>
+
+              </ng-container>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="card">
+
+          <div class="card-header">
+
+            <h5 class="card-title mb-0">
+
+              Add Items
+
+            </h5>
+
+          </div>
+
+          <div class="card-body">
+
+            <form [formGroup]="itemForm">
+
+              <div class="row">
+
+                <div class="col-11">
+
+                  <div class="row mb-3">
+
+                    <div class="col">
+
+                      <label class="form-label">
+
+                        COA Category
+
+                        <span class="text-danger">*</span>
+
+                      </label>
+
+
+                      <select class="form-select" formControlName="chartOfAccountId">
+
+                        <option [value]="category.id" *ngFor="let category of chartofAccountsCategories">
+
+                          {{category.name}}
+
+                        </option>
+
+                      </select>
+
+                    </div>
+
+                    <div class="col">
+
+                      <label class="form-label">
+
+                        Store Group(s)
+
+                        <span class="text-danger">*</span>
+
+                      </label>
+
+                      <select class="form-select" formControlName="storeGroupId" (change)="selectStoreGroup($event)">
+
+                        <option [value]="group.id" *ngFor="let group of storeGroups">
+
+                          {{group.name}}
+
+                        </option>
+
+                      </select>
+
+                    </div>
+
+                    <div class="col">
+
+                      <label class="form-label">
+
+                        Store(s)
+
+                        <span class="text-danger">*</span>
+
+                      </label>
+
+                      <ng-select formControlName="storeId" [items]="selectedStores" bindLabel="name" bindValue="id"
+                        [multiple]="true" [clearable]="true" [closeOnSelect]="false"
+                        (change)="itemForm.controls['allocatedAmount'].setValue(null)">
+
+                      </ng-select>
+
+                    </div>
+
+                    <div class="col">
+
+                      <label class="form-label">
+
+                        Total Amount
+
+                        <span class="text-danger">*</span>
+
+                      </label>
+
+                      <input type="number" placeholder="$ 0.00" min="0" class="form-control" formControlName="amount"
+                        [ngClass]="{'is-invalid': itemForm.controls && itemForm.controls['amount']?.dirty && itemForm.controls['amount']?.errors}" />
+
+                      <ng-container
+                        *ngIf="itemForm.controls && itemForm.controls['amount']?.dirty && itemForm.controls['amount']?.errors">
+
+                        <div class="invalid-feedback">
+
+                          <ng-container *ngIf="itemForm.controls['amount']?.errors['required']">
+
+                            Total Amount is required
+
+                          </ng-container>
+
+                        </div>
+
+                      </ng-container>
+
+                    </div>
+
+                    <div class="col">
+
+                      <label class="form-label">
+
+                        Allocate Amount
+
+                        <span class="text-danger">*</span>
+
+                      </label>
+
+                      <select class="form-select" formControlName="allocatedAmount"
+                        (change)="onAllocatedAmountChange(itemForm.controls['allocatedAmount'].value)">
+
+                        <option [value]="amountAllocatedOptions.equally">{{amountAllocatedOptions.equally}}</option>
+
+                        <option [value]="amountAllocatedOptions.manually">{{amountAllocatedOptions.manually}}</option>
+
+                      </select>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div style="display: flex; align-items: center; margin-top: 10px;" class="col-1">
+
+                  <button class="btn btn-primary" style="background-color: #6964E1; border:0px none;"
+                    [disabled]="!itemForm.valid" type="submit" (click)="add()">
+
+                    <i class="ri-arrow-right-line"></i>
+
+                  </button>
+
+                </div>
+
+              </div>
+
+
+            </form>
+
+
+            <div class="row mb-3">
+              <table class="table table-borderless text-center table-nowrap align-middle mb-0">
+
+                <thead>
+
+                  <tr class="table-active">
+
+                    <th scope="col" class="text-start">Category</th>
+
+                    <th scope="col" class="text-start">Group</th>
+
+                    <th scope="col" class="text-start">Store</th>
+
+                    <th scope="col" class="text-start">Total Amount</th>
+
+                    <th scope="col" class="text-start">Actions</th>
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  <tr *ngFor="let item of items; let i=index;">
+
+                    <td class="text-start">
+
+                      <span class="fw-medium">
+
+                        {{getChartofAccountCategory(item.chartOfAccountId)}}
+
+                      </span>
+
+                    </td>
+
+                    <td class="text-start">
+
+                      {{getStoreGroup(item.storeGroupId)}}
+
+                    </td>
+
+                    <td class="text-start">
+
+                      {{getStore(item.storeId[0])}}
+
+                    </td>
+
+                    <td class="text-start">
+
+                      $ {{item.amount}}
+
+                    </td>
+
+                    <td class="text-center">
+
+                      <ul class="list-inline hstack gap-2 mb-0">
+                        <li title="Delete" class="list-inline-item edit">
+                          <a (click)="deleteItem(i)" class="text-muted d-inline-block cursor-pointer">
+                            <i class="ri-delete-bin-line"></i>
+                          </a>
+                        </li>
+                      </ul>
+                    </td>
+
+                  </tr>
+
+                </tbody>
+
+              </table>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="text-end mb-4">
+
+          <button type="button" [disabled]="isCreateRequestInProgress" class="btn btn-light waves-effect me-2"
+            routerLink="/accounts-payable/list">
+
+            Close
+
+          </button>
+
+          <button class="btn btn-primary w-sm btn-load" style="background-color: #6964E1; border:0px none;"
+            [disabled]="!form.valid || (!files) || isCreateRequestInProgress || items === null || items.length === 0"
+            type="submit">
+
+            <div class="d-flex align-items-center justify-content-center">
+
+              <ng-container *ngIf="!id">
+
+                Create Request
+
+              </ng-container>
+
+              <ng-container *ngIf="id">
+
+                Update Request
+
+              </ng-container>
+
+              <ng-container *ngIf="isCreateRequestInProgress">
+
+                <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+                  <span class="visually-hidden">Loading...</span>
+
+                </span>
+
+              </ng-container>
+
+            </div>
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </form>
+
+</ng-container>
+
+<ng-template #allocateAmountTemplate>
+
+  <div class="modal-header">
+
+    <h5 class="modal-title">
+
+      Allocate Amount Between Stores
+
+    </h5>
+
+    <button type="button" class="btn-close" (click)="modalRef.hide()"></button>
+
+  </div>
+
+  <div class="modal-body">
+    <div class="d-flex flex-row gap-2 mt-3 filter-check">
+
+      <div class="form-check">
+
+        <input class="form-check-input" type="radio" [value]="allocateByOptions.percentage" [(ngModel)]="allocateBy"
+          (change)="onAllocateByOptChange(allocateBy)">
+
+        <label class="form-check-label" for="productBrandRadio5">By %</label>
+
+      </div>
+
+      <div class="form-check">
+
+        <input class="form-check-input" type="radio" [value]="allocateByOptions.amount" [(ngModel)]="allocateBy"
+          (change)="onAllocateByOptChange(allocateBy)">
+
+        <label class="form-check-label" for="productBrandRadio4">By Amount</label>
+
+      </div>
+
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-6" *ngFor="let store of itemForm.controls['storeId'].value; let i = index">
+
+        <label class="form-label">
+
+          Store - {{store}}
+
+        </label>
+
+        <input type="number" class="form-control" [(ngModel)]="allocatedAmount[i]"
+          (input)="onAmountChange(allocatedAmount)" />
+      </div>
+    </div>
+
+    <div class="row mt-2">
+      <div style="display: flex; align-items: baseline;" class="col mt-3">
+        <h5>Remaining to allocate</h5>
+        <span style="margin-left: 15px;">
+          {{remainingToAllocate}}
+          <span *ngIf="allocateBy === allocateByOptions.percentage">%</span>
+          <span *ngIf="allocateBy === allocateByOptions.amount">$</span>
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+
+
+
+  </div>
+
+</ng-template>

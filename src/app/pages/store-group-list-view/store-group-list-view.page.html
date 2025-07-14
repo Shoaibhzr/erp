@@ -1,0 +1,207 @@
+<div style="position: relative;">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 my-3">
+        <h4 class="mb-sm-0 md-page-heading fw-bold" style="text-transform:none;">Store Groups</h4>
+        <div class="d-flex align-items-center flex-wrap gap-2 justify-content-end flex-grow-1">
+             <div class="search-box flex-grow-1" style="max-width: 500px;">
+        <input type="text" class="form-control search" placeholder="Search" [(ngModel)]="searchTerm"
+          (ngModelChange)="searchByKeyword()">
+
+        <i class="ri-search-line search-icon"></i>
+      </div>
+            <button type="button" style="background-color: #6964e1; border: 0px none"
+                [routerLink]="['/store-groups/create']" class="btn btn-primary add-btn">
+                <i class="ri-add-line align-bottom me-1"></i> Create New
+            </button>
+        </div>
+    </div>
+    <div class="row">
+        <!-- <ng-container *ngIf="isHttpRequestInProcess && !storeGroups">">
+            <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 238px)">
+                <span class="spinner-border flex-shrink-0 ms-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </span>
+            </div>
+        </ng-container> -->
+        <div class="col-lg-12">
+            <div class="card" style="min-height: 300px;">
+                
+                    <ng-container *ngIf="storeGroups && storeGroups.length; else noData">
+                        <div class="card-body">
+                            <div class="table-responsive table-card">
+                                <table class="table align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Company</th>
+                                            <th>Store(s)</th>
+                                            <th>Details</th>
+                                            <th>CreatedOn</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody class="list form-check-all">
+                                        <tr *ngFor="let storeGroup of storeGroups; trackBy: trackByFn; let i = index">
+                                            <td class="py-3 text-truncate cursor-pointer fw-bold"
+                                                style="max-width: 250px; color:#0F172A">
+                                                {{ storeGroup.name }}
+                                            </td>
+                                            <td class="py-3 phone cursor-pointer">
+                                                {{ storeGroup.companies | userStoreNameToStore}}
+                                            </td>
+                                            <td class="py-3 phone cursor-pointer">
+                                                {{storeGroup.stores | userStoreNameToStore}}
+                                            </td>
+                                            <td class="py-3 phone cursor-pointer text-truncate" style="max-width: 250px;">
+                                                {{storeGroup.description }}
+                                            </td>
+                                            <td class="py-3 date cursor-pointer date">
+                                                {{storeGroup.createdOn | date : "MMM d,y"}}
+                                            </td>
+
+                                            <td class="py-3">
+
+
+                                                <div class="dropdown" dropdown style="margin-left: -15px;">
+                                                    <button type="button" dropdownToggle
+                                                        class="btn dropdown dropdown-btn" aria-expanded="false">
+                                                        <i class="ri-more-line"></i>
+                                                    </button>
+                                                    <ul id="dropdown-basic" *dropdownMenu
+                                                        class="dropdown-menu dropdown-menu-end" role="menu"
+                                                        aria-labelledby="button-basic">
+                                                        <li role="menuitem">
+                                                            <button
+                                                                class="dropdown-item cursor-pointer d-flex gap-2 align-items-center"
+                                                                (click)="select(storeGroup)">
+                                                                <span>View Store Group</span>
+                                                            </button>
+                                                        </li>
+                                                        <li role="menuitem">
+                                                            <button
+                                                                class="dropdown-item cursor-pointer d-flex gap-2 align-items-center"
+                                                                [routerLink]="['/store-groups/',storeGroup.id,'edit']">
+                                                                <span>Edit Store Group</span>
+                                                            </button>
+                                                        </li>
+                                                        <li role="menuitem">
+                                                            <button
+                                                                class="dropdown-item cursor-pointer d-flex gap-2 align-items-center text-danger"
+                                                                (click)="openModal(confirmModal,storeGroup)">
+                                                                <span>Delete Store Group</span>
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                           
+
+                            <div class="d-flex align-items-center pagination-wrap">
+                                <div *ngIf="isHttpRequestInProcess === false">
+                                    <pagination [totalItems]="totalRecords" [(ngModel)]="currentPage"
+                                        [maxSize]="5" [disabled]="isHttpRequestInProcess" [itemsPerPage]="pageSize"
+                                        (pageChanged)="onPageChanged($event)">
+                                    </pagination>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <ng-template #noData>
+                        <ng-container *ngIf="!(isLoading$ | async)">
+                            <div class="card-body p-4 m-4">
+                                <div class="noresult">
+                                    <div class="text-center">
+                                        <h5 class="mt-2">Sorry! No Result Found</h5>
+                                        <p class="text-muted mb-0">
+                                            We did not find any store group for you search.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </ng-template>
+                
+            </div>
+        </div>
+    </div>
+    <app-spinner *ngIf="isLoading$ | async"></app-spinner>
+</div>
+
+<ng-template #confirmModal>
+    <div class="delete-modal">
+        <div class="modal-body">
+            <p>Are you sure you want to <strong>"Delete"</strong> this store group
+                <strong>"{{selectedItem?.name}}"</strong>?
+            </p>
+            <p class="disclaimer"><span>Disclaimer:</span> All the requests/activity will be automatically deleted if
+                you delete this store group.</p>
+            <button class="btn modal-cancel-btn" (click)="modalRef?.hide()">Not Now</button>
+            <button class="btn modal-delete-btn" (click)="delete()">Yes, Delete</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #storeGroupDetailTemplate>
+  <div class="modal-content h-100">
+    <div class="modal-header border-bottom">
+      <div class="d-flex align-items-center mb-3">
+        <ng-container *ngIf="!selectedItem.profilePictureWebUrl">
+            <div class="avatar-sm">
+              <div class="avatar-title bg-info-subtle text-info rounded-circle fs-1">
+                {{selectedItem | userPrefix}}
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="selectedItem.profilePictureWebUrl">
+            <img [src]="selectedItem.profilePictureWebUrl" class="rounded-circle avatar-lg img-thumbnail user-profile-image" />
+          </ng-container>
+        <span class="text-truncate mx-3 fw-semibold">{{ selectedItem.name }}</span>
+      </div>
+      <button type="button" class="btn-close" (click)="modalRef?.hide()"></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="table-responsive">
+        <table class="table table-borderless mb-0">
+          <tbody>
+            <tr>
+              <th class="ps-0" scope="row">Store Group Name:</th>
+              <td class="text-muted">{{ selectedItem.name }}</td>
+            </tr>
+
+            <tr>
+              <th class="ps-0" scope="row">Company:</th>
+              <td class="text-muted">{{ selectedItem?.companies?.[0]?.name }}</td>
+            </tr>
+
+            <tr>
+              <th class="ps-0 align-top" scope="row">Store(s):</th>
+              <td class="text-muted">
+                <ng-container *ngIf="selectedItem?.stores?.length; else noStores">
+                  <table class="table table-borderless mb-0">
+                    <tbody>
+                      <tr *ngFor="let row of getStoreChunks(selectedItem.stores)">
+                        <td *ngFor="let store of row" class="text-muted py-1 pe-3">• {{ store.name }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </ng-container>
+                <ng-template #noStores>No stores available</ng-template>
+              </td>
+            </tr>
+
+            <tr>
+              <th class="ps-0 align-top" scope="row">Detail:</th>
+              <td class="text-muted">{{ selectedItem.description }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>

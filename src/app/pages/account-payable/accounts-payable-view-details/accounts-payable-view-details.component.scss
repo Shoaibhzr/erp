@@ -1,0 +1,67 @@
+.fs-20 {
+    font-size: 20px;
+}
+
+.color-475569 {
+    color: #475569;
+}
+
+table {
+    th {
+        background: #F8FAFC;
+        color: #475569;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 18px;
+    }
+
+    td {
+        color: #475569;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        max-width: 300px;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+.critical {
+    background-color: rgb(253, 232, 228);
+    color: rgb(240, 101, 72);
+}
+
+.non-critical {
+    background-color: rgb(226, 229, 237);
+    color: rgb(64, 81, 137);
+}
+
+.returned {
+    background-color: #ffedd5;
+
+    i,
+    h5 {
+        color: #fa822d;
+    }
+
+    i {
+        font-size: 20px;
+    }
+}
+
+.rejected {
+    background-color: #fef2f2;
+
+    i,
+    h5 {
+        color: #ee404c
+    }
+
+    i {
+        font-size: 20px;
+    }
+}

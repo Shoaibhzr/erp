@@ -1,0 +1,49 @@
+/*
+Template Name: Velzon - Admin & Dashboard Template
+Author: Themesbrand
+Website: https://themesbrand.com/
+Contact: support@themesbrand.com
+File: Custom Css File
+*/
+
+@import '~quill/dist/quill.snow.css';
+
+ul.pagination {
+  margin-bottom: 0;
+}
+
+.pointer-none {
+  pointer-events: none;
+}
+
+.custom-select.ng-invalid.ng-touched .ng-select-container {
+  border: 1px solid #f06548 !important;
+}
+
+.input-group.is-invalid {
+  border: 1px solid #f06548 !important;
+}
+
+.highlight-objection {
+  background: red;
+  color:white;
+}
+
+.highlight-response {
+  background: yellow;
+}
+
+.protip-quill-editor {
+  width: 100%; /* Set width to 100% */
+  height: 130px; /* Set a height for the editor */
+}
+
+.protip-quill-editor .ql-container {
+  height: 100%;
+}
+
+.protip-quill-editor .ql-editor {
+  width: 100%;
+  height: 95%;
+  box-sizing: border-box; /* Ensure padding and border are included in the element's total width and height */
+}

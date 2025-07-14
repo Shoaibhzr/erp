@@ -1,0 +1,356 @@
+<div class="card">
+
+  <div class="card-body">
+
+    <div class="d-flex align-items-center mb-4">
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-lg-12">
+
+        <div class="table-responsive table-card">
+
+          <ul class="list-group list-group-flush">
+
+            <li class="list-group-item">
+
+              <div class="d-flex align-items-center">
+
+                <div class="d-flex align-items-center">
+
+                  <ng-container *ngIf="!invoice.createdBy.profilePictureWebUrl">
+
+                    <div class="avatar-xs flex-shrink-0">
+
+                      <div class="avatar-title bg-info-subtle text-info rounded-circle">
+
+                        {{invoice.createdBy | userPrefix}}
+
+                      </div>
+
+                    </div>
+
+                  </ng-container>
+
+                  <ng-container *ngIf="invoice.createdBy.profilePictureWebUrl">
+
+                    <img [src]="invoice.createdBy.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+
+                  </ng-container>
+
+                  <span class="text-start ms-xl-2">
+
+                    <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
+
+                      {{invoice.createdBy.firstName}} {{invoice.createdBy.lastName}}
+
+                    </span>
+
+                    <!-- <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text text-muted">
+
+                      Invited on {{invoice.createdOn | date}}
+
+                    </span> -->
+
+                  </span>
+
+                  <div class="badge rounded-pill fs-12 fw-medium">
+                    {{ invoice?.status }}
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="col-lg-12">
+
+                <div class="card-body px-1 py-4">
+
+                  <div class="alert alert-info" *ngIf="invoice.description">
+
+                    <p class="mb-0">
+
+                      {{invoice.description}}
+
+                    </p>
+
+                  </div>
+
+                  <div class="col-lg-12 mb-3 flex-grow-1 d-flex rounded p-2" style="background-color: #f1f5f9;">
+
+                    <span class="fw-semibold col">
+
+                      Grand Total
+
+                    </span>
+
+                    <span class="col fs-5 text-end fw-bold">
+
+                      ${{invoice.total}}
+
+                    </span>
+
+                  </div>
+
+                  <ng-container *ngFor="let item of invoice.items; let i=index;">
+
+                    <div class="d-flex justify-content-between align-items-center px-2">
+
+                      <h6 class="mb-3 fw-bold">
+
+                        {{ getItemCategory(item.expenseCategoryId) || 'N/A' }}
+
+                      </h6>
+                      <h6 class="mb-3 fw-bold">
+
+                        ${{item.amount}}
+
+                      </h6>
+                    </div>
+
+                    <div class="table-responsive">
+
+                      <table class="table rounded-4 overflow-hidden text-center align-middle mb-3">
+
+                        <thead>
+
+                          <tr class="table-active">
+
+                            <th scope="col" class="text-start fw-normal" style="color: #697586;">Invoice/Receipt Number
+                            </th>
+
+                            <th scope="col" class="text-start fw-normal" style="color: #697586;">Date</th>
+
+                            <th scope="col" class="text-start fw-normal" style="color: #697586;">Company</th>
+
+                            <th scope="col" class="fw-normal" style="color: #697586;">Store(s)</th>
+
+                            <th scope="col" class="fw-normal" style="color: #697586;">Status</th>
+
+                            <th scope="col" class="fw-normal" style="color: #697586;">Amount</th>
+
+                            <th scope="col" class="fw-normal" style="color: #697586;"></th>
+
+                            <th scope="col" class="fw-normal" style="color: #697586;"
+                              *ngIf="invoiceType === serviceRequestType.repairAndMainenance && invoice.status !== InvoiceStatus.approved">
+
+                              Action
+
+                            </th>
+
+                          </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                          <tr>
+
+                            <td scope="row" class="text-start" style="max-width: 130px;
+                                overflow: hidden;
+                                white-space: nowrap;
+                            ">
+
+                              {{item.invoiceNumber}}
+
+                            </td>
+
+                            <td class="text-start">
+
+                              <span class="fw-medium">
+
+                                {{item.invoiceDate | date: "MMM d, y"}}
+
+                              </span>
+
+                            </td>
+
+                            <td class="text-start">
+
+                              {{getItemCompany(item.companyId)}}
+
+                            </td>
+
+                            <td>
+                              <ng-container *ngIf="item.stores?.length; else noStores">
+                                <ul class="list-unstyled mb-0 ps-1">
+                                  <!-- Show stores based on toggle -->
+                                  <li *ngFor="let store of getVisibleStores(item)">
+                                    {{ store.name }}
+                                  </li>
+
+                                  <!-- Toggle link: show more/less -->
+                                  <li *ngIf="item.stores.length > 2">
+                                    <a href="#" (click)="toggleStores(item, $event)">
+                                      {{ isExpanded(item) ? 'less' : '+' + (item.stores.length - 2) + ' more' }}
+                                    </a>
+                                  </li>
+                                </ul>
+                              </ng-container>
+                              <ng-template #noStores>No stores</ng-template>
+                            </td>
+
+
+
+                            <td>
+
+                              <div class="badge rounded-pill fw-medium" style="border: 1px solid #D9D6FE;"
+                                [ngStyle]="{ 'background-color': item.isPaid ? '#DAF4F0' : '#F4F3FF', 'color': item.isPaid ? '#0AB39C' : '#5925DC'}">
+
+                                <ng-container *ngIf="!item.isPaid">
+
+                                  Unpaid
+
+                                </ng-container>
+
+                                <ng-container *ngIf="item.isPaid">
+
+                                  Paid
+
+                                </ng-container>
+
+                              </div>
+
+                            </td>
+
+                            <td class="text-start" *ngIf="invoiceType === serviceRequestType.repairAndMainenance &&
+                          invoice.status !== InvoiceStatus.approved">
+
+                              <div class="hstack gap-2">
+
+                                <button class="btn btn-sm btn-soft-danger remove-list"
+                                  [disabled]="item.status === InvoiceStatus.rejected" (click)="rejectItem(item)">
+
+                                  <i class="ri-close-line align-bottom"></i>
+
+                                </button>
+
+                                <button class="btn btn-sm btn-soft-success edit-list"
+                                  [disabled]="item.status === InvoiceStatus.approved" (click)="approveItem(item)">
+
+                                  <i class="ri-check-line align-bottom"></i>
+
+                                </button>
+
+                              </div>
+
+                            </td>
+
+                            <td>
+
+                              ${{item.amount}}
+
+                            </td>
+
+                            <td class="text-end p-0">
+
+                              <button class="btn btn-sm p-1" (click)="openModal(item?.files)"
+                                style="border: 1px solid #E2E8F0;">
+
+                                <i class="ri-attachment-line align-middle" style="margin-right:5px;"></i>
+
+                                <span class="badge fw-medium"
+                                  style="background-color: #E3E8EF; color: #344054; font-size:0.7rem;">{{item.files?.length}}</span>
+
+                              </button>
+
+                            </td>
+
+                          </tr>
+
+                        </tbody>
+
+                      </table>
+
+                    </div>
+                  </ng-container>
+
+                  <div class="border-top border-top-dashed mt-2">
+
+                    <!--                    <table class="table table-borderless table-nowrap align-middle mb-0 ms-auto" style="width:250px">
+
+                      <tbody>
+
+                        <tr>
+
+                          <td>Sub Total</td>
+
+                          <td class="text-end">
+
+                            ${{invoice.subTotal}}
+
+                          </td>
+
+                        </tr>
+
+                        <tr *ngIf="invoice.tax">
+
+                          <td>Estimated Tax</td>
+
+                          <td class="text-end">
+
+                            ${{invoice.tax}}
+
+                          </td>
+
+                        </tr>
+
+                        <tr class="border-top border-top-dashed fs-15">
+
+                          <th scope="row">Total Amount</th>
+
+                          <th class="text-end">
+
+                            ${{invoice.total}}
+
+                          </th>
+
+                        </tr>
+
+                      </tbody>
+
+                    </table>-->
+
+                  </div>
+
+                  <div class="d-flex mt-4"
+                    *ngIf="invoiceType === serviceRequestType.repairAndMainenance && invoice.status !== InvoiceStatus.approved">
+
+                    <div class="d-flex ms-auto">
+
+                      <a class="btn btn-danger me-2 cursor-pointer"
+                        [class.disabled]="invoice.status === InvoiceStatus.rejected" (click)="reject(invoice)">
+
+                        <i class="ri-close-line align-bottom me-1"></i> Reject
+
+                      </a>
+
+                      <a class="btn btn-success cursor-pointer" (click)="approve(invoice)">
+
+                        <i class="ri-check-line align-bottom me-1"></i> Approve
+
+                      </a>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </li>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

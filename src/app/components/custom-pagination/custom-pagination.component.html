@@ -1,0 +1,15 @@
+<pagination [totalItems]="totalItems" [ngModel]="currentPage" [maxSize]="maxSize" [disabled]="isLoading"
+    [itemsPerPage]="itemsPerPage" (pageChanged)="onPageChanged($event)" [customPreviousTemplate]="prevTemplate"
+    [customNextTemplate]="nextTemplate" [customPageTemplate]="pageTemplate">
+</pagination>
+<ng-template #pageTemplate let-page let-disabled="disabled" let-currentPage="currentPage">
+    <span class="fw-medium fs-14">{{ page.number }}</span>
+</ng-template>
+
+<ng-template #prevTemplate let-disabled="disabled" let-currentPage="currentPage">
+    <i class="ri-arrow-left-line fw-bolder"></i>
+</ng-template>
+
+<ng-template #nextTemplate let-disabled="disabled" let-currentPage="currentPage">
+    <i class="ri-arrow-right-line fw-bolder"></i>
+</ng-template>

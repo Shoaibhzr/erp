@@ -1,0 +1,421 @@
+<ng-container *ngIf="isInitInProgress == undefined || isInitInProgress == true">
+
+  <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+
+    <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+      <span class="visually-hidden">Loading...</span>
+
+    </span>
+
+  </div>
+
+</ng-container>
+
+<ng-container *ngIf="isInitInProgress == false">
+
+  <ng-container *ngIf="id && !companyModel">
+
+    <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+
+      <div class="container-fluid">
+
+        <div class="row justify-content-center">
+
+          <div class="col-xl-4 text-center">
+
+            <div class="error-500 position-relative">
+
+              <img src="assets/images/error500.png" alt="" class="img-fluid error-500-img error-img">
+
+              <h1 class="title text-muted">500</h1>
+
+            </div>
+
+            <div>
+
+              <h4>Internal Server Error!</h4>
+
+              <p class="text-muted w-75 mx-auto">
+
+                The company you're trying to edit does not exist, or something else went wrong. Please try again later.
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+  <ng-container *ngIf="!id || companyModel">
+
+    <div class="row">
+
+      <div class="col-12">
+
+        <div class="page-title-box d-sm-flex align-items-center">
+          <img src="assets/images/svg/back-button-form.svg" alt="" (click)="goBack()" style="cursor: pointer;">
+          <h4 class="mb-sm-0 mx-2" style="text-transform:none;">
+
+            <ng-container *ngIf="!id">
+
+              Create
+
+            </ng-container>
+
+            <ng-container *ngIf="id">
+
+              Update
+
+            </ng-container>
+
+            Company
+
+          </h4>
+
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <form (ngSubmit)="create()" [formGroup]="form">
+
+      <div class="row">
+
+        <div class="col-lg-12">
+
+          <div class="card">
+
+            <div class="card-body">
+
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="mb-3">
+
+                    <label class="form-label required">
+
+                      Company Name
+
+                    </label>
+
+                    <input type="text" class="form-control" formControlName="name" maxlength="50" placeholder="Enter company name" maxlength="50"
+                      [ngClass]="{'is-invalid': form.controls && form.controls['name']?.touched && form.controls['name']?.errors}" />
+
+                    <ng-container
+                      *ngIf="!form.controls || !form.controls['name']?.touched || !form.controls['name']?.errors">
+
+                      <small class="form-text text-muted">
+
+                        This will be used in all communications and displays.
+
+                      </small>
+
+                    </ng-container>
+
+                    <ng-container
+                      *ngIf="form.controls && form.controls['name']?.touched && form.controls['name']?.errors">
+
+                      <div class="invalid-feedback">
+
+                        <ng-container *ngIf="form.controls['name']?.errors['required']">
+
+                          Company Name is required
+
+                        </ng-container>
+
+                        <ng-container *ngIf="form.controls['name']?.errors['maxlength']">
+
+                          Please keep the name to {{form.controls['name']?.errors['maxlength'].requiredLength}}
+                          characters or less. You entered {{form.controls['name']?.errors['maxlength'].actualLength}}
+                          characters.
+
+                        </ng-container>
+
+                      </div>
+
+                    </ng-container>
+
+                  </div>
+
+                  <div class="mb-3">
+
+                    <label class="form-label required">
+
+                      Address
+
+                    </label>
+
+                    <input type="text" class="form-control" formControlName="address" placeholder="Enter address" maxlength="50" 
+                    [ngClass]="{'is-invalid': form.controls && form.controls['address']?.touched && form.controls['address']?.errors}" />
+
+                     <ng-container
+                      *ngIf="form.controls && form.controls['address']?.touched && form.controls['address']?.errors">
+
+                      <div class="invalid-feedback">
+
+                        <ng-container *ngIf="form.controls['address']?.errors['required']">
+
+                          Address is required
+
+                        </ng-container>
+
+                        <ng-container *ngIf="form.controls['address']?.errors['maxlength']">
+
+                          Please keep the address to {{form.controls['address']?.errors['maxlength'].requiredLength}}
+                          characters or less. You entered {{form.controls['address']?.errors['maxlength'].actualLength}}
+                          characters.
+
+                        </ng-container>
+
+                      </div>
+
+                    </ng-container>
+
+
+
+                  </div>
+
+                  <div class="mb-3">
+
+                    <label class="form-label">
+
+                      Website
+
+                    </label>
+
+                    <input type="text" class="form-control" formControlName="website" placeholder="https://" maxlength="50" />
+
+
+
+                  </div>
+
+                  <div class="row">
+                    <div class="col-lg-6">
+                      <div class="mb-3">
+
+                        <label class="form-label required">
+
+                          Name
+
+                        </label>
+
+                        <input type="text" class="form-control" formControlName="contactName" maxlength="50" placeholder="Enter contact name" maxlength="50"
+                          [ngClass]="{'is-invalid': form.controls && form.controls['contactName']?.touched && form.controls['contactName']?.errors}" />
+
+                        <ng-container
+                          *ngIf="form.controls && form.controls['contactName']?.touched && form.controls['contactName']?.errors">
+
+                          <div class="invalid-feedback">
+
+                            <ng-container *ngIf="form.controls['contactName']?.errors['required']">
+
+                              Contact Name is required
+
+                            </ng-container>
+
+                            <ng-container *ngIf="form.controls['contactName']?.errors['maxlength']">
+
+                              Please keep the name to {{form.controls['name']?.errors['maxlength'].requiredLength}}
+                              characters or less. You entered
+                              {{form.controls['name']?.errors['maxlength'].actualLength}}
+                              characters.
+
+                            </ng-container>
+
+                          </div>
+
+                        </ng-container>
+
+                      </div>
+                    </div>
+                    <div class="col-lg-6">
+                      <div>
+
+                        <label class="form-label required">Contact Email</label>
+
+                        <input type="text" class="form-control" formControlName="contactEmail" placeholder="Enter contact email address" maxlength="50"
+                          [ngClass]="{'is-invalid': form.controls && form.controls['contactEmail']?.touched && form.controls['contactEmail']?.errors}" />
+
+                        <ng-container
+                          *ngIf="form.controls && form.controls['contactEmail']?.touched && form.controls['contactEmail']?.errors">
+
+                          <div class="invalid-feedback">
+
+                            <ng-container *ngIf="form.controls['contactEmail']?.errors['required']">
+                              Email is required
+                            </ng-container>
+
+                            <ng-container
+                              *ngIf="form.controls['contactEmail']?.errors['pattern'] || form.controls['contactEmail']?.errors['email']">
+                              Email is invalid
+                            </ng-container>
+
+                          </div>
+
+                        </ng-container>
+
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-3">
+
+                    <label class="form-label">
+
+                      Details:
+
+                    </label>
+
+                    <textarea class="form-control" rows="5" formControlName="detail" placeholder="Enter details..." maxlength="1024"
+                      [ngClass]="{'is-invalid': form.controls && form.controls['detail']?.touched && form.controls['detail']?.errors}"></textarea>
+
+                      <div class="float-end fs-10">
+                      {{ detail.length }}/1024
+                    </div>
+
+                    <ng-container
+                      *ngIf="!form.controls || !form.controls['detail']?.touched || !form.controls['detail']?.errors">
+
+                      <small class="form-text text-muted">
+
+                        Add a brief description of the company, including its mission, services, or products.
+
+                      </small>
+
+                    </ng-container>
+
+                    <ng-container
+                      *ngIf="form.controls && form.controls['detail']?.touched && form.controls['detail']?.errors">
+
+                      <div class="invalid-feedback">
+
+                        <ng-container *ngIf="form.controls['detail']?.errors['required']">
+
+                          Detail is required
+
+                        </ng-container>
+
+                        <ng-container *ngIf="form.controls['detail']?.errors['maxlength']">
+
+                          Please keep the detail to {{form.controls['detail']?.errors['maxlength'].requiredLength}}
+                          characters or less. You entered {{form.controls['detail']?.errors['maxlength'].actualLength}}
+                          characters.
+
+                        </ng-container>
+
+                      </div>
+
+                    </ng-container>
+
+                  </div>
+                </div>
+                <div class="col-lg-4 md-forms">
+                  <h5 class="md-card-title">Logo</h5>
+
+                  <div class="form-wrap">
+                    <label class="form-label">Company Logo</label>
+
+                    <!-- File Input and Message -->
+                    <div class="mb-3">
+                      <input #fileInput class="form-control" type="file" (change)="onFileSelected($event)"
+                        accept="image/png, image/jpeg" />
+                      <p class="text-muted md-profile-message mt-2">
+                        Please upload the profile picture in a standard format (e.g., PNG or JPEG).
+                        This image will be used for identification purposes.
+                      </p>
+                    </div>
+
+                    <!-- Preview and Action Buttons -->
+                    <ng-container *ngIf="file || companyModel?.logoUrl">
+                      <div class="d-flex align-items-center gap-3">
+                        <div class="md-profile-img">
+                          <img [src]="fileDataUrl || companyModel.logoUrl" style="height: 48px"
+                            class="object-fit-cover rounded-circle" />
+                        </div>
+
+                        <div class="d-flex gap-2">
+                          <button type="button" class="md-delete-btn" (click)="deleteLogo()">Delete</button>
+                          <button type="button" class="md-edit-btn" (click)="fileInput.click()">
+                            Update
+                          </button>
+
+                        </div>
+                      </div>
+
+                      <input #updateFileInput type="file" accept="image/png, image/jpeg" style="display: none"
+                        (change)="onFileSelected($event)" />
+
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+
+
+
+            </div>
+
+          </div>
+
+          <div class="text-end mb-4">
+
+            <button type="button" [disabled]="isCreateRequestInProgress" class="btn btn-light waves-effect me-2"
+              routerLink="/companies/list">
+
+              Close
+
+            </button>
+
+            <button class="btn btn-primary w-sm btn-load" style="background-color: #6964E1; border:0px none;"
+              [disabled]="!form.valid || (!file && (!companyModel || !companyModel.logoUrl)) || isCreateRequestInProgress"
+              type="submit">
+
+              <div class="d-flex align-items-center justify-content-center">
+
+                <ng-container *ngIf="!id">
+
+                  Create Company
+
+                </ng-container>
+
+                <ng-container *ngIf="id">
+
+                  Update Company
+
+                </ng-container>
+
+                <ng-container *ngIf="isCreateRequestInProgress">
+
+                  <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+                    <span class="visually-hidden">Loading...</span>
+
+                  </span>
+
+                </ng-container>
+
+              </div>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </form>
+
+  </ng-container>
+
+</ng-container>

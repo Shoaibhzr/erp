@@ -1,0 +1,538 @@
+<div class="p-0 m-0">
+
+  <!-- <div class="bg-overlay"></div> -->
+
+  <div class="overflow-hidden">
+
+    <div class="main-container">
+
+      <div class="row">
+
+        <div class="col-lg-12 h-100">
+
+          <div class="row g-0 page-h">
+
+            <div class="col-lg-6 p-0 bg-img">
+              <div id="fullScreenCarousel" class="carousel slide carousel-fade h-100" data-bs-ride="carousel" data-bs-interval="4000">
+
+                <!-- Indicators -->
+                <div class="carousel-indicators">
+                  <button type="button" data-bs-target="#fullScreenCarousel" data-bs-slide-to="0" class="active"
+                    aria-current="true" aria-label="Slide 1"></button>
+                  <button type="button" data-bs-target="#fullScreenCarousel" data-bs-slide-to="1"
+                    aria-label="Slide 2"></button>
+                  <button type="button" data-bs-target="#fullScreenCarousel" data-bs-slide-to="2"
+                    aria-label="Slide 3"></button>
+                </div>
+
+                <!-- Carousel Slides -->
+                <div class="carousel-inner h-100">
+                  <div class="carousel-item active h-100 text-center">
+                    <img src="../../../assets/images/sliders/Repair and Maintenance.svg" alt="">
+
+                    <div class="mt-4 mx-auto text-center" style="max-width: 650px;">
+                      <h5 class="slider-heading">Repair and Maintenance</h5>
+                      <p class="dec-text">Submit and manage repair requests efficiently, ensuring issues are addressed
+                        without delay. Track maintenance progress,
+                        eliminate paperwork, and keep operations running smoothly.</p>
+                    </div>
+                  </div>
+                  <div class="carousel-item h-100 text-center">
+                    <img src="../../../assets/images/sliders/Accounts Payable.svg" alt="">
+
+                    <div class="mt-4 mx-auto text-center" style="max-width: 650px;">
+                      <h5 class="slider-heading">Accounts Payable</h5>
+                      <p class="dec-text">Streamline invoice processing and vendor payments with ease. Simplify
+                        approvals, reduce manual errors, and ensure timely disbursements—all in one place.</p>
+                    </div>
+                  </div>
+                  <div class="carousel-item h-100 text-center">
+                    <img src="../../../assets/images/sliders/Expense Reimbursement.svg" alt="">
+
+                    <div class="mt-4 mx-auto text-center" style="max-width: 650px;">
+                      <h5 class="slider-heading">Expense Reimbursement</h5>
+                      <p class="dec-text">Improve budgeting and cut unnecessary costs making it simpler and more
+                        efficient. Employees can easily submit their receipts, eliminating the hassle of keeping track
+                        of paper trails.</p>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#fullScreenCarousel"
+                  data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#fullScreenCarousel"
+                  data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            </div>
+
+
+            <div class="col-lg-6">
+              <div *ngIf="islogin"
+                class="p-lg-5 p-4 d-flex flex-column justify-content-center align-items-center min-vh-100">
+                <div class="login-container">
+                  <div class="text-center mb-5">
+                    <img src="../../../assets/logo/new-logo.png" alt="">
+                  </div>
+                  <div class="text-center">
+
+                    <h5 class="welcome-text">👋 Welcome Back!</h5>
+
+                    <p class="small-text">Streamline, Automate, and Control Your Back-Office Tasks with Ease!</p>
+
+                  </div>
+
+                  <ng-container *ngIf="form">
+
+                    <div class="mt-4">
+
+                      <form (ngSubmit)="login()" [formGroup]="form">
+
+                        <div class="mb-3">
+
+                          <label for="username" class="form-label">
+                            Email <span class="text-danger">*</span>
+                          </label>
+
+
+                          <input type="text" class="form-control" placeholder="Enter email address"
+                            formControlName="email" maxlength="50" pattern="^[^@\s]+@[^@\s]+$"
+                            [ngClass]="{'is-invalid': form.controls && form.controls['email']?.touched && form.controls['email']?.errors}" />
+
+                          <div class="invalid-feedback"
+                            *ngIf="form.controls && form.controls['email']?.touched && form.controls['email']?.errors">
+
+                            <ng-container *ngIf="form.controls['email']?.errors['required']">
+
+                              Email address is required
+
+                            </ng-container>
+
+                            <ng-container *ngIf="form.controls['email']?.errors['pattern']">
+
+                              Please enter a valid email address.
+
+                            </ng-container>
+
+                          </div>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                          <label class="form-label" for="password-input">Password</label>
+
+                          <div class="d-flex align-items-center">
+                            <input [type]="passwordVisible ? 'text' : 'password'" class="form-control"
+                              placeholder="Enter password" formControlName="password" maxlength="30"
+                              [ngClass]="{'is-invalid': form.controls && form.controls['password']?.touched && form.controls['password']?.errors}" />
+
+                            <i *ngIf="form.controls['password']?.valid" (click)="passwordVisible = !passwordVisible"
+                              class="password-eye-icon"
+                              [class]="passwordVisible ? 'bx bxs-hide fs-22' : 'bx bxs-show fs-22'"></i>
+
+                          </div>
+                          <div class="invalid-feedback"
+                            *ngIf="form.controls && form.controls['password']?.touched && form.controls['password']?.errors">
+
+                            Password is required
+
+                          </div>
+
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between;">
+
+                          <div class="form-check">
+
+                            <input class="form-check-input" type="checkbox" formControlName="rememberMe"
+                              id="rememberMe">
+
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+
+                          </div>
+
+                          <a href="javascript:void(0)" (click)="islogin = false" class="fw-semibold text-primary">
+                            Forgot Password?
+                          </a>
+
+
+                        </div>
+
+                        <div class="mt-4">
+
+                          <button class="btn login-btn w-100 btn-load" [disabled]="!form.valid || isLoginInProgress"
+                            type="submit">
+
+                            <div class="d-flex align-items-center justify-content-center">
+
+                              Login
+
+                              <ng-container *ngIf="isLoginInProgress">
+
+                                <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+                                  <span class="visually-hidden">Loading...</span>
+
+                                </span>
+
+                              </ng-container>
+
+                            </div>
+
+                          </button>
+
+                        </div>
+
+                      </form>
+
+                    </div>
+
+                    <span *ngIf="loginError" class="error-message" style="display: flex; justify-content: center;">
+                      The username or password you entered is incorrect.
+                    </span>
+
+                  </ng-container>
+                  <div class="mt-3 text-center">
+
+                    <p class="account-text">Need help with your account? <a href="https://mealdynamics.com/contact/"
+                        class="fw-semibold text-primary text-decoration-underline"> Contact Us</a> </p>
+
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="!islogin && !isOTP && !isNewPassword"
+                class="p-lg-5 p-4 d-flex flex-column justify-content-center align-items-center min-vh-100">
+                <div class="login-container">
+                  <div *ngIf="isLoginInProgress" class="overlay">
+                    <div class="spinner-container">
+                      <span role="status" class="spinner-border"><span class="visually-hidden">Loading...</span></span>
+                    </div>
+                  </div>
+
+                  <div class="text-center mb-5">
+                    <img src="../../../assets/logo/new-logo.png" alt="">
+                  </div>
+
+                  <div class="text-center">
+
+                    <h5 class="forget-text">Forgot Password</h5>
+                    <p class="small-text">Enter your registered email to reset your password.</p>
+
+                  </div>
+
+                  <ng-container *ngIf="form">
+
+                    <div class="mt-5">
+
+                      <div class="mb-3">
+
+                        <label for="username" class="form-label">
+                          Email <span class="text-danger">*</span>
+                        </label>
+
+                        <input type="text" class="form-control" placeholder="Enter email address" [(ngModel)]="email"
+                          #emailRef="ngModel" required pattern="^[^@\s]+@[^@\s]+$" maxlength="50"
+                          [ngClass]="{'is-invalid': emailRef && emailRef?.dirty && emailRef?.errors}" />
+
+                        <div class="invalid-feedback" *ngIf="emailRef && emailRef?.dirty && emailRef?.errors">
+
+                          <ng-container *ngIf="emailRef?.errors['required']">
+
+                            Email address is required
+
+                          </ng-container>
+
+                          <ng-container *ngIf="emailRef?.errors['pattern']">
+
+                            Please enter a valid email address.
+
+                          </ng-container>
+
+                        </div>
+
+                      </div>
+
+                      <div class="mt-4">
+
+                        <button class="btn otp-btn w-100 btn-load" [disabled]="!emailRef?.valid || isLoginInProgress"
+                          (click)="getChangePasswordOTP()">
+                          <div class="d-flex align-items-center justify-content-center">
+                            Send OTP
+                          </div>
+                        </button>
+
+
+                      </div>
+
+                      <div style="display: flex; justify-content: center;" class="mt-3">
+                        <img src="../../../assets/images/back-button.svg"
+                          (click)="islogin = true; isOTP = false; isNewPassword = false" [style.cursor]="'pointer'">
+
+                      </div>
+
+                    </div>
+
+                  </ng-container>
+
+                </div>
+              </div>
+
+
+              <div *ngIf="isOTP"
+                class="p-lg-5 p-4 d-flex flex-column justify-content-center align-items-center min-vh-100">
+                <div class="login-container">
+                  <div *ngIf="isLoginInProgress" class="overlay">
+                    <div class="spinner-container">
+                      <span role="status" class="spinner-border"><span class="visually-hidden">Loading...</span></span>
+                    </div>
+                  </div>
+
+                  <div class="text-center mb-5">
+                    <img src="../../../assets/logo/new-logo.png" alt="">
+                  </div>
+
+                  <div class="text-center">
+
+                    <h5 class="forget-text">Check your email</h5>
+                    <p class="small-text">An OTP has been sent to</p>
+                    <p class="small-text">{{email}}</p>
+
+                  </div>
+
+                  <ng-container>
+
+                    <div class="mt-5">
+
+                      <div class="mb-3">
+                        <input type="text" maxlength="6" class="form-control text-center fs-1 mb-3 otp-input"
+                          [(ngModel)]="otp" placeholder="000000" />
+
+                        <div *ngIf="otpErrorMessage" class="text-danger mt-1">
+                          {{ otpErrorMessage }}
+                        </div>
+                      </div>
+
+                      <div class="mt-4">
+
+                        <button class="btn otp-btn w-100 btn-load" [disabled]="!otp" (click)="verifyOtp(otp)">
+
+                          <div class="d-flex align-items-center justify-content-center">
+
+                            Verify OTP
+
+                          </div>
+
+                        </button>
+
+                      </div>
+
+                      <div [style.clear]="'both'" class="mt-3 d-flex justify-content-center resend-btn">
+                        <div *ngIf="isResendDisabled"><span class="otp-text">Resend OTP in </span> <b>{{
+                            getMinsFromSeconds(timer) }}</b></div>
+                        <a [ngStyle]="{
+                          color: isResendDisabled ? '#374151' : '#6964E1',
+                          cursor: isResendDisabled ? 'not-allowed' : 'pointer'
+                        }" href="javascript:void(0)" style="margin-left: 15px;">Resend OTP</a>
+                      </div>
+
+                      <div style="display: flex; justify-content: center;" class="mt-3">
+                        <img src="../../../assets/images/back-button.svg"
+                          (click)="islogin = true; isOTP = false; isNewPassword = false" [style.cursor]="'pointer'">
+                        <!-- <a (click)="islogin = true" class="fw-semibold text-primary" [style.cursor]="'pointer'"> Back to
+                          Login</a> -->
+                      </div>
+
+                    </div>
+
+                  </ng-container>
+
+                </div>
+
+
+                <!-- BOTTOM FOOTER -->
+                <!-- <div class="p-3 text-start">
+                          <p class="mb-0 small">
+                            © 2024
+                            <a href="https://mealdynamics.com" target="_blank" style="color:red;">Meal Dynamics</a>
+                          </p>
+                        </div> -->
+              </div>
+
+              <div *ngIf="isNewPassword"
+                class="p-lg-5 p-4 d-flex flex-column justify-content-center align-items-center min-vh-100">
+                <div class="login-container">
+                  <div *ngIf="isLoginInProgress" class="overlay">
+                    <div class="spinner-container">
+                      <span role="status" class="spinner-border"><span class="visually-hidden">Loading...</span></span>
+                    </div>
+                  </div>
+
+                  <div class="text-center mb-5">
+                    <img src="../../../assets/logo/new-logo.png" alt="">
+                  </div>
+
+                  <div class="text-center">
+
+                    <h5 class="forget-text">Choose a password</h5>
+                    <p class="small-text">Must be at least 6 characters.</p>
+
+                  </div>
+
+                  <ng-container>
+
+                    <div class="mt-5">
+                      <form [formGroup]="passwordForm">
+                        <div class="form-wrap">
+                          <label class="form-label required">
+                            Password
+                          </label>
+                          <div class="input-group">
+                            <input [type]="passwordVisible ? 'text' : 'password'" class="form-control"
+                              placeholder="Enter password" formControlName="password" maxlength="30" [ngClass]="{
+                                'is-invalid': passwordForm.get('password')?.invalid && (passwordForm.get('password')?.dirty || passwordForm.get('password')?.touched)
+                              }">
+                            <div class="input-group-append">
+                              <button [style.display]="'flex'" type="button" class="btn"
+                                (click)="togglePasswordVisibility()">
+                                <i [class]="passwordVisible ? 'bx bxs-hide fs-22' : 'bx bxs-show fs-22'"></i>
+                              </button>
+                            </div>
+                          </div>
+
+
+                          <ng-container
+                            *ngIf="passwordForm.get('password')?.invalid && (passwordForm.get('password')?.touched || passwordForm.get('password')?.dirty)">
+                            <div class="invalid-feedback d-flex align-items-center gap-1">
+                              <span>
+                                <span class="text-danger fw-bold">!</span>
+                                <ng-container *ngIf="passwordForm.get('password')?.errors?.['required']">
+                                  Password is required
+                                </ng-container>
+                                <ng-container *ngIf="passwordForm.get('password')?.errors?.['minlength']">
+                                  Password must be at least 6 characters long.
+                                </ng-container>
+                              </span>
+                            </div>
+                          </ng-container>
+
+                        </div>
+
+                        <div class="form-wrap mt-3">
+                          <label class="form-label required">
+                            Confirm Password
+                          </label>
+                          <div class="input-group">
+                            <input [type]="confirmPasswordVisible ? 'text' : 'password'" class="form-control"
+                              placeholder="Enter confirm password" formControlName="confirmPassword" maxlength="30"
+                              [ngClass]="{
+                                'is-invalid': passwordForm.get('confirmPassword')?.invalid && (passwordForm.get('confirmPassword')?.dirty || passwordForm.get('confirmPassword')?.touched)
+                              }">
+                            <div class="input-group-append">
+                              <button [style.display]="'flex'" type="button" class="btn"
+                                (click)="toggleConfirmPasswordVisibility()">
+                                <i [class]="confirmPasswordVisible ? 'bx bxs-hide fs-22' : 'bx bxs-show fs-22'"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <!-- Confirm Password Mismatch Error -->
+                          <ng-container
+                            *ngIf="passwordForm.get('confirmPassword')?.touched || passwordForm.get('confirmPassword')?.dirty">
+                            <div class="invalid-feedback d-flex align-items-center gap-1"
+                              *ngIf="passwordForm.get('confirmPassword')?.errors">
+                              <span class="text-danger fw-bold">!</span>
+                              <span>
+                                <ng-container *ngIf="passwordForm.get('confirmPassword')?.errors?.['required']">
+                                  Confirm Password is required
+                                </ng-container>
+                                <ng-container *ngIf="passwordForm.get('confirmPassword')?.errors?.['minlength']">
+                                  Confirm Password must be at least 6 characters long.
+                                </ng-container>
+                                <ng-container
+                                  *ngIf="passwordForm.get('confirmPassword')?.errors?.['confirmPasswordValidator']">
+                                  Password and Confirm Password do not match.
+                                </ng-container>
+                              </span>
+                            </div>
+                          </ng-container>
+
+                        </div>
+                      </form>
+                      <div class="mt-4">
+
+                        <button class="btn otp-btn w-100 btn-load" [disabled]="!passwordForm.valid"
+                          (click)="getChangePasswordOTP()">
+
+                          <div class="d-flex align-items-center justify-content-center">
+
+                            Reset Password
+
+                          </div>
+
+                        </button>
+
+                      </div>
+
+                      <div style="display: flex; justify-content: center;" class="mt-3">
+                        <img src="../../../assets/images/back-button.svg"
+                          (click)="islogin = true; isOTP = false; isNewPassword = false" [style.cursor]="'pointer'">
+                      </div>
+
+                    </div>
+
+                  </ng-container>
+
+                </div>
+
+
+
+              </div>
+
+              <div class="footer text-start mx-4">
+                <p class="mb-0 small">
+                  ©
+                  <a href="https://mealdynamics.com" target="_blank">Meal Dynamics 2025</a>
+                </p>
+              </div>
+
+
+            </div>
+
+
+
+          </div>
+
+
+        </div>
+
+
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- Popup Container -->
+<!-- <div *ngIf="showOtpPopup" id="popup" class="popup" style="display: flex;">
+  <div [style.width]="'500px'" class="popup-content">
+    <div class="popup-header" (click)="showOtpPopup = false">
+      <i class="mdi mdi-close text-muted fs-16 align-middle me-1"></i>
+    </div>
+    <div>
+      <app-change-password-otp (onSubmit)="verifyOtp($event)"
+        (onResend)="getChangePasswordOTP()"></app-change-password-otp>
+    </div>
+  </div>
+</div> -->

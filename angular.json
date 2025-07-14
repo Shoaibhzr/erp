@@ -3,64 +3,181 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "erp": {
+    "App.Web": {
       "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
+      "schematics": {},
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/erp",
+            "outputPath": "dist/app.web",
             "index": "src/index.html",
-            "browser": "src/main.ts",
+            "main": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
-            ],
             "styles": [
-              "src/styles.scss"
+              "src/assets/scss/config/default/bootstrap.scss",
+              "src/assets/scss/icons.scss",
+              "src/assets/scss/config/default/app.scss",
+              "src/assets/scss/config/default/custom.scss",
+              "src/styles.scss",
+              "node_modules/ngx-toastr/toastr.css"
             ],
-            "scripts": [],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+              "node_modules/apexcharts/dist/apexcharts.min.js"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "10mb",
+                  "maximumError": "10mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.production.ts"
+                }
+              ],
+              "assets": [
+                {
+                  "glob": "firebase-messaging-sw.js",
+                  "input": "src/firebase-messaging-sw/production",
+                  "output": "/"
+                },
+                "src/favicon.ico",
+                "src/logo.png",
+                "src/assets",
+                "src/staticwebapp.config.json",
+                "src/manifest.json",
+                {
+                  "glob": "**/*",
+                  "input": "src/assets/translations/",
+                  "output": "/"
+                }
+              ]
+            },
+            "qa": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "10mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.qa.ts"
+                }
+              ],
+              "assets": [
+                {
+                  "glob": "firebase-messaging-sw.js",
+                  "input": "src/firebase-messaging-sw/qa",
+                  "output": "/"
+                },
+                "src/favicon.ico",
+                "src/logo.png",
+                "src/assets",
+                "src/staticwebapp.config.json",
+                "src/manifest.json",
+                {
+                  "glob": "**/*",
+                  "input": "src/assets/translations/",
+                  "output": "/"
+                }
+              ]
+            },
+            "staging": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "10mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "assets": [
+                {
+                  "glob": "firebase-messaging-sw.js",
+                  "input": "src/firebase-messaging-sw/qa",
+                  "output": "/"
+                },
+                "src/favicon.ico",
+                "src/logo.png",
+                "src/assets",
+                "src/staticwebapp.config.json",
+                "src/manifest.json",
+                {
+                  "glob": "**/*",
+                  "input": "src/assets/translations/",
+                  "output": "/"
+                }
+              ]
             },
             "development": {
+              "buildOptimizer": false,
               "optimization": false,
+              "vendorChunk": true,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "namedChunks": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                }
+              ],
+              "assets": [
+                {
+                  "glob": "firebase-messaging-sw.js",
+                  "input": "src/firebase-messaging-sw/development",
+                  "output": "/"
+                },
+                "src/favicon.ico",
+                "src/logo.png",
+                "src/assets",
+                "src/staticwebapp.config.json",
+                "src/manifest.json",
+                {
+                  "glob": "**/*",
+                  "input": "src/assets/translations/",
+                  "output": "/"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -69,16 +186,22 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "erp:build:production"
+              "browserTarget": "App.Web:build:production"
+            },
+            "qa": {
+              "browserTarget": "App.Web:build:qa"
             },
             "development": {
-              "buildTarget": "erp:build:development"
+              "browserTarget": "App.Web:build:development"
             }
           },
           "defaultConfiguration": "development"
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n"
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "App.Web:build"
+          }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
@@ -88,23 +211,23 @@
               "zone.js/testing"
             ],
             "tsConfig": "tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              }
+              "src/favicon.ico",
+              "src/logo.png",
+              "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+               "node_modules/apexcharts/dist/apexcharts.min.js"
+            ]
           }
         }
       }
     }
   },
   "cli": {
-    "analytics": "206d6635-1341-4214-82e9-e9d94716cdef"
+    "analytics": "e3a32714-e694-4f17-90d4-70fc32eb8af6"
   }
 }

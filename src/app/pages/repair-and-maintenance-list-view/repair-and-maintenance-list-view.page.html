@@ -1,0 +1,124 @@
+<div style="position: relative;">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 my-3">
+    <h4 class="col-sm-3 text-dark m-0">Repair & Maintenance List</h4>
+    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-end flex-grow-1">
+      <div class="search-box flex-grow-1" style="max-width: 500px;">
+        <input type="text" class="form-control search" placeholder="Search" [formControl]="searchCtrl" />
+        <i class="ri-search-line search-icon"></i>
+      </div>
+      <div class="dropdown" dropdown>
+        <button type="button" style="background-color: #fff; border: 0px none" dropdownToggle class="btn btn-light">
+          <i class="ri-filter-3-line align-bottom me-1"></i> Filters
+        </button>
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu" role="menu" aria-labelledby="button-basic">
+          <li role="menuitem" (click)="statusCtrl.setValue('')">
+            <span class="dropdown-item" [ngClass]="{'active':statusCtrl.value === ''}">All</span>
+          </li>
+          <li role="menuitem" *ngFor="let status of statuses" (click)="statusCtrl.setValue(status)">
+            <span class="dropdown-item" [ngClass]="{'active':statusCtrl.value === status}">{{status |
+              ServiceRequestStatus}}</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card" style="min-height: 300px;">
+        <ng-container *ngIf="list$ | async as data">
+          <ng-container *ngIf="data && data.items.length; else noData">
+            <div class="card-body">
+              <div class="table-responsive table-card rounded">
+                <table class="table align-middle table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Title</th>
+
+                      <th>Item</th>
+
+                      <th>Store</th>
+
+                      <th>Priority</th>
+
+                      <th>Status</th>
+
+                      <th>Requestor</th>
+
+                      <th class="text-center">Requested On</th>
+                    </tr>
+                  </thead>
+
+                  <tbody class="list form-check-all">
+                    <tr *ngFor="let serviceRequest of data.items;">
+                      <td class="py-3 text-truncate cursor-pointer fw-bold"
+                        [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']"
+                        style="max-width: 300px; color:#0F172A">
+                        {{ serviceRequest.title }}
+                      </td>
+                      <td class="py-3 phone cursor-pointer"
+                        [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']">
+                        {{ serviceRequest.item }}
+                      </td>
+                      <td class="py-3 phone cursor-pointer"
+                        [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']">
+                        {{ serviceRequest.store.name }}
+                      </td>
+                      <td class="py-3 date cursor-pointer"
+                        [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']">
+                        {{serviceRequest.priority | priority}}
+                      </td>
+                      <td class="py-3 date cursor-pointer"
+                        [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']">
+                        <div class="badge rounded-pill fs-12 fw-medium"
+                          [ngStyle]="serviceRequest?.status | statusStyle">
+                          {{ serviceRequest?.status | ServiceRequestStatus }}
+                        </div>
+                      </td>
+
+                      <td class="py-3 date cursor-pointer"
+                        [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']">
+                        <img src="assets/images/users/avatar-3.jpg" alt="" class="avatar-xxs rounded-circle me-2">
+                        {{serviceRequest.createdBy.firstName}} {{serviceRequest.createdBy.lastName}}
+                      </td>
+
+                      <td class="py-3 cursor-pointer"
+                        [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']">
+                        {{serviceRequest.createdOn | date : "MMM d, y h:mm a"}}
+                      </td>
+
+
+
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="d-flex mt-3 align-items-center justify-content-center">
+                <app-custom-pagination [totalItems]="data.totalRecords" [currentPage]="data.currentPage"
+                  [disabled]="isLoading$ | async" [maxSize]="5" [disabled]="isLoading$ | async"
+                  [itemsPerPage]="data.pageSize" (pageChanged)="onPageChanged($event)">
+                </app-custom-pagination>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noData>
+            <ng-container *ngIf="!(isLoading$ | async)">
+              <div class="card-body p-4 m-4">
+                <div class="noresult">
+                  <div class="text-center">
+                    <h5 class="mt-2">Sorry! No Result Found</h5>
+                    <p class="text-muted mb-0">
+                      We did not find any requests for you search.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+  <app-spinner *ngIf="isLoading$ | async"></app-spinner>
+</div>

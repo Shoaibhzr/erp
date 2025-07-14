@@ -1,0 +1,1081 @@
+<div class="row">
+
+  <div class="col-12">
+
+    <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+
+      <h4 class="mb-sm-0" style="text-transform:none;">Expenses List</h4>
+
+      <div class="page-title-right">
+
+        <ol class="breadcrumb m-0">
+
+          <li class="breadcrumb-item"><a href="javascript: void(0);">Expenses</a></li>
+
+          <li class="breadcrumb-item active">List View</li>
+
+        </ol>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="col-lg-2">
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <div class="d-flex">
+
+          <div class="flex-grow-1">
+
+            <h5 class="fs-16 mb-0">Filters</h5>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="accordion accordion-flush filter-accordion">
+
+        <div class="card-body border-bottom">
+
+          <div>
+
+            <p class="text-muted fs-12 fw-medium mb-2">
+
+              Quick Filters
+
+            </p>
+
+            <ul class="list-unstyled mb-0 filter-list">
+
+              <li>
+
+                <a class="d-flex py-1 align-items-center cursor-pointer" (click)="filter([])">
+
+                  <div class="flex-grow-1">
+
+                    <h5 class="fs-12 mb-0 listname">
+
+                      <div class="d-flex align-items-center"
+                        [class.fw-bold]="!expenseRequestSearchRequestModel?.status || expenseRequestSearchRequestModel?.status.length === 0"
+                        [class.text-primary]="!expenseRequestSearchRequestModel?.status || expenseRequestSearchRequestModel?.status.length === 0">
+
+                        <i class="bx bx-right-arrow-alt fs-16"
+                          [class.fw-bold]="!expenseRequestSearchRequestModel?.status || expenseRequestSearchRequestModel?.status.length === 0"></i>
+                        All
+
+                      </div>
+
+                    </h5>
+
+                  </div>
+
+                </a>
+
+              </li>
+
+              <li>
+
+                <a class="d-flex py-1 align-items-center cursor-pointer"
+                  (click)="filter([ExpenseRequestStatus?.pendingApproval])">
+
+                  <div class="flex-grow-1">
+
+                    <h5 class="fs-12 mb-0 listname">
+
+                      <div class="d-flex align-items-center"
+                        [class.fw-bold]="checkIfStatusSelected(ExpenseRequestStatus?.pendingApproval)"
+                        [class.text-primary]="checkIfStatusSelected(ExpenseRequestStatus?.pendingApproval)">
+
+                        <i class="bx bx-right-arrow-alt fs-16"
+                          [class.fw-bold]="checkIfStatusSelected(ExpenseRequestStatus?.pendingApproval)"></i> Pending
+                        Approvals
+
+                      </div>
+
+                    </h5>
+
+                  </div>
+
+                  <div class="flex-shrink-0 ms-2 d-none">
+
+                    <span class="badge bg-light text-muted">5</span>
+
+                  </div>
+
+                </a>
+
+              </li>
+
+              <li>
+
+                <a class="d-flex py-1 align-items-center cursor-pointer"
+                  (click)="filter([ExpenseRequestStatus?.approved])">
+
+                  <div class="flex-grow-1">
+
+                    <h5 class="fs-12 mb-0 listname">
+
+                      <div class="d-flex align-items-center"
+                        [class.fw-bold]="checkIfStatusSelected(ExpenseRequestStatus?.approved)"
+                        [class.text-primary]="checkIfStatusSelected(ExpenseRequestStatus?.approved)">
+
+                        <i class="bx bx-right-arrow-alt fs-16"
+                          [class.fw-bold]="checkIfStatusSelected(ExpenseRequestStatus?.approved)"></i> Approved
+
+                      </div>
+
+                    </h5>
+
+                  </div>
+
+                </a>
+
+              </li>
+
+              <li>
+
+                <a class="d-flex py-1 align-items-center cursor-pointer"
+                  (click)="filter([ExpenseRequestStatus?.rejected])">
+
+                  <div class="flex-grow-1">
+
+                    <h5 class="fs-12 mb-0 listname">
+
+                      <div class="d-flex align-items-center"
+                        [class.fw-bold]="checkIfStatusSelected(ExpenseRequestStatus?.rejected)"
+                        [class.text-primary]="checkIfStatusSelected(ExpenseRequestStatus?.rejected)">
+
+                        <i class="bx bx-right-arrow-alt fs-16"
+                          [class.fw-bold]="checkIfStatusSelected(ExpenseRequestStatus?.rejected)"></i> Rejected
+                      </div>
+
+                    </h5>
+
+                  </div>
+
+                  <div class="flex-shrink-0 ms-2 d-none">
+
+                    <span class="badge bg-light text-muted">5</span>
+
+                  </div>
+
+                </a>
+
+              </li>
+
+            </ul>
+
+          </div>
+
+        </div>
+
+        <div class="card-body border-bottom d-none">
+
+          <p class="text-muted fs-12 fw-medium mb-4">
+
+            Between
+
+          </p>
+
+          <div id="product-price-range"></div>
+
+          <div class="formCost d-flex gap-2 align-items-center mt-3">
+
+            <input class="form-control form-control-sm" type="text" id="minCost" value="0" /> <span
+              class="fw-semibold text-muted">to</span> <input class="form-control form-control-sm" type="text"
+              id="maxCost" value="1000" />
+
+          </div>
+
+        </div>
+
+        <div class="accordion-item d-none">
+
+          <h2 class="accordion-header" id="flush-headingBrands">
+
+            <button class="accordion-button bg-transparent shadow-none" type="button" data-bs-toggle="collapse"
+              data-bs-target="#flush-collapseBrands" aria-expanded="true" aria-controls="flush-collapseBrands">
+
+              <span class="text-muted fs-12 fw-semibold">
+
+                Companies
+
+              </span>
+
+              <span class="badge bg-success rounded-pill align-middle ms-1 filter-badge"></span>
+
+            </button>
+
+          </h2>
+
+          <div id="flush-collapseBrands" class="accordion-collapse collapse show" aria-labelledby="flush-headingBrands">
+
+            <div class="accordion-body text-body pt-0">
+
+              <div class="search-box search-box-sm">
+
+                <input type="text" class="form-control bg-light border-0" id="searchBrandsList"
+                  placeholder="Search Brands...">
+
+                <i class="ri-search-line search-icon"></i>
+
+              </div>
+
+              <div class="d-flex flex-column gap-2 mt-3 filter-check">
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="Boat" id="productBrandRadio5" checked>
+
+                  <label class="form-check-label" for="productBrandRadio5">Boat</label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="OnePlus" id="productBrandRadio4">
+
+                  <label class="form-check-label" for="productBrandRadio4">OnePlus</label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="Realme" id="productBrandRadio3">
+
+                  <label class="form-check-label" for="productBrandRadio3">Realme</label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="Sony" id="productBrandRadio2">
+
+                  <label class="form-check-label" for="productBrandRadio2">Sony</label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="JBL" id="productBrandRadio1" checked>
+
+                  <label class="form-check-label" for="productBrandRadio1">JBL</label>
+
+                </div>
+
+                <div>
+
+                  <button type="button" class="btn btn-link text-decoration-none text-uppercase fw-medium p-0">
+
+                    1,235 More
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="accordion-item d-none">
+
+          <h2 class="accordion-header" id="flush-headingDiscount">
+
+            <button class="accordion-button bg-transparent shadow-none collapsed" type="button">
+
+              <span class="text-muted fs-12 fw-semibold">
+
+                Stores
+
+              </span>
+
+              <span class="badge bg-success rounded-pill align-middle ms-1 filter-badge"></span>
+
+            </button>
+
+          </h2>
+
+          <div id="flush-collapseDiscount" class="accordion-collapse collapse" aria-labelledby="flush-headingDiscount">
+
+            <div class="accordion-body text-body pt-1">
+
+              <div class="d-flex flex-column gap-2 filter-check">
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="50% or more" id="productdiscountRadio6">
+
+                  <label class="form-check-label" for="productdiscountRadio6">50% or more</label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="40% or more" id="productdiscountRadio5">
+
+                  <label class="form-check-label" for="productdiscountRadio5">40% or more</label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="30% or more" id="productdiscountRadio4">
+
+                  <label class="form-check-label" for="productdiscountRadio4">
+
+                    30% or more
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="20% or more" id="productdiscountRadio3"
+                    checked>
+
+                  <label class="form-check-label" for="productdiscountRadio3">
+
+                    20% or more
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="10% or more" id="productdiscountRadio2">
+
+                  <label class="form-check-label" for="productdiscountRadio2">
+
+                    10% or more
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="Less than 10%" id="productdiscountRadio1">
+
+                  <label class="form-check-label" for="productdiscountRadio1">
+
+                    Less than 10%
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="accordion-item d-none">
+
+          <h2 class="accordion-header" id="flush-headingRating">
+
+            <button class="accordion-button bg-transparent shadow-none collapsed" type="button"
+              data-bs-toggle="collapse" data-bs-target="#flush-collapseRating" aria-expanded="false"
+              aria-controls="flush-collapseRating">
+
+              <span class="text-muted fs-12 fw-semibold">
+
+                Status
+
+              </span>
+
+              <span class="badge bg-success rounded-pill align-middle ms-1 filter-badge"></span>
+
+            </button>
+
+          </h2>
+
+          <div id="flush-collapseRating" class="accordion-collapse collapse" aria-labelledby="flush-headingRating">
+
+            <div class="accordion-body text-body">
+
+              <div class="d-flex flex-column gap-2 filter-check">
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="4 & Above Star" id="productratingRadio4"
+                    checked>
+
+                  <label class="form-check-label" for="productratingRadio4">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 4 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="3 & Above Star" id="productratingRadio3">
+
+                  <label class="form-check-label" for="productratingRadio3">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 3 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="2 & Above Star" id="productratingRadio2">
+
+                  <label class="form-check-label" for="productratingRadio2">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 2 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="1 Star" id="productratingRadio1">
+
+                  <label class="form-check-label" for="productratingRadio1">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 1
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="accordion-item d-none">
+
+          <h2 class="accordion-header" id="flush-headingRating">
+
+            <button class="accordion-button bg-transparent shadow-none collapsed" type="button"
+              data-bs-toggle="collapse" data-bs-target="#flush-collapseRating" aria-expanded="false"
+              aria-controls="flush-collapseRating">
+
+              <span class="text-muted fs-12 fw-semibold">
+
+                Priority
+
+              </span>
+
+              <span class="badge bg-success rounded-pill align-middle ms-1 filter-badge"></span>
+
+            </button>
+
+          </h2>
+
+          <div id="flush-collapseRating" class="accordion-collapse collapse" aria-labelledby="flush-headingRating">
+
+            <div class="accordion-body text-body">
+
+              <div class="d-flex flex-column gap-2 filter-check">
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="4 & Above Star" id="productratingRadio4"
+                    checked>
+
+                  <label class="form-check-label" for="productratingRadio4">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 4 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="3 & Above Star" id="productratingRadio3">
+
+                  <label class="form-check-label" for="productratingRadio3">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 3 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="2 & Above Star" id="productratingRadio2">
+
+                  <label class="form-check-label" for="productratingRadio2">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 2 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="1 Star" id="productratingRadio1">
+
+                  <label class="form-check-label" for="productratingRadio1">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 1
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="accordion-item d-none">
+
+          <h2 class="accordion-header" id="flush-headingRating">
+
+            <button class="accordion-button bg-transparent shadow-none collapsed" type="button"
+              data-bs-toggle="collapse" data-bs-target="#flush-collapseRating" aria-expanded="false"
+              aria-controls="flush-collapseRating">
+
+              <span class="text-muted fs-12 fw-semibold">
+
+                Vendors
+
+              </span>
+
+              <span class="badge bg-success rounded-pill align-middle ms-1 filter-badge"></span>
+
+            </button>
+
+          </h2>
+
+          <div id="flush-collapseRating" class="accordion-collapse collapse" aria-labelledby="flush-headingRating">
+
+            <div class="accordion-body text-body">
+
+              <div class="d-flex flex-column gap-2 filter-check">
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="4 & Above Star" id="productratingRadio4"
+                    checked>
+
+                  <label class="form-check-label" for="productratingRadio4">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 4 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="3 & Above Star" id="productratingRadio3">
+
+                  <label class="form-check-label" for="productratingRadio3">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 3 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="2 & Above Star" id="productratingRadio2">
+
+                  <label class="form-check-label" for="productratingRadio2">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 2 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="1 Star" id="productratingRadio1">
+
+                  <label class="form-check-label" for="productratingRadio1">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 1
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="accordion-item d-none">
+
+          <h2 class="accordion-header" id="flush-headingRating">
+
+            <button class="accordion-button bg-transparent shadow-none collapsed" type="button"
+              data-bs-toggle="collapse" data-bs-target="#flush-collapseRating" aria-expanded="false"
+              aria-controls="flush-collapseRating">
+
+              <span class="text-muted fs-12 fw-semibold">
+
+                Chart of Accounts
+
+              </span>
+
+              <span class="badge bg-success rounded-pill align-middle ms-1 filter-badge"></span>
+
+            </button>
+
+          </h2>
+
+          <div id="flush-collapseRating" class="accordion-collapse collapse" aria-labelledby="flush-headingRating">
+
+            <div class="accordion-body text-body">
+
+              <div class="d-flex flex-column gap-2 filter-check">
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="4 & Above Star" id="productratingRadio4"
+                    checked>
+
+                  <label class="form-check-label" for="productratingRadio4">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 4 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="3 & Above Star" id="productratingRadio3">
+
+                  <label class="form-check-label" for="productratingRadio3">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 3 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="2 & Above Star" id="productratingRadio2">
+
+                  <label class="form-check-label" for="productratingRadio2">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 2 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="1 Star" id="productratingRadio1">
+
+                  <label class="form-check-label" for="productratingRadio1">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 1
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="accordion-item d-none">
+
+          <h2 class="accordion-header" id="flush-headingRating">
+
+            <button class="accordion-button bg-transparent shadow-none collapsed" type="button"
+              data-bs-toggle="collapse" data-bs-target="#flush-collapseRating" aria-expanded="false"
+              aria-controls="flush-collapseRating">
+
+              <span class="text-muted fs-12 fw-semibold">
+
+                Created By
+
+              </span>
+
+              <span class="badge bg-success rounded-pill align-middle ms-1 filter-badge"></span>
+
+            </button>
+
+          </h2>
+
+          <div id="flush-collapseRating" class="accordion-collapse collapse" aria-labelledby="flush-headingRating">
+
+            <div class="accordion-body text-body">
+
+              <div class="d-flex flex-column gap-2 filter-check">
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="4 & Above Star" id="productratingRadio4"
+                    checked>
+
+                  <label class="form-check-label" for="productratingRadio4">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 4 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="3 & Above Star" id="productratingRadio3">
+
+                  <label class="form-check-label" for="productratingRadio3">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 3 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="2 & Above Star" id="productratingRadio2">
+
+                  <label class="form-check-label" for="productratingRadio2">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 2 & Above
+
+                  </label>
+
+                </div>
+
+                <div class="form-check">
+
+                  <input class="form-check-input" type="checkbox" value="1 Star" id="productratingRadio1">
+
+                  <label class="form-check-label" for="productratingRadio1">
+
+                    <span class="text-muted">
+
+                      <i class="mdi mdi-star text-warning"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                      <i class="mdi mdi-star"></i>
+
+                    </span> 1
+
+                  </label>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <ng-container *ngIf="isHttpRequestInProcess && !expenseRequestPagedListModel">
+
+    <div class="col-lg-10">
+
+      <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 238px)">
+
+        <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+          <span class="visually-hidden">Loading...</span>
+
+        </span>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+  <div *ngIf="!isHttpRequestInProcess && expenseRequestPagedListModel" class="col-lg-10">
+    <app-expenses-list
+                       [expenseRequestPagedListModel]=expenseRequestPagedListModel
+                       [expenseRequestSearchRequestModel]=expenseRequestSearchRequestModel
+                       [searchTerm]=searchTerm
+                       (OnChanged)="search($event)">
+
+    </app-expenses-list>
+  </div>
+
+</div>

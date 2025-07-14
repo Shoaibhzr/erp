@@ -1,0 +1,47 @@
+<div class="position-relative">
+    <div class="modal-header">
+        <h5 class="modal-title d-flex align-items-center">
+            Upload Document for OCR
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="bsModalRef.hide()"></button>
+    </div>
+
+    <div class="modal-body">
+        <div class="mb-2">
+            <label for="ocrFileInput" class="form-label">Choose a document or image:</label>
+            <input type="file" id="ocrFileInput" class="form-control" (change)="onFileSelected($event)"
+                accept=".pdf,.jpg,.jpeg,.png" />
+            <small class="text-muted d-block mt-2">
+                Supported formats: PDF, JPG, JPEG, PNG
+            </small>
+        </div>
+        <ng-container>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Preview</h5>
+                    <canvas #canvas></canvas>
+                </div>
+
+                <div class="col-md-6 text">
+                    <h5>Extracted Text</h5>
+                    <div>
+                        <pre *ngIf="result">{{ result | json }}</pre>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+
+    <div class="modal-footer border-0 pt-0 d-flex align-items-center gap-2">
+        <button class="btn btn-light px-4" (click)="bsModalRef.hide()">Cancel</button>
+        <button *ngIf="result" class="btn btn-primary px-4" style="background-color: #6964e1; border: 0"
+            (click)="onUseValues()">
+            Use Values
+        </button>
+        <button *ngIf="!result" class="btn btn-primary px-4" style="background-color: #6964e1; border: 0"
+            (click)="startOCR()">
+            Start OCR
+        </button>
+    </div>
+    <app-spinner *ngIf="isLoading$ | async"></app-spinner>
+</div>

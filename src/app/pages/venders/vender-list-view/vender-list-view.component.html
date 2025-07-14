@@ -1,0 +1,248 @@
+<div class="row">
+  <div class="col-12">
+    <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+      <h4 class="mb-sm-0 md-page-heading" style="text-transform:none;">
+        Vendors List
+      </h4>
+      <ng-container *ngIf="!isHttpRequestInProcess || userPagedListModel">
+        <div class="card-header border-0 col-lg-3">
+          <div class="d-flex md-search-box justify-content-end">
+            <div class="search-box" style="max-width: 500px;">
+              <input type="text" class="form-control search" placeholder="Search" [(ngModel)]="searchTerm"
+                (ngModelChange)="searchByKeyword()">
+              <i class="ri-search-line search-icon"></i>
+            </div>
+            <div class="hstack gap-2">
+              <button type="button" routerLink="/vendors/create" class="btn btn-primary add-btn md-add-btn">
+                <i class="ri-add-line align-bottom me-1"></i> Create Vendor
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+
+    </div>
+  </div>
+</div>
+<div class="row">
+  <ng-container *ngIf="isHttpRequestInProcess && !userPagedListModel">
+    <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 238px)">
+      <span class="spinner-border flex-shrink-0 ms-2" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </span>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!isHttpRequestInProcess || userPagedListModel">
+    <div class="col-lg-12">
+      <div class="card" style="min-height: 300px;">
+        <ng-container *ngIf="userPagedListModel.totalRecords > 0; else noResults">
+          <div class="card-body">
+            <div class="table-responsive table-card">
+
+
+              <table class="table align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Business Name</th>
+                    <th>Name</th>
+                    <th>Vendor Subsidiary / DBA</th>
+                    <th>Created On</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="list form-check-all">
+                  <tr *ngFor="let user of userPagedListModel.items">
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <ng-container *ngIf="!user.profilePictureWebUrl">
+                          <div class="avatar-xs flex-shrink-0">
+                            <div class="avatar-title bg-info-subtle text-info rounded-circle">
+                              {{user | userPrefix}}
+                            </div>
+                          </div>
+                        </ng-container>
+                        <ng-container *ngIf="user.profilePictureWebUrl">
+                          <img [src]="user.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+                        </ng-container>
+                        <div class="ms-2 requester-name">
+                          {{user.businessName}}
+
+                        </div>
+                      </div>
+                    </td>
+                    <td style="max-width: 200px;overflow: hidden;white-space: nowrap;">
+                      {{user.firstName}} {{user.lastName}}
+                    </td>
+                    <td>
+                      <ng-container *ngFor="let sub of user.subsidiaries | slice:0:3">
+                        <span class="badge-gray">{{ getShortName(sub.name) }}</span>
+                      </ng-container>
+
+                      <ng-container *ngIf="user.subsidiaries.length > 3">
+                        <span class="badge-more">+{{ user.subsidiaries.length - 3 }}</span>
+                      </ng-container>
+                    </td>
+                    <td class="date">
+                      {{user.createdOn | date : "MMM d, y, h:mm a"}}
+                    </td>
+                    <td class="text-center">
+                      <div class="dropdown" dropdown style="margin-left: -15px;">
+                        <button type="button" dropdownToggle class="btn dropdown dropdown-btn" aria-expanded="false">
+                          <i class="ri-more-line"></i>
+                        </button>
+                        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-end" role="menu"
+                          aria-labelledby="button-basic">
+                          <li role="menuitem">
+                            <button class="dropdown-item cursor-pointer d-flex gap-2 align-items-center"
+                              (click)="select(user)">
+                              <span>View Vendor</span>
+                            </button>
+                          </li>
+                          <li role="menuitem">
+                            <button class="dropdown-item cursor-pointer d-flex gap-2 align-items-center"
+                              [routerLink]="['/vendors', user.id, 'edit']">
+                              <span>Edit Vendor</span>
+                            </button>
+                          </li>
+                          <li role="menuitem">
+                            <button class="dropdown-item cursor-pointer d-flex gap-2 align-items-center text-danger"
+                              (click)="openModal(confirmModal, user)">
+                              <span>Delete Vendor</span>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </div>
+            <div class="d-flex align-items-center pagination-wrap">
+
+              <div *ngIf="isHttpRequestInProcess === false">
+                <pagination [totalItems]="userPagedListModel.totalRecords" [(ngModel)]="vendorSearchRequestModel.page"
+                  [maxSize]="5" [disabled]="isHttpRequestInProcess" [itemsPerPage]="vendorSearchRequestModel.pageSize"
+                  (pageChanged)="onPageChanged($event)">
+                </pagination>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- NO ITEMS TEMPLATE -->
+        <ng-template #noResults>
+          <ng-container *ngIf="!(isLoading$ | async)">
+            <div class="card-body p-4 m-4">
+              <div class="noresult text-center">
+                <h5 class="mt-2">Sorry! No Result Found</h5>
+                <p class="text-muted mb-0">
+                  We did not find any vendor for your search.
+                </p>
+              </div>
+            </div>
+          </ng-container>
+        </ng-template>
+      </div>
+    </div>
+  </ng-container>
+  <!-- <app-spinner *ngIf="isLoading$ | async"></app-spinner> -->
+</div>
+
+<ng-template #confirmModal>
+  <div class="delete-modal">
+    <div class="modal-body">
+      <p>Are you sure you want to <strong>"Delete"</strong> this Vendor named <strong>"{{selectedUserModel?.firstName}}
+          {{selectedUserModel?.lastName}}"</strong>?</p>
+      <p class="disclaimer"><span>Disclaimer:</span> All the requests/activity will be automatically deleted if you
+        delete this user.</p>
+      <button class="btn modal-cancel-btn" (click)="modalRef?.hide()">Not Now</button>
+      <button class="btn modal-delete-btn" (click)="onConfirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</ng-template>
+<ng-template #vendorDetailTemplate>
+  <div class="modal-content h-100">
+    <div class="modal-header border-bottom">
+      <div class="profile-user d-flex align-items-center mb-2">
+
+        <!-- Fallback: Initials Avatar -->
+        <ng-container *ngIf="!selectedUserModel.profilePictureWebUrl">
+          <div class="avatar-lg">
+            <div class="avatar-title bg-info-subtle text-info rounded-circle fs-1">
+              {{ selectedUserModel | userPrefix }}
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- User Image -->
+        <ng-container *ngIf="selectedUserModel.profilePictureWebUrl">
+          <img [src]="selectedUserModel.profilePictureWebUrl"
+            class="rounded-circle avatar-lg img-thumbnail user-profile-image" alt="Profile picture" />
+        </ng-container>
+
+        <!-- Business Name & Full Name -->
+        <div class="d-flex flex-column ms-3 text-truncate" style="max-width: 200px;">
+          <div class="fw-semibold">
+            {{ selectedUserModel.businessName }}
+          </div>
+          <div class="fw-light text-muted">
+            {{ selectedUserModel.firstName }} {{ selectedUserModel.lastName }}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Close Button -->
+      <button type="button" class="btn-close" (click)="modalRef?.hide()"></button>
+    </div>
+
+    <div class="modal-body p-4">
+
+
+      <div class="table-responsive">
+        <table class="table table-borderless mb-0">
+          <tbody>
+            <tr>
+              <th class="ps-0" scope="row">Business Name :</th>
+              <td class="text-muted">{{ selectedUserModel.businessName }}</td>
+            </tr>
+
+            <tr>
+              <th class="ps-0 align-top" scope="row">Vendor Subsidiary / DBA:</th>
+              <td class="text-muted">
+                <ng-container *ngIf="selectedUserModel?.subsidiaries?.length; else noStores">
+                  <table class="table table-borderless mb-0">
+                    <tbody>
+                      <tr *ngFor="let sub of selectedUserModel.subsidiaries">
+                        <td class="text-muted p-0">• {{ sub.name }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </ng-container>
+                <ng-template #noStores>No subsidiaries available</ng-template>
+              </td>
+
+            </tr>
+
+
+            <tr>
+              <th class="ps-0" scope="row">Name :</th>
+              <td class="text-muted"> {{ selectedUserModel.firstName }} {{ selectedUserModel.lastName }}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Email Address :</th>
+              <td class="text-muted">{{ selectedUserModel.email }}</td>
+            </tr>
+            <tr>
+              <th class="ps-0" scope="row">Phone Number :</th>
+              <td class="text-muted">{{ selectedUserModel.phone }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</ng-template>

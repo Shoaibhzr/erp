@@ -1,0 +1,186 @@
+<ng-container *ngIf="serviceRequestPagedListModel">
+
+  <div class="card">
+
+    <div class="card-header border-0">
+
+      <div class="row g-4 align-items-center">
+
+        <div class="col-sm-3">
+
+          <div class="search-box">
+
+            <input type="text" class="form-control search" placeholder="Search for..." [(ngModel)]="searchTerm" (ngModelChange)="searchByKeyword()">
+
+            <i class="ri-search-line search-icon"></i>
+
+          </div>
+
+        </div>
+
+        <div class="col-sm-auto ms-auto d-none">
+
+          <div class="hstack gap-2">
+
+            <button type="button"
+                    routerLink="/company/create"
+                    class="btn btn-primary add-btn">
+
+              <i class="ri-add-line align-bottom me-1"></i> Add Request
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <ng-container *ngIf="serviceRequestPagedListModel.totalRecords == 0">
+
+      <div class="card-body p-4 m-4">
+
+        <div class="noresult">
+
+          <div class="text-center">
+
+            <h5 class="mt-2">Sorry! No Result Found</h5>
+
+            <p class="text-muted mb-0">We did not find any requests for you search.</p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </ng-container>
+
+    <ng-container *ngIf="serviceRequestPagedListModel.totalRecords > 0">
+
+      <div class="card-body">
+
+        <div class="table-responsive table-card">
+
+          <ng-container *ngIf="serviceRequestPagedListModel.totalRecords > 0">
+
+            <table class="table align-middle table-hover">
+
+              <thead class="table-light">
+
+                <tr>
+
+                  <th>Title</th>
+
+                  <th>Item</th>
+
+                  <th>Store</th>
+
+                  <th>Priority</th>
+
+                  <th>Status</th>
+
+                  <th>Requested By</th>
+
+                  <th style="min-width: 140px;">Requested Date</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody class="list form-check-all">
+
+                <tr *ngFor="let serviceRequest of serviceRequestPagedListModel.items">
+
+                  <td [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']"
+                      class="text-truncate cursor-pointer"
+                      style="max-width: 300px;">
+
+                    {{serviceRequest.title}}
+
+                  </td>
+
+                  <td [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']"
+                      class="phone cursor-pointer">
+
+                    {{serviceRequest.item}}
+
+                  </td>
+
+                  <td [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']"
+                      class="phone cursor-pointer">
+
+                    {{serviceRequest.store.name}}
+
+                  </td>
+
+                  <td [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']"
+                      class="company_name cursor-pointer">
+
+                    {{serviceRequest.priority | priority}}
+
+                  </td>
+
+                  <td [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']"
+                      class="date cursor-pointer">
+
+                    {{serviceRequest.status | ServiceRequestStatus}}
+
+                  </td>
+
+                  <td [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']"
+                      class="date cursor-pointer">
+
+                    <img src="assets/images/users/avatar-3.jpg" alt="" class="avatar-xxs rounded-circle me-2"> {{serviceRequest.createdBy.firstName}} {{serviceRequest.createdBy.lastName}}
+
+                  </td>
+
+                  <td [routerLink]="['/repairs-and-maintenance', serviceRequest.id, 'detail']"
+                      class="date cursor-pointer">
+
+                    {{serviceRequest.createdOn | date : "MMM d, y h:mm a"}}
+
+                  </td>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </ng-container>
+
+        </div>
+
+        <div class="d-flex mt-3 align-items-center" *ngIf="serviceRequestPagedListModel.totalRecords > 0">
+
+          <div>
+
+            Showing {{_serviceRequestSearchRequestModel.page > 1 ? ((_serviceRequestSearchRequestModel.page - 1) * _serviceRequestSearchRequestModel.pageSize) : 1}} to {{(_serviceRequestSearchRequestModel.page * _serviceRequestSearchRequestModel.pageSize) > serviceRequestPagedListModel.totalRecords ? serviceRequestPagedListModel.totalRecords : (_serviceRequestSearchRequestModel.page * _serviceRequestSearchRequestModel.pageSize)}} of {{serviceRequestPagedListModel.totalRecords}} results
+
+          </div>
+
+          <div class="ms-auto" *ngIf="isHttpRequestInProcess === false">
+
+            <pagination [totalItems]="serviceRequestPagedListModel.totalRecords"
+                        [(ngModel)]="_serviceRequestSearchRequestModel.page"
+                        [maxSize]="5"
+                        [disabled]="isHttpRequestInProcess"
+                        [itemsPerPage]="_serviceRequestSearchRequestModel.pageSize"
+                        (pageChanged)="onPageChanged($event)">
+
+            </pagination>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </ng-container>
+
+  </div>
+
+</ng-container>

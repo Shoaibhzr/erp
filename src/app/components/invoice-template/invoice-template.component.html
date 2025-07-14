@@ -1,0 +1,118 @@
+<div class="main-container d-flex flex-column" #invoiceContent style="min-height: 100vh; padding: 20px;">
+  <!-- Header -->
+  <div class="invoice-header mb-4 text-center">
+    <h2>Employee Expense Reimbursement</h2>
+  </div>
+
+  <!-- Invoice Content Wrapper -->
+  <div class="invoice-wrapper flex-grow-1">
+    <!-- Basic Information -->
+    <div>
+      <div class="info-header mb-2">Basic Information</div>
+
+      <div class="info-grid">
+        <div class="info-title">Title</div>
+        <div class="info-description">{{invoiceData?.title}}</div>
+
+        <div class="info-title">Description</div>
+        <div class="info-description">{{invoiceData?.description}}</div>
+      </div>
+
+      <div class="info-section mt-3">
+        <div><div class="info-label">Request Number</div><div class="info-value">{{invoiceData?.number}} {{invoiceData | ServiceRequestNumber}}</div></div>
+        <div><div class="info-label">Expense Period</div><div class="info-value">{{invoiceData?.dueOn | date : "MMM d, y, h:mm a"}}</div></div>
+        <div><div class="info-label">Company</div><div class="info-value">{{invoiceData?.company?.name}}</div></div>
+        <div><div class="info-label">Type</div><div class="info-value">{{invoiceData?.type}}</div></div>
+      </div>
+
+      <div class="info-section mt-3">
+        <div><div class="info-label">Priority</div><div class="info-value">{{invoiceData?.priority}}</div></div>
+        <div><div class="info-label">Status</div><div class="info-value">{{invoiceData?.status}}</div></div>
+        <div><div class="info-label">Created on</div><div class="info-value">{{invoiceData?.createdOn | date : "MMM d, y, h:mm a"}}</div></div>
+        <div><div class="info-label">Created By</div><div class="info-value">{{invoiceData?.createdBy?.firstName}} {{invoiceData?.createdBy?.lastName}}</div></div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Invoice Items -->
+    <div class="invoice-section d-flex justify-content-between align-items-end">
+      <div><h3>Items</h3></div>
+      <div class="grand-total"><h3 class="total">Grand Total: ${{invoiceData?.invoice?.total}}</h3></div>
+    </div>
+
+    <ng-container *ngFor="let item of invoiceData?.invoice?.items">
+      <div class="d-flex justify-content-between align-items-end">
+        <div class="item-total"><h3>{{getItemCategory(item.expenseCategoryId)}}</h3></div>
+        <div class="item-total"><h3 class="total">${{item.amount}}</h3></div>
+      </div>
+
+      <div class="info-section-items mt-2">
+        <div><div class="info-label">Invoice/Receipt No.</div><div class="info-value">{{item.invoiceNumber}}</div></div>
+        <div><div class="info-label">Expense Date</div><div class="info-value">{{item.invoiceDate | date : "MMM d, y, h:mm a"}}</div></div>
+        <div>
+          <div class="info-label">Store Group</div>
+          <div class="info-value">
+            <ng-container *ngIf="item.groups?.length; else noGroups">
+              <ul class="mb-0 ps-1"><li *ngFor="let group of item.groups | uniqueGroups">{{ group.name }}</li></ul>
+            </ng-container>
+            <ng-template #noGroups>No groups</ng-template>
+          </div>
+        </div>
+        <div>
+          <div class="info-label">Store(s)</div>
+          <div class="info-value">
+            <ng-container *ngIf="item.stores?.length; else noStores">
+              <ul class="mb-0 ps-1"><li *ngFor="let store of item.stores">{{ store.name }}</li></ul>
+            </ng-container>
+            <ng-template #noStores>No stores</ng-template>
+          </div>
+        </div>
+        <div><div class="info-label">Amount</div><div class="info-value">{{item.amount}}</div></div>
+        <div>
+          <div class="info-label">Status</div>
+          <div class="info-value" [ngStyle]="{ color: item.isPaid ? '#16A34A' : '#EF4444', 'font-weight': '600' }">
+            {{ item.isPaid ? 'prepaid' : 'unpaid' }}
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <div class="grand-total w-100 mt-3"><h3 class="total">Grand Total: ${{invoiceData?.invoice?.total}}</h3></div>
+
+    <hr>
+
+    <!-- Audit Trail -->
+    <div class="info-header">Audit Trails</div>
+    <div class="table-wrapper mt-3">
+  <table class="approval-table">
+    <thead>
+      <tr>
+        <th>Approver</th>
+        <th>Status</th>
+        <th>Approval Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let approver of invoiceData?.approvals">
+        <td>{{ approver?.role?.name }}</td>
+        <td [ngClass]="{
+          'status-approved': approver?.state === 'Approved',
+          'status-skipped': approver?.state === 'Skipped',
+          'status-other': approver?.state !== 'Approved' && approver?.state !== 'Skipped'
+        }">{{ approver?.state }}</td>
+        <td>{{ approver?.updatedOn | date : 'MMM d, y, h:mm a' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-5 pt-3 border-top">
+    <small class="text-muted d-block mb-1">This is a system-generated document and does not require a physical signature.</small>
+    <p class="print-date mb-2">Print Date and Time: {{ getFormattedDateTime() }}</p>
+    <img src="assets/logo/logo-dark.png" alt="Logo" height="30">
+  </div>
+</div>

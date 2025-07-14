@@ -1,0 +1,2323 @@
+<ng-container *ngIf="isInitInProgress == undefined || isInitInProgress == true">
+
+  <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+
+    <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+      <span class="visually-hidden">Loading...</span>
+
+    </span>
+
+  </div>
+
+</ng-container>
+
+<ng-container *ngIf="isInitInProgress == false">
+
+  <ng-container *ngIf="!serviceRequestModel">
+
+    <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+
+      <div class="container-fluid">
+
+        <div class="row justify-content-center">
+
+          <div class="col-xl-4 text-center">
+
+            <div class="error-500 position-relative">
+
+              <img src="assets/images/error500.png" alt="" class="img-fluid error-500-img error-img">
+
+              <h1 class="title text-muted">500</h1>
+
+            </div>
+
+            <div>
+
+              <h4>Internal Server Error!</h4>
+
+              <p class="text-muted w-75 mx-auto">
+
+                The company you're trying to edit does not exist, or something else went wrong. Please try again later.
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+  <ng-container *ngIf="serviceRequestModel">
+
+    <div class="row">
+
+      <div class="col-lg-12">
+
+        <div class="card mt-n4 mx-n4">
+
+          <div>
+
+            <div class="card-body pb-0 px-4">
+
+              <div class="row mb-3">
+
+                <div class="col-md">
+
+                  <div class="row align-items-center g-3">
+
+                    <div class="col-md-auto">
+
+                      <div class="avatar-md">
+
+                        <div class="avatar-title bg-white rounded-circle">
+
+                          <img [src]="serviceRequestModel.company.logoUrl" class="avatar-xs object-fit-cover">
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                    <div class="col-md">
+
+                      <div>
+
+                        <h4 class="fw-bold">{{serviceRequestModel.store.name}} ({{serviceRequestModel | ServiceRequestNumber}})</h4>
+
+                        <div class="hstack gap-3 flex-wrap">
+
+                          <div>
+
+                            <i class="ri-building-line align-bottom me-1"></i> {{serviceRequestModel.company.name}}
+
+                          </div>
+
+                          <div class="vr">
+
+                          </div>
+
+                          <div>
+
+                            Created Date : <span class="fw-medium">{{serviceRequestModel.createdOn | date : 'MMM d, y'}}</span>
+
+                          </div>
+
+                          <div class="vr">
+
+                          </div>
+
+                          <div>
+
+                            Due Date : <span class="fw-medium">{{serviceRequestModel.dueOn | date : 'MMM d, y'}}</span>
+
+                          </div>
+
+                          <div class="vr">
+
+                          </div>
+
+                          <div class="badge rounded-pill bg-info fs-12">
+
+                            {{serviceRequestModel.status | ServiceRequestStatus}}
+
+                          </div>
+
+                          <div class="badge rounded-pill fs-12"
+                               [class.bg-primary]="serviceRequestModel.priority === ServiceRequestPriority.nonCritical"
+                               [class.bg-warning]="serviceRequestModel.priority === ServiceRequestPriority.critical"
+                               [class.bg-danger]="serviceRequestModel.priority === ServiceRequestPriority.emergency">
+
+                            {{serviceRequestModel.priority | priority}}
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="col-md-auto d-none">
+
+                  <div class="hstack gap-1 flex-wrap">
+
+                    <button type="button" class="btn py-0 fs-16 favourite-btn active">
+
+                      <i class="ri-star-fill"></i>
+
+                    </button>
+
+                    <button type="button" class="btn py-0 fs-16 text-body">
+
+                      <i class="ri-share-line"></i>
+
+                    </button>
+
+                    <button type="button" class="btn py-0 fs-16 text-body">
+
+                      <i class="ri-flag-line"></i>
+
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
+
+                <li class="nav-item">
+
+                  <a class="nav-link text-body fw-semibold cursor-pointer"
+                     [class.active]="selectedTab === ServiceRequestTab.overview"
+                     (click)="selectedTab = ServiceRequestTab.overview">
+
+                    Overview
+
+                  </a>
+
+                </li>
+
+                <ng-container *ngIf="serviceRequestModel.priority !== ServiceRequestPriority.emergency">
+
+                  <li class="nav-item">
+
+                    <a class="nav-link text-body fw-semibold cursor-pointer"
+                       [class.disabled]="checkIfQuotationsDisabled()"
+                       [class.active]="selectedTab === ServiceRequestTab.quotations"
+                       (click)="selectedTab = ServiceRequestTab.quotations">
+
+                      Quotations
+
+                    </a>
+
+                  </li>
+
+                </ng-container>
+
+                <li class="nav-item">
+
+                  <a class="nav-link text-body fw-semibold cursor-pointer"
+                     [class.disabled]="checkIfInvoicesDisabled()"
+                     [class.active]="selectedTab === ServiceRequestTab.invoice"
+                     (click)="selectedTab = ServiceRequestTab.invoice">
+
+                    Invoice
+
+                  </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                  <a class="nav-link text-body fw-semibold cursor-pointer"
+                     [class.disabled]="checkIfPaymentsDisabled()"
+                     [class.active]="selectedTab === ServiceRequestTab.payment"
+                     (click)="selectedTab = ServiceRequestTab.payment">
+
+                    Payment
+
+                  </a>
+
+                </li>
+
+                <li class="nav-item d-none">
+
+                  <a class="nav-link text-body fw-semibold">
+
+                    Activities
+
+                  </a>
+
+                </li>
+
+              </ul>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-lg-12">
+
+        <div class="tab-content text-muted">
+
+          <div class="tab-pane fade"
+               [class.show]="selectedTab === ServiceRequestTab.overview"
+               [class.active]="selectedTab === ServiceRequestTab.overview">
+
+            <div class="row">
+
+              <div class="col-xl-9 col-lg-8">
+
+                <div class="card">
+
+                  <div class="card-body">
+
+                    <div class="text-muted">
+
+                      <div class="row">
+
+                        <div class="col-12">
+
+                          <h6 class="mb-3 fw-bold">
+
+                            Title
+
+                          </h6>
+
+                          <p>
+
+                            {{serviceRequestModel.title}}
+
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                      <div class="row">
+
+                        <div class="col-12">
+
+                          <h6 class="mb-3 fw-bold">
+
+                            Item
+
+                          </h6>
+
+                          <p [innerHTML]="serviceRequestModel.item">
+
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                      <div class="row">
+
+                        <div class="col-12">
+
+                          <h6 class="mb-3 fw-bold">
+
+                            Detail
+
+                          </h6>
+
+                          <p [innerHTML]="serviceRequestModel.description">
+
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                      <div class="pt-3 border-top border-top-dashed">
+
+                        <div class="row">
+
+                          <div class="col-lg-3 col-sm-6">
+
+                            <div>
+
+                              <p class="mb-2 fw-medium">
+
+                                Created Date :
+
+                              </p>
+
+                              <h5 class="fs-14 mb-0">
+
+                                {{serviceRequestModel.createdOn | date : 'MMM d, y'}}
+
+                              </h5>
+
+                            </div>
+
+                          </div>
+
+                          <div class="col-lg-3 col-sm-6">
+
+                            <div>
+
+                              <p class="mb-2 fw-medium">
+
+                                Due Date :
+
+                              </p>
+
+                              <h5 class="fs-14 mb-0">
+
+                                {{serviceRequestModel.dueOn | date : 'MMM d, y'}}
+
+                              </h5>
+
+                            </div>
+
+                          </div>
+
+                          <div class="col-lg-3 col-sm-6">
+
+                            <div>
+
+                              <p class="mb-2 fw-medium">Priority :</p>
+
+                              <div class="badge fs-12"
+                                   [class.bg-primary]="serviceRequestModel.priority === ServiceRequestPriority.nonCritical"
+                                   [class.bg-warning]="serviceRequestModel.priority === ServiceRequestPriority.critical"
+                                   [class.bg-danger]="serviceRequestModel.priority === ServiceRequestPriority.emergency">
+
+                                {{serviceRequestModel.priority | priority}}
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                          <div class="col-lg-3 col-sm-6">
+
+                            <div>
+
+                              <p class="mb-2 fw-medium">Status :</p>
+
+                              <div class="badge bg-info fs-12">
+
+                                {{serviceRequestModel.status | ServiceRequestStatus}}
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                      <ng-container *ngIf="serviceRequestModel.files && serviceRequestModel.files.length > 0">
+
+                        <div class="pt-3 border-top border-top-dashed mt-4">
+
+                          <h6 class="mb-3 fw-semibold text-uppercase">
+
+                            Attachments
+
+                          </h6>
+
+                          <div class="row g-3">
+
+                            <div class="col-xxl-4 col-lg-6" *ngFor="let file of serviceRequestModel.files">
+
+                              <div class="border rounded border-dashed p-2">
+
+                                <div class="d-flex align-items-center">
+
+                                  <div class="flex-shrink-0 me-3">
+
+                                    <div class="avatar-sm">
+
+                                      <div class="avatar-title bg-light text-secondary rounded fs-24">
+
+                                        <i class="{{file.contentType | contentTypeToRiIcon}}"></i>
+
+                                      </div>
+
+                                    </div>
+
+                                  </div>
+
+                                  <div class="flex-grow-1 overflow-hidden">
+
+                                    <h5 class="fs-13 mb-1">
+
+                                      <a class="text-body text-truncate d-block">
+
+                                        {{file.name}}
+
+                                      </a>
+
+                                    </h5>
+
+                                    <div>
+
+                                      {{(file.size / 1000) | number}} KB
+
+                                    </div>
+
+                                  </div>
+
+                                  <div class="flex-shrink-0 ms-2">
+
+                                    <div class="d-flex gap-1">
+
+                                      <a (click)="FileHelper.downloadFile(file.webUrl, file.name)" class="btn btn-icon text-muted btn-sm fs-18">
+
+                                        <i class="ri-download-2-line"></i>
+
+                                      </a>
+
+                                    </div>
+
+                                  </div>
+
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </ng-container>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <comment [serviceRequestId]="id" [comments]="serviceRequestModel.comments"></comment>
+
+              </div>
+
+              <!-- ene col -->
+              <div class="col-xl-3 col-lg-4">
+
+                <div class="card">
+
+                  <div class="card-body">
+
+                    <h5 class="card-title mb-4">
+
+                      <div class="d-flex align-items-center">
+
+                        <i class="ri-information-fill me-2 text-primary"></i> Actions
+
+                      </div>
+
+                    </h5>
+
+                    <p class="text-muted mb-0">
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.pendingApproval">
+
+                        <ng-container *ngIf="serviceRequestModel.priority === ServiceRequestPriority.nonCritical">
+
+                          <ng-container *ngIf="!isUserTurnInApprovalProcess()">
+
+                            The request was created by the {{serviceRequestModel.createdBy.firstName}} {{serviceRequestModel.createdBy.lastName}} and is now awaiting approval from {{getCurrentApprovalUserName()}}.
+
+                          </ng-container>
+
+                          <ng-container *ngIf="isUserTurnInApprovalProcess()">
+
+                            This request was created by {{serviceRequestModel.createdBy.firstName}} {{serviceRequestModel.createdBy.lastName}} and is awaiting your approval. You can approve, reject, or return it to the user for any changes.
+
+                          </ng-container>
+
+                        </ng-container>
+
+                        <ng-container *ngIf="serviceRequestModel.priority === ServiceRequestPriority.critical">
+
+                          <ng-container *ngIf="!isUserTurnInApprovalProcess()">
+
+                            This critical request was created by {{serviceRequestModel.createdBy.firstName}} {{serviceRequestModel.createdBy.lastName}} and is now awaiting approval. As this is a critical request, only one approval from the approval chain is required to proceed.
+
+                          </ng-container>
+
+                          <ng-container *ngIf="isUserTurnInApprovalProcess()">
+
+                            This critical request was created by {{serviceRequestModel.createdBy.firstName}} {{serviceRequestModel.createdBy.lastName}} and is now awaiting approval. As you're also part of the approval process, you have the authority to approve it. Only one approval from the approval chain is required for this request to proceed.
+
+                          </ng-container>
+
+                        </ng-container>
+
+                        <ng-container *ngIf="serviceRequestModel.priority === ServiceRequestPriority.emergency">
+
+                          <ng-container *ngIf="!isUserTurnInApprovalProcess()">
+
+                            This emergency request was created by {{serviceRequestModel.createdBy.firstName}} {{serviceRequestModel.createdBy.lastName}} and is now awaiting approval. As this is an emergency request, only one approval from the approval chain is required to proceed.
+
+                          </ng-container>
+
+                          <ng-container *ngIf="isUserTurnInApprovalProcess()">
+
+                            This emergency request was created by {{serviceRequestModel.createdBy.firstName}} {{serviceRequestModel.createdBy.lastName}} and is now awaiting approval. As you're also part of the approval process, you have the authority to approve it. Only one approval from the approval chain is required for this request to proceed.
+
+                          </ng-container>
+
+                        </ng-container>
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.rejected">
+
+                        <ng-container *ngIf="user.id !== approval.approver.id">
+
+                          This request was rejected by {{approval.approver.firstName}} {{approval.approver.lastName}} for the reason given below. <br />
+
+                        </ng-container>
+
+                        <ng-container *ngIf="user.id === approval.approver.id">
+
+                          This request was rejected by you for the reason given below. <br />
+
+                        </ng-container>
+
+                        <p class="fst-italic mt-3 text-danger mb-0">
+
+                          <q>
+
+                            {{approval.reason}}
+
+                          </q>
+
+                        </p>
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.returned">
+
+                        <ng-container *ngIf="user.id !== approval.approver.id">
+
+                          This request was returned by {{approval.approver.firstName}} {{approval.approver.lastName}} for the reason given below. <br />
+
+                        </ng-container>
+
+                        <ng-container *ngIf="user.id === approval.approver.id">
+
+                          This request was returned by you for the reason given below. <br />
+
+                        </ng-container>
+
+                        <p class="fst-italic mt-3 text-danger mb-0">
+
+                          <q>
+
+                            {{approval.reason}}
+
+                          </q>
+
+                        </p>
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.approved">
+
+                        <ng-container *ngIf="serviceRequestModel.priority !== ServiceRequestPriority.emergency">
+
+                          <ng-container *ngIf="user.id !== approval.approver.id">
+
+                            This request was approved by {{approval.approver.firstName}} {{approval.approver.lastName}}, so you can now go ahead and invite vendors to it.
+
+                          </ng-container>
+
+                          <ng-container *ngIf="user.id === approval.approver.id">
+
+                            This request was approved by you, so you can now go ahead and invite vendors to it.
+
+                          </ng-container>
+
+                        </ng-container>
+
+                        <ng-container *ngIf="serviceRequestModel.priority === ServiceRequestPriority.emergency">
+
+                          <ng-container *ngIf="user.id !== approval.approver.id">
+
+                            This request was approved by {{approval.approver.firstName}} {{approval.approver.lastName}}, so you can now go ahead and assign vendor to it.
+
+                          </ng-container>
+
+                          <ng-container *ngIf="user.id === approval.approver.id">
+
+                            This request was approved by you, so you can now go ahead and assign vendor to it.
+
+                          </ng-container>
+
+                        </ng-container>
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.quotationRequested">
+
+                        The invitations were sent to the vendor(s) by {{approval.approver.firstName}} {{approval.approver.lastName}} and are awaiting responses. <br /> <br />You can review the details or invite more vendors by clicking the button below.
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.vendorAssigned">
+
+                        The request has been assigned to the vendor and is now in their work-assigned section, waiting for them to start the work.
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.inProgress">
+
+                        The vendor has begun working on this request.
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.issueResolved">
+
+                        The vendor has completed the work on this request.
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.awaitingInvoiceApproval">
+
+                        The vendor has submitted an invoice and is waiting for approval.
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.invoiceRejected">
+
+                        The vendor's invoice has been rejected, and we are awaiting a response from the vendor.
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.paymentPending">
+
+                        The vendor's invoice has been approved, and the payment is now pending. <br /> <br />If the payment has been made, click the button below to send confirmation to the vendor.
+
+                      </ng-container>
+
+                      <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.finalized">
+
+                        This request has been completed.
+
+                      </ng-container>
+
+                    </p>
+
+                    <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.pendingApproval
+                                  && (isUserTurnInApprovalProcess() || (isUserPartOfApprovalProcess() && (serviceRequestModel.priority === ServiceRequestPriority.critical || serviceRequestModel.priority === ServiceRequestPriority.emergency)))">
+
+                      <div class="flex-wrap fs-16 mt-4">
+
+                        <button type="button" class="btn btn-primary custom-toggle rounded-pill btn-sm" (click)="openModal(approveRequestTemplate)">
+
+                          <i class="ri-thumb-up-line align-bottom me-1"></i> Approve
+
+                        </button>
+
+                        <button type="button" class="btn btn-danger mx-2 custom-toggle rounded-pill btn-sm" (click)="openModal(rejectRequestTemplate)">
+
+                          <i class="ri-thumb-down-line align-bottom me-1"></i> Reject
+
+                        </button>
+
+                        <button type="button" class="btn btn-light custom-toggle ms-auto btn-sm" (click)="openModal(returnRequestTemplate)">
+
+                          <i class="ri-reply-line align-bottom me-1"></i> Return
+
+                        </button>
+
+                      </div>
+
+                    </ng-container>
+
+                    <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.approved">
+
+                      <div class="d-flex flex-wrap gap-2 fs-16 mt-4">
+
+                        <button type="button" class="btn btn-primary custom-toggle rounded-pill btn-sm" (click)="inviteVendor()">
+
+                          <ng-container *ngIf="serviceRequestModel.priority !== ServiceRequestPriority.emergency">
+
+                            <i class="ri-mail-line align-bottom me-1"></i> Invite Vendors
+
+                          </ng-container>
+
+                          <ng-container *ngIf="serviceRequestModel.priority === ServiceRequestPriority.emergency">
+
+                            <i class="ri-user-add-line align-bottom me-1"></i> Assign Vendor
+
+                          </ng-container>
+
+                        </button>
+
+                      </div>
+
+                    </ng-container>
+
+                    <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.quotationRequested">
+
+                      <div class="d-flex flex-wrap gap-2 fs-16 mt-4">
+
+                        <button type="button" class="btn btn-primary custom-toggle rounded-pill btn-sm" (click)="selectedTab = ServiceRequestTab.quotations">
+
+                          <i class="ri-mail-line align-bottom me-1"></i> Review Quotations
+
+                        </button>
+
+                      </div>
+
+                    </ng-container>
+
+                    <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.paymentPending">
+
+                      <div class="d-flex flex-wrap gap-2 fs-16 mt-4">
+
+                        <button type="button" class="btn btn-primary custom-toggle rounded-pill btn-sm"
+                                (click)="completePayment()">
+
+                          <i class="ri-money-dollar-box-line align-bottom me-1"></i> Complete Payment
+
+                        </button>
+
+                      </div>
+
+                    </ng-container>
+
+                  </div>
+
+                </div>
+
+                <div class="card">
+
+                  <div class="card-header align-items-center d-flex border-bottom-dashed">
+
+                    <h4 class="card-title mb-0 flex-grow-1">
+
+                      Approvers
+
+                    </h4>
+
+                  </div>
+
+                  <div class="card-body">
+
+                    <div data-simplebar class="mx-n3 px-3">
+
+                      <div class="vstack gap-3">
+
+                        <ng-container *ngFor="let approval of serviceRequestModel.approvals">
+
+                          <div class="d-flex align-items-center">
+
+                            <div class="flex-shrink-0 me-3">
+
+                              <ng-container *ngIf="!approval.approver.profilePictureWebUrl">
+
+                                <div class="avatar-xs">
+
+                                  <div class="avatar-title bg-info-subtle text-info rounded-circle">
+
+                                    {{approval.approver | userPrefix}}
+
+                                  </div>
+
+                                </div>
+
+                              </ng-container>
+
+                              <ng-container *ngIf="approval.approver.profilePictureWebUrl">
+
+                                <img [src]="approval.approver.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+
+                              </ng-container>
+
+                            </div>
+
+                            <div class="flex-grow-1">
+
+                              <h5 class="fs-13 mb-0">
+
+                                <a class="text-body d-block">
+
+                                  {{approval.approver.firstName}} {{approval.approver.lastName}}
+
+                                </a>
+
+                              </h5>
+
+                            </div>
+
+                            <ng-container *ngIf="serviceRequestModel.status === ServiceRequestStatus.pendingApproval || serviceRequestModel.status === ServiceRequestStatus.rejected || serviceRequestModel.status === ServiceRequestStatus.returned || approval.state === ApprovalState.pending || approval.state === ApprovalState.approved || approval.state === ApprovalState.rejected || approval.state === ApprovalState.returned || approval.state === ApprovalState.skipped">
+
+                              <div class="flex-shrink-0">
+
+                                <div class="d-flex align-items-center gap-1">
+
+                                  <button type="button" class="btn btn-light btn-sm"
+                                          [class.btn-light]="approval.state === ApprovalState.pending || approval.state === ApprovalState.skipped"
+                                          [class.btn-success]="approval.state === ApprovalState.approved"
+                                          [class.btn-info]="approval.state === ApprovalState.returned"
+                                          [class.btn-danger]="approval.state === ApprovalState.rejected">
+
+                                    {{approval.state}}
+
+                                  </button>
+
+                                </div>
+
+                              </div>
+
+                            </ng-container>
+
+                          </div>
+
+                        </ng-container>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="card" *ngIf="serviceRequestModel.vendor">
+
+                  <div class="card-header align-items-center d-flex border-bottom-dashed">
+
+                    <h4 class="card-title mb-0 flex-grow-1">
+
+                      Vendor
+
+                    </h4>
+
+                  </div>
+
+                  <div class="card-body">
+
+                    <div class="d-flex align-items-center">
+
+                      <div class="flex-shrink-0 me-3">
+
+                        <ng-container *ngIf="!serviceRequestModel.vendor.profilePictureWebUrl">
+
+                          <div class="avatar-xs">
+
+                            <div class="avatar-title bg-info-subtle text-info rounded-circle">
+
+                              {{serviceRequestModel.vendor | userPrefix}}
+
+                            </div>
+
+                          </div>
+
+                        </ng-container>
+
+                        <ng-container *ngIf="serviceRequestModel.vendor.profilePictureWebUrl">
+
+                          <img [src]="serviceRequestModel.vendor.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+
+                        </ng-container>
+
+                      </div>
+
+                      <div class="flex-grow-1">
+
+                        <h5 class="fs-13 mb-0">
+
+                          <a class="text-body d-block">
+
+                            {{serviceRequestModel.vendor.firstName}} {{serviceRequestModel.vendor.lastName}}
+
+                          </a>
+
+                        </h5>
+
+                        <div class="fs-10 text-muted" *ngIf="approvedQuotation && approvedQuotation.createdOn">
+
+                          Assigned on {{approvedQuotation.createdOn | date}}
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <ng-container *ngIf="approvedQuotationFile">
+
+                  <div class="card">
+
+                    <div class="card-header align-items-center d-flex border-bottom-dashed">
+
+                      <h4 class="card-title mb-0 flex-grow-1">
+
+                        Quotation
+
+                      </h4>
+
+                    </div>
+
+                    <div class="card-body">
+
+                      <div class="d-flex align-items-center">
+
+                        <div class="me-3">
+
+                          <div class="avatar-xs">
+
+                            <div class="avatar-title bg-light text-secondary rounded fs-24">
+
+                              <i class="{{approvedQuotationFile.contentType | contentTypeToRiIcon}}"></i>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                        <div class="overflow-hidden">
+
+                          <h5 class="fs-11 mb-1">
+
+                            <a class="text-body text-truncate d-block">
+
+                              {{approvedQuotationFile.name}}
+
+                            </a>
+
+                          </h5>
+
+                          <div class="fs-10"> {{approvedQuotationFile.size / 1000}} KB </div>
+
+                        </div>
+
+                        <div class="ms-2 ms-auto">
+
+                          <div class="d-flex gap-1">
+
+                            <a (click)="FileHelper.downloadFile(approvedQuotationFile.webUrl, approvedQuotationFile.name)"
+                              class="btn btn-icon text-muted btn-sm fs-18">
+                            
+                              <i class="ri-download-2-line"></i>
+                            
+                            </a>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </ng-container>
+
+                <ng-container *ngIf="serviceRequestModel.invoice && serviceRequestModel.invoice.files">
+
+                  <div class="card">
+
+                    <div class="card-header align-items-center d-flex border-bottom-dashed">
+
+                      <h4 class="card-title mb-0 flex-grow-1">
+
+                        Invoice
+
+                      </h4>
+
+                    </div>
+
+                    <div class="card-body">
+
+                      <div class="d-flex align-items-center">
+
+                        <div class="me-3">
+
+                          <div class="avatar-xs">
+
+                            <div class="avatar-title bg-light text-secondary rounded fs-24">
+
+                              <i class="{{serviceRequestModel.invoice.files[0].contentType | contentTypeToRiIcon}}"></i>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                        <div class="overflow-hidden">
+
+                          <h5 class="fs-11 mb-1">
+
+                            <a class="text-body text-truncate d-block">
+
+                              {{serviceRequestModel.invoice.files[0].name}}
+
+                            </a>
+
+                          </h5>
+
+                          <div class="fs-10"> {{serviceRequestModel.invoice.files[0].size / 1000}} KB </div>
+
+                        </div>
+
+                        <div class="ms-2 ms-auto">
+
+                          <div class="d-flex gap-1">
+
+                            <a (click)="FileHelper.downloadFile(serviceRequestModel.invoice.files[0].webUrl, serviceRequestModel.invoice.files[0].name)"
+                              class="btn btn-icon text-muted btn-sm fs-18">
+                            
+                              <i class="ri-download-2-line"></i>
+                            
+                            </a>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </ng-container>
+
+               
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="tab-pane fade"
+               [class.show]="selectedTab === ServiceRequestTab.quotations"
+               [class.active]="selectedTab === ServiceRequestTab.quotations"
+               *ngIf="serviceRequestModel.quotations">
+
+            <quotation [quotations]="serviceRequestModel.quotations"
+                       (onInviteVendor)="inviteVendor()"
+                       (onApproved)="onQuotationApproved($event)"></quotation>
+
+          </div>
+
+          <div class="tab-pane fade"
+               [class.show]="selectedTab === ServiceRequestTab.invoice"
+               [class.active]="selectedTab === ServiceRequestTab.invoice"
+               *ngIf="serviceRequestModel.invoice">
+
+            <invoice [invoice]="serviceRequestModel.invoice"
+                     (onApproved)="onInvoiceApproved()"
+                     (onRejected)="onInvoiceRejected()"></invoice>
+
+          </div>
+
+          <div class="tab-pane fade"
+               [class.show]="selectedTab === ServiceRequestTab.payment"
+               [class.active]="selectedTab === ServiceRequestTab.payment"
+               *ngIf="serviceRequestModel.payment">
+
+            <payment [payment]="serviceRequestModel.payment"
+                     (onApproved)="onInvoiceApproved()"
+                     (onRejected)="onInvoiceRejected()"></payment>
+
+          </div>
+
+          <div class="tab-pane fade" id="project-activities" role="tabpanel">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Activities</h5>
+                <div class="acitivity-timeline py-3">
+                  <div class="acitivity-item d-flex">
+                    <div class="flex-shrink-0">
+                      <img src="assets/images/users/avatar-1.jpg" alt=""
+                           class="avatar-xs rounded-circle acitivity-avatar" />
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-1">
+                        Oliver Phillips <span class="badge bg-primary-subtle text-primary align-middle">New</span>
+                      </h6>
+                      <p class="text-muted mb-2">We talked about a project on linkedin.</p>
+                      <small class="mb-0 text-muted">Today</small>
+                    </div>
+                  </div>
+                  <div class="acitivity-item py-3 d-flex">
+                    <div class="flex-shrink-0 avatar-xs acitivity-avatar">
+                      <div class="avatar-title bg-success-subtle text-success rounded-circle">
+                        N
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-1">
+                        Nancy Martino <span class="badge bg-secondary-subtle text-secondary align-middle">In Progress</span>
+                      </h6>
+                      <p class="text-muted mb-2">
+                        <i class="ri-file-text-line align-middle ms-2"></i> Create new project
+                        Building product
+                      </p>
+                      <div class="avatar-group mb-2">
+                        <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
+                           data-bs-placement="top" title="" data-bs-original-title="Christi">
+                          <img src="assets/images/users/avatar-4.jpg" alt="" class="rounded-circle avatar-xs" />
+                        </a>
+                        <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
+                           data-bs-placement="top" title="" data-bs-original-title="Frank Hook">
+                          <img src="assets/images/users/avatar-3.jpg" alt="" class="rounded-circle avatar-xs" />
+                        </a>
+                        <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
+                           data-bs-placement="top" title="" data-bs-original-title=" Ruby">
+                          <div class="avatar-xs">
+                            <div class="avatar-title rounded-circle bg-light text-primary">
+                              R
+                            </div>
+                          </div>
+                        </a>
+                        <a href="javascript: void(0);" class="avatar-group-item" data-bs-toggle="tooltip"
+                           data-bs-placement="top" title="" data-bs-original-title="more">
+                          <div class="avatar-xs">
+                            <div class="avatar-title rounded-circle">
+                              2+
+                            </div>
+                          </div>
+                        </a>
+                      </div>
+                      <small class="mb-0 text-muted">Yesterday</small>
+                    </div>
+                  </div>
+                  <div class="acitivity-item py-3 d-flex">
+                    <div class="flex-shrink-0">
+                      <img src="assets/images/users/avatar-2.jpg" alt=""
+                           class="avatar-xs rounded-circle acitivity-avatar" />
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-1">
+                        Natasha Carey <span class="badge bg-success-subtle text-success align-middle">Completed</span>
+                      </h6>
+                      <p class="text-muted mb-2">Adding a new event with attachments</p>
+                      <div class="row">
+                        <div class="col-xxl-4">
+                          <div class="row border border-dashed gx-2 p-2 mb-2">
+                            <div class="col-4">
+                              <img src="assets/images/small/img-2.jpg" alt="" class="img-fluid rounded" />
+                            </div>
+                            <!--end col-->
+                            <div class="col-4">
+                              <img src="assets/images/small/img-3.jpg" alt="" class="img-fluid rounded" />
+                            </div>
+                            <!--end col-->
+                            <div class="col-4">
+                              <img src="assets/images/small/img-4.jpg" alt="" class="img-fluid rounded" />
+                            </div>
+                            <!--end col-->
+                          </div>
+                          <!--end row-->
+                        </div>
+                      </div>
+                      <small class="mb-0 text-muted">25 Nov</small>
+                    </div>
+                  </div>
+                  <div class="acitivity-item py-3 d-flex">
+                    <div class="flex-shrink-0">
+                      <img src="assets/images/users/avatar-6.jpg" alt=""
+                           class="avatar-xs rounded-circle acitivity-avatar" />
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-1">Bethany Johnson</h6>
+                      <p class="text-muted mb-2">added a new member to velzon dashboard</p>
+                      <small class="mb-0 text-muted">19 Nov</small>
+                    </div>
+                  </div>
+                  <div class="acitivity-item py-3 d-flex">
+                    <div class="flex-shrink-0">
+                      <div class="avatar-xs acitivity-avatar">
+                        <div class="avatar-title rounded-circle bg-danger-subtle text-danger">
+                          <i class="ri-shopping-bag-line"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-1">
+                        Your order is placed <span class="badge bg-danger-subtle text-danger align-middle ms-1">Out of Delivery</span>
+                      </h6>
+                      <p class="text-muted mb-2">These customers can rest assured their order has been placed.</p>
+                      <small class="mb-0 text-muted">16 Nov</small>
+                    </div>
+                  </div>
+                  <div class="acitivity-item py-3 d-flex">
+                    <div class="flex-shrink-0">
+                      <img src="assets/images/users/avatar-7.jpg" alt=""
+                           class="avatar-xs rounded-circle acitivity-avatar" />
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-1">Lewis Pratt</h6>
+                      <p class="text-muted mb-2">
+                        They all have something to say beyond the words on the page. They can
+                        come across as casual or neutral, exotic or graphic.
+                      </p>
+                      <small class="mb-0 text-muted">22 Oct</small>
+                    </div>
+                  </div>
+                  <div class="acitivity-item py-3 d-flex">
+                    <div class="flex-shrink-0">
+                      <div class="avatar-xs acitivity-avatar">
+                        <div class="avatar-title rounded-circle bg-info-subtle text-info">
+                          <i class="ri-line-chart-line"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-1">Monthly sales report</h6>
+                      <p class="text-muted mb-2">
+                        <span class="text-danger">2 days left</span> notification to submit the
+                        monthly sales report. <a href="javascript:void(0);"
+                                                 class="link-warning text-decoration-underline">Reports Builder</a>
+                      </p>
+                      <small class="mb-0 text-muted">15 Oct</small>
+                    </div>
+                  </div>
+                  <div class="acitivity-item d-flex">
+                    <div class="flex-shrink-0">
+                      <img src="assets/images/users/avatar-8.jpg" alt=""
+                           class="avatar-xs rounded-circle acitivity-avatar" />
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                      <h6 class="mb-1">
+                        New ticket received <span class="badge bg-success-subtle text-success align-middle">Completed</span>
+                      </h6>
+                      <p class="text-muted mb-2">
+                        User <span class="text-secondary">Erica245</span> submitted a ticket.
+                      </p>
+                      <small class="mb-0 text-muted">26 Aug</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-body-->
+            </div>
+            <!--end card-->
+          </div>
+
+          <div class="tab-pane fade" id="project-team" role="tabpanel">
+            <div class="row g-4 mb-3">
+              <div class="col-sm">
+                <div class="d-flex">
+                  <div class="search-box me-2">
+                    <input type="text" class="form-control" placeholder="Search member...">
+                    <i class="ri-search-line search-icon"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-auto">
+                <div>
+                  <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                          data-bs-target="#inviteMembersModal">
+                    <i class="ri-share-line me-1 align-bottom"></i> Invite
+                    Member
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- end row -->
+
+            <div class="team-list list-view-filter">
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <img src="assets/images/users/avatar-2.jpg" alt="" class="img-fluid d-block rounded-circle" />
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Nancy Martino</h5>
+                          </a>
+                          <p class="text-muted mb-0">Team Leader & HR</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">225</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">197</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn active">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <div class="avatar-title bg-danger-subtle text-danger rounded-circle">
+                            HB
+                          </div>
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Henry Baird</h5>
+                          </a>
+                          <p class="text-muted mb-0">Full Stack Developer</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">352</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">376</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn active">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <img src="assets/images/users/avatar-3.jpg" alt="" class="img-fluid d-block rounded-circle" />
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Frank Hook</h5>
+                          </a>
+                          <p class="text-muted mb-0">Project Manager</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">164</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">182</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <img src="assets/images/users/avatar-8.jpg" alt="" class="img-fluid d-block rounded-circle" />
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Jennifer Carter</h5>
+                          </a>
+                          <p class="text-muted mb-0">UI/UX Designer</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">225</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">197</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <div class="avatar-title bg-success-subtle text-success rounded-circle">
+                            ME
+                          </div>
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Megan Elmore</h5>
+                          </a>
+                          <p class="text-muted mb-0">Team Leader & Web Developer</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">201</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">263</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <img src="assets/images/users/avatar-4.jpg" alt="" class="img-fluid d-block rounded-circle" />
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Alexis Clarke</h5>
+                          </a>
+                          <p class="text-muted mb-0">Backend Developer</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">132</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">147</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <div class="avatar-title bg-info-subtle text-info rounded-circle">
+                            NC
+                          </div>
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Nathan Cole</h5>
+                          </a>
+                          <p class="text-muted mb-0">Front-End Developer</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">352</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">376</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <img src="assets/images/users/avatar-7.jpg" alt="" class="img-fluid d-block rounded-circle" />
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Joseph Parker</h5>
+                          </a>
+                          <p class="text-muted mb-0">Team Leader & HR</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">64</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">93</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <img src="assets/images/users/avatar-5.jpg" alt="" class="img-fluid d-block rounded-circle" />
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Erica Kernan</h5>
+                          </a>
+                          <p class="text-muted mb-0">Web Designer</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">345</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">298</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+              <div class="card team-box">
+                <div class="card-body px-4">
+                  <div class="row align-items-center team-row">
+                    <div class="col team-settings">
+                      <div class="row align-items-center">
+                        <div class="col">
+                          <div class="flex-shrink-0 me-2">
+                            <button type="button" class="btn fs-16 p-0 favourite-btn">
+                              <i class="ri-star-fill"></i>
+                            </button>
+                          </div>
+                        </div>
+                        <div class="col text-end dropdown">
+                          <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ri-more-fill fs-17"></i>
+                          </a>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-eye-fill text-muted me-2 align-bottom"></i>View
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-star-fill text-muted me-2 align-bottom"></i>Favourite
+                              </a>
+                            </li>
+                            <li>
+                              <a class="dropdown-item" href="javascript:void(0);">
+                                <i class="ri-delete-bin-5-fill text-muted me-2 align-bottom"></i>Delete
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="team-profile-img">
+                        <div class="avatar-lg img-thumbnail rounded-circle">
+                          <div class="avatar-title border bg-light text-primary rounded-circle">
+                            DP
+                          </div>
+                        </div>
+                        <div class="team-content">
+                          <a href="#" class="d-block">
+                            <h5 class="fs-15 mb-1">Donald Palmer</h5>
+                          </a>
+                          <p class="text-muted mb-0">Wed Developer</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col">
+                      <div class="row text-muted text-center">
+                        <div class="col-6 border-end border-end-dashed">
+                          <h5 class="fs-15 mb-1">97</h5>
+                          <p class="text-muted mb-0">Projects</p>
+                        </div>
+                        <div class="col-6">
+                          <h5 class="fs-15 mb-1">135</h5>
+                          <p class="text-muted mb-0">Tasks</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-2 col">
+                      <div class="text-end">
+                        <a href="pages-profile.html" class="btn btn-light view-btn">View Profile</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!--end card-->
+            </div>
+            <!-- end team list -->
+
+            <div class="row g-0 text-center text-sm-start align-items-center mb-3">
+              <div class="col-sm-6">
+                <div>
+                  <p class="mb-sm-0">Showing 1 to 10 of 12 entries</p>
+                </div>
+              </div> <!-- end col -->
+              <div class="col-sm-6">
+                <ul class="pagination pagination-separated justify-content-center justify-content-sm-end mb-sm-0">
+                  <li class="page-item disabled">
+                    <a href="#" class="page-link"><i class="mdi mdi-chevron-left"></i></a>
+                  </li>
+                  <li class="page-item"> <a href="#" class="page-link">1</a> </li>
+                  <li class="page-item active"> <a href="#" class="page-link">2</a> </li>
+                  <li class="page-item"> <a href="#" class="page-link">3</a> </li>
+                  <li class="page-item"> <a href="#" class="page-link">4</a> </li>
+                  <li class="page-item"> <a href="#" class="page-link">5</a> </li>
+                  <li class="page-item"> <a href="#" class="page-link"><i class="mdi mdi-chevron-right"></i></a> </li>
+                </ul>
+              </div><!-- end col -->
+            </div><!-- end row -->
+          </div>
+
+        </div>
+
+      </div>
+      
+    </div>
+
+  </ng-container>
+
+</ng-container>
+
+<ng-template #approveRequestTemplate>
+
+  <div class="modal-header">
+
+    <h5 class="modal-title">
+
+      <i class="ri-thumb-up-line align-bottom me-1 text-primary"></i> Approval Confirmation
+
+    </h5>
+
+    <button type="button" class="btn-close" (click)="modalRef.hide()" [disabled]="isActionInProgress"></button>
+
+  </div>
+
+  <div class="modal-body">
+
+    <p class="text-muted">
+
+      <ng-container *ngIf="serviceRequestModel.priority !== ServiceRequestPriority.emergency">
+
+        You’re about to approve Request, created by {{serviceRequestModel.createdBy.firstName}} {{serviceRequestModel.createdBy.lastName}}. Once you approve it, the request will be considered approved, and you will be able to send quotation requests to vendors.
+
+      </ng-container>
+
+      <ng-container *ngIf="serviceRequestModel.priority === ServiceRequestPriority.emergency">
+
+        You’re about to approve Request, created by {{serviceRequestModel.createdBy.firstName}} {{serviceRequestModel.createdBy.lastName}}. Once you approve it, the request will be considered approved, and you will be directly able to assign a vendor to it.
+
+      </ng-container>
+
+    </p>
+
+    <p class="text-muted">
+
+      Are you sure you want to proceed with this action?
+
+    </p>
+
+  </div>
+
+  <div class="modal-footer">
+
+    <button type="button" class="btn btn-light" (click)="modalRef.hide()" [disabled]="isActionInProgress">
+
+      Close
+
+    </button>
+
+    <button type="button" class="btn btn-primary btn-load" (click)="approve()" [disabled]="isActionInProgress">
+
+      <div class="d-flex align-items-center justify-content-center">
+
+        Approve
+
+        <ng-container *ngIf="isActionInProgress">
+
+          <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+            <span class="visually-hidden">Loading...</span>
+
+          </span>
+
+        </ng-container>
+
+      </div>
+
+    </button>
+
+  </div>
+
+</ng-template>
+
+<ng-template #rejectRequestTemplate>
+
+  <div class="modal-header">
+
+    <h5 class="modal-title">
+
+      <i class="ri-thumb-down-line align-bottom me-1 text-danger"></i> Rejection Confirmation
+
+    </h5>
+
+    <button type="button" class="btn-close" (click)="modalRef.hide()" [disabled]="isActionInProgress"></button>
+
+  </div>
+
+  <div class="modal-body">
+
+    <p class="text-muted">
+
+      You are about to reject Request #1010101 from James Cordon. Once you proceed, this request will be marked as
+      rejected and cannot be undone.
+
+    </p>
+
+    <p class="text-muted">
+
+      Are you sure you want to continue? Please let us know your reason for rejecting this request.
+
+    </p>
+
+    <form>
+
+      <div class="mb-3">
+
+        <label for="message-text" class="col-form-label">
+
+          Reason: <i class="text-danger">*</i>
+
+        </label>
+
+        <textarea [ngStyle]="{ 'border': rejectReason.value && rejectReason.value.length < 3 ? '1px solid red' : '1px solid #ccc'}" class="form-control" rows="5" maxlength="300" (keyup)="onReasonChanged($event)" #rejectReason></textarea>
+
+        <div *ngIf="rejectReason.value && rejectReason.value.length < 3" class="mt-1">
+
+          <span class="small" style="color:red;">Reason must be at least 3 characters long.</span>
+
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="modal-footer">
+
+    <button type="button" class="btn btn-light" (click)="modalRef.hide()" [disabled]="isActionInProgress">
+
+      Close
+
+    </button>
+
+    <button type="button" class="btn btn-danger btn-load" (click)="reject(rejectReason.value)"
+      [disabled]="isActionInProgress || !(rejectReason.value && rejectReason.value.length >= 3)">
+
+      <div class="d-flex align-items-center justify-content-center">
+
+        Reject
+
+        <ng-container *ngIf="isActionInProgress">
+
+          <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+            <span class="visually-hidden">Loading...</span>
+
+          </span>
+
+        </ng-container>
+
+      </div>
+
+    </button>
+
+  </div>
+
+</ng-template>
+
+<ng-template #returnRequestTemplate>
+
+  <div class="modal-header">
+
+    <h5 class="modal-title">
+
+      <i class="ri-reply-line align-bottom me-1 text-primary"></i> Return Request
+
+    </h5>
+
+    <button type="button" class="btn-close" (click)="modalRef.hide()" [disabled]="isActionInProgress"></button>
+
+  </div>
+
+  <div class="modal-body">
+
+    <p class="text-muted">
+
+      You are about to return Request #1010101 from {{serviceRequestModel.createdBy.firstName}} {{serviceRequestModel.createdBy.lastName}}. This action will indicate that the request is being sent back for further review and cannot be undone.
+
+    </p>
+
+    <p class="text-muted">
+
+      Are you sure you want to proceed? Please share your reason for returning this request.
+
+    </p>
+
+    <form>
+
+      <div class="mb-3">
+
+        <label for="message-text" class="col-form-label">
+
+          Reason: <i class="text-danger">*</i>
+
+        </label>
+
+        <textarea [ngStyle]="{ 'border': returnReason.value && returnReason.value.length < 3 ? '1px solid red' : '1px solid #ccc'}" class="form-control" rows="5" maxlength="300" (keyup)="onReasonChanged($event)" #returnReason></textarea>
+
+        <div *ngIf="returnReason.value && returnReason.value.length < 3" class="mt-1">
+
+          <span class="small" style="color:red;">Reason must be at least 3 characters long.</span>
+
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+
+  <div class="modal-footer">
+
+    <button type="button" class="btn btn-light" (click)="modalRef.hide()" [disabled]="isActionInProgress">
+
+      Close
+
+    </button>
+
+    <button type="button" class="btn btn-primary btn-load" (click)="return(returnReason.value)"
+      [disabled]="isActionInProgress || !(returnReason.value && returnReason.value.length >= 3)">
+
+      <div class="d-flex align-items-center justify-content-center">
+
+        Return
+
+        <ng-container *ngIf="isActionInProgress">
+
+          <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+            <span class="visually-hidden">Loading...</span>
+
+          </span>
+
+        </ng-container>
+
+      </div>
+
+    </button>
+
+  </div>
+
+</ng-template>

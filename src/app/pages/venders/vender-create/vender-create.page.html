@@ -1,0 +1,416 @@
+<ng-container *ngIf="isInitInProgress == undefined || isInitInProgress == true">
+  <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+    <span class="spinner-border flex-shrink-0 ms-2" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </span>
+  </div>
+</ng-container>
+<ng-container *ngIf="isInitInProgress == false">
+  <ng-container *ngIf="id && !userToEdit">
+    <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+      <div class="container-fluid">
+        <div class="row justify-content-center">
+          <div class="col-xl-4 text-center">
+            <div class="error-500 position-relative">
+              <img src="assets/images/error500.png" alt class="img-fluid error-500-img error-img">
+              <h1 class="title text-muted">500</h1>
+            </div>
+            <div>
+              <h4>Internal Server Error!</h4>
+              <p class="text-muted w-75 mx-auto">
+                The store you're trying to edit does not exist, or something
+                else went wrong. Please try again later.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!id || userToEdit">
+    <div class="row">
+      <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center">
+            <button class="md-back-btn"><i class="ri-arrow-left-s-line"></i></button>
+            <ng-container *ngIf="!id">
+              <h4 class="mb-0">Create </h4>
+            </ng-container>
+            <ng-container *ngIf="id">
+              <h4 class="mb-0">Update </h4>
+            </ng-container>
+            <ng-container *ngTemplateOutlet="pathDisplayTemplate; context: { isVender: isVender }"></ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    <form [formGroup]="form">
+      <div class="row">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card overflow-visible">
+              <div class="card-body p-30 md-forms">
+                <div class="row">
+                  <div class="col-lg-7">
+                    <h5 class="md-card-title">
+                      Vendor Details
+                    </h5>
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <div class="form-wrap">
+                          <label class="form-label required">
+                            Business Name
+                          </label>
+                          <input type="text" class="form-control" formControlName="businessName" maxlength="50"
+                          placeholder="Enter business name"
+                            [ngClass]="{'is-invalid': form.controls && form.controls['businessName']?.dirty && form.controls['businessName']?.touched && form.controls['businessName']?.errors}" />
+                            <ng-container
+                            *ngIf="form.controls && form.controls['businessName']?.dirty && form.controls['businessName']?.touched && form.controls['businessName']?.errors">
+                            <div class="invalid-feedback">
+                              <span class="text-danger fw-bold">!</span>
+                              <ng-container *ngIf="form.controls['businessName']?.errors['required']">
+                                Business Name is required
+                              </ng-container>
+                             
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                      <div class="form-wrap col-lg-6">
+                      <label class="form-label required">Vendor Subsidiary</label>
+                      <ng-container>
+                        <ng-select [items]="vendorSubArray" bindLabel="name" bindValue="id" [multiple]="true" [clearable]="false" 
+                           formControlName="subsidiary" placeholder="Select vendor subsidiary"  (change)="onSubChanged()" class="custom-placeholder-align"
+                          [ngClass]="{'is-invalid': form.controls && form.controls['subsidiary']?.dirty && form.controls['subsidiary']?.touched && form.controls['subsidiary']?.errors}">
+
+
+                        </ng-select>
+
+                        
+                      </ng-container>
+                     
+                      <ng-container
+                        *ngIf="form.controls && form.controls['subsidiary']?.dirty && form.controls['subsidiary']?.touched && form.controls['subsidiary']?.errors">
+                        <div class="invalid-feedback">
+                          <ng-container *ngIf="form.controls['subsidiary']?.errors['required']">
+                            DBA is required
+                          </ng-container>
+                        </div>
+                      </ng-container>
+                    </div>
+                      <div class="col-lg-6">
+                        <div class="form-wrap">
+                          <label class="form-label required">
+                            First Name
+                          </label>
+                          <input type="text" class="form-control" formControlName="firstName" maxlength="50" placeholder="Enter your first name"
+                            [ngClass]="{'is-invalid': form.controls && form.controls['firstName']?.dirty && form.controls['firstName']?.touched && form.controls['firstName']?.errors}" />
+                            <ng-container
+                            *ngIf="form.controls && form.controls['firstName']?.dirty && form.controls['firstName']?.touched && form.controls['firstName']?.errors">
+                            <div class="invalid-feedback">
+                              <span class="text-danger fw-bold">!</span>
+                              <ng-container *ngIf="form.controls['firstName']?.errors['required']">
+                                First Name is required
+                              </ng-container>
+                              <ng-container *ngIf="form.controls['firstName']?.errors['maxlength']">
+                                Please keep the first name to
+                                {{form.controls['firstName']?.errors['maxlength'].requiredLength}}
+                                characters or less. You entered
+                                {{form.controls['firstName']?.errors['maxlength'].actualLength}}
+                                characters.
+                              </ng-container>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-wrap">
+                          <label class="form-label required">
+                            Last Name
+                          </label>
+                          <input type="text" class="form-control" formControlName="lastName" maxlength="50" placeholder="Enter your last name"
+                            [ngClass]="{'is-invalid': form.controls && form.controls['lastName']?.dirty && form.controls['lastName']?.touched &&form.controls['lastName']?.errors}" />
+                            <ng-container
+                            *ngIf="form.controls && form.controls['lastName']?.dirty && form.controls['lastName']?.touched && form.controls['lastName']?.errors">
+                            <div class="invalid-feedback">
+                              <span class="text-danger fw-bold">!</span>
+                              <ng-container *ngIf="form.controls['lastName']?.errors['required']">
+                                Last Name is required
+                              </ng-container>
+                              <ng-container *ngIf="form.controls['lastName']?.errors['maxlength']">
+                                Please keep the last name to
+                                {{form.controls['lastName']?.errors['maxlength'].requiredLength}}
+                                characters or less. You entered
+                                {{form.controls['lastName']?.errors['maxlength'].actualLength}}
+                                characters.
+                              </ng-container>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-wrap">
+                          <label class="form-label required">
+                            Email
+                            <i class="ri-information-line ms-1"
+                              [tooltip]="'This email address will be used by the user to log into the system.'"
+                              [tooltipClass]="'custom-tooltip'" placement="top"
+                              style="cursor: pointer; font-size: 14px;"></i>
+                          </label>
+                          <input type="text" class="form-control" formControlName="email" pattern="^[^@\s]+@[^@\s]+$" maxlength="50" placeholder="Enter your email"
+                            [ngClass]="{'is-invalid': form.controls && form.controls['email']?.dirty && form.controls['email']?.touched && form.controls['email']?.errors}" />
+                          <ng-container
+                            *ngIf="!form.controls || !form.controls['email']?.dirty && form.controls['email']?.touched || !form.controls['email']?.errors">
+                            <small class="form-text text-muted">
+                              This email address will be used by the user to log
+                              into the
+                              system.
+                            </small>
+                          </ng-container>
+                          <ng-container
+                            *ngIf="form.controls && form.controls['email']?.dirty && form.controls['email']?.touched && form.controls['email']?.errors">
+                            <div class="invalid-feedback">
+                              <span class="text-danger fw-bold">!</span>
+                              <ng-container *ngIf="form.controls['email']?.errors['required']">
+                                Email is required
+                              </ng-container>
+                              <ng-container *ngIf="form.controls['email']?.errors['maxlength']">
+                                Please keep the email to
+                                {{form.controls['email']?.errors['maxlength'].requiredLength}}
+                                characters or less. You entered
+                                {{form.controls['email']?.errors['maxlength'].actualLength}}
+                                characters.
+                              </ng-container>
+                              <ng-container *ngIf="form.controls['email']?.errors['pattern']">
+                                Email is invalid
+                              </ng-container>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-wrap">
+                          <label class="form-label required">
+                            Phone Number
+                          </label>
+                          <input type="text" class="form-control" formControlName="phone" maxlength="15" (keypress)="allowOnlyNumbers($event)"
+                          placeholder="Enter your phone number"
+                            [ngClass]="{'is-invalid': form.controls && form.controls['phone']?.dirty && form.controls['phone']?.touched && form.controls['phone']?.errors}" />
+                            <ng-container
+                            *ngIf="form.controls && form.controls['phone']?.dirty && form.controls['phone']?.touched && form.controls['phone']?.errors">
+                            <div class="invalid-feedback">
+                              <span class="text-danger fw-bold">!</span>
+                              <ng-container *ngIf="form.controls['phone']?.errors['required']">
+                                Phone is required
+                              </ng-container>
+                              <ng-container *ngIf="form.controls['phone']?.errors['maxlength']">
+                                Please keep the phone to
+                                {{form.controls['phone']?.errors['maxlength'].requiredLength}}
+                                characters or less. You entered
+                                {{form.controls['phone']?.errors['maxlength'].actualLength}}
+                                characters.
+                              </ng-container>
+                            </div>
+                          </ng-container>
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-wrap">
+                          <label class="form-label required">
+                            Password
+                          </label>
+                          <div class="input-group">
+                            <input [type]="passwordVisible ? 'text' : 'password'" class="form-control"
+                              formControlName="password"
+                               maxlength="30"
+                               placeholder="Enter password"
+                              (input)="onPasswordInput($event)"
+                              [ngClass]="{
+                                'is-invalid': form.get('password')?.invalid && (form.get('password')?.dirty || form.get('password')?.touched)
+                              }"
+                              
+                              >
+                            <div class="input-group-append">
+                              <button [style.display]="'flex'" type="button" class="btn"
+                                (click)="togglePasswordVisibility()">
+                                <i [class]="passwordVisible ? 'bx bxs-hide fs-22' : 'bx bxs-show fs-22'"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <ng-container *ngIf="form.get('password')?.valid || !form.get('password')?.touched">
+                            <small class="form-text text-muted">
+                              This password will be used by the user to log into the system.
+                            </small>
+                          </ng-container>
+                          
+                          <ng-container *ngIf="form.get('password')?.invalid && (form.get('password')?.touched || form.get('password')?.dirty)">
+                            <div class="invalid-feedback d-flex align-items-center gap-1">
+                              <span>
+                                <span class="text-danger fw-bold">!</span>
+                                <ng-container *ngIf="form.get('password')?.errors?.['required']">
+                                  Password is required
+                                </ng-container>
+                                <ng-container *ngIf="form.get('password')?.errors?.['minlength']">
+                                  Password must be at least 6 characters long.
+                                </ng-container>
+                              </span>
+                            </div>
+                          </ng-container>
+                          
+                        </div>
+                      </div>
+                      <div class="col-lg-6">
+                        <div class="form-wrap">
+                          <label class="form-label required">
+                            Confirm Password
+                          </label>
+                          <div class="input-group">
+                            <input [type]="confirmPasswordVisible ? 'text' : 'password'" class="form-control"
+                              formControlName="confirmPassword"
+                              maxlength="30"
+                              placeholder="Confirm password"
+                              [ngClass]="{
+                                'is-invalid': form.get('confirmPassword')?.invalid && (form.get('confirmPassword')?.dirty || form.get('confirmPassword')?.touched)
+                              }">
+                            <div class="input-group-append">
+                              <button [style.display]="'flex'" type="button" class="btn"
+                                (click)="toggleConfirmPasswordVisibility()">
+                                <i [class]="confirmPasswordVisible ? 'bx bxs-hide fs-22' : 'bx bxs-show fs-22'"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <!-- Confirm Password Mismatch Error -->
+                          <ng-container *ngIf="form.get('confirmPassword')?.touched || form.get('confirmPassword')?.dirty">
+                            <div class="invalid-feedback d-flex align-items-center gap-1" *ngIf="form.get('confirmPassword')?.errors">
+                              <span class="text-danger fw-bold">!</span>
+                              <span>
+                                <ng-container *ngIf="form.get('confirmPassword')?.errors?.['required']">
+                                  Confirm Password is required
+                                </ng-container>
+                                <ng-container *ngIf="form.get('confirmPassword')?.errors?.['minlength']">
+                                  Confirm Password must be at least 6 characters long.
+                                </ng-container>
+                                <ng-container *ngIf="form.get('confirmPassword')?.errors?.['confirmPasswordValidator']">
+                                  Password and Confirm Password do not match.
+                                </ng-container>
+                              </span>
+                            </div>
+                          </ng-container>
+                          
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-5 md-forms">
+                    <h5 class="md-card-title">Profile Picture</h5>
+                  
+                    <div class="form-wrap">
+                      <label class="form-label">Profile Picture</label>
+                  
+                      <!-- File Input and Message -->
+                      <div class="mb-3">
+                        <input
+                          #fileInput
+                          class="form-control"
+                          type="file"
+                          (change)="onFileSelected($event)"
+                          accept="image/png, image/jpeg"
+                        />
+                        <p class="text-muted md-profile-message mt-2">
+                          Please upload the profile picture in a standard format (e.g., PNG or JPEG).
+                          This image will be used for identification purposes.
+                        </p>
+                      </div>
+                  
+                      <!-- Preview and Action Buttons -->
+                      <ng-container *ngIf="file || userToEdit?.profilePictureWebUrl">
+                        <div class="d-flex align-items-center gap-3">
+                          <div class="md-profile-img">
+                            <img
+                              [src]="fileDataUrl || userToEdit?.profilePictureWebUrl"
+                              style="height: 48px"
+                              class="object-fit-cover rounded-circle"
+                            />
+                          </div>
+                  
+                          <div class="d-flex gap-2">
+                            <button type="button" class="md-delete-btn" (click)="deleteProfilePicture()">Delete</button>
+                            <button type="button" class="md-edit-btn" (click)="fileInput.click()">
+                              Update
+                            </button>
+                            
+                          </div>
+                        </div>
+                  
+                        <input
+                          #updateFileInput
+                          type="file"
+                          accept="image/png, image/jpeg"
+                          style="display: none"
+                          (change)="onFileSelected($event)"
+                        />
+
+                      </ng-container>
+                    </div>
+                  </div>
+                  
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+           <div class="col-lg-12">
+            <div class="d-flex justify-content-end gap-3">
+              <button type="button" [disabled]="isCreateRequestInProgress" class="md-close-btn"
+                routerLink="/vendors/list">
+                Close
+              </button>
+              <button
+                  type="button"
+                  [disabled]="!form.valid || isCreateRequestInProgress"
+                  class="md-update-btn"
+                  (click)="openCreateModal(createVendorModal)">
+                  <div class="d-flex align-items-center justify-content-center">
+                    <ng-container *ngIf="!id">Create Vendor</ng-container>
+                    <ng-container *ngIf="id">Update Vendor</ng-container>
+                    <ng-container *ngIf="isCreateRequestInProgress">
+                      <span class="spinner-border flex-shrink-0 ms-2" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </span>
+                    </ng-container>
+                  </div>
+                </button>
+
+            </div>
+          </div>
+
+        </div>
+        
+      </div>
+    </form>
+  </ng-container>
+</ng-container>
+
+<ng-template #pathDisplayTemplate let-isVender="isVender">
+  <ng-container *ngIf="isVender">
+    <h4 class="mb-0 mx-2">Vendor</h4>
+  </ng-container>
+  
+</ng-template>
+<ng-template #createVendorModal>
+  <div class="modal-header">
+    <h5 class="modal-title" *ngIf="!id">Vendor Creation Confirmation</h5>
+    <h5 class="modal-title" *ngIf="id">Vendor Updation Confirmation</h5>
+    <button type="button" class="btn-close" (click)="modalRef.hide()"></button>
+  </div>
+  <div class="modal-body">
+    <p *ngIf="!id">Are you sure you want to Create this vendor?</p>
+    <p *ngIf="id">Are you sure you want to Update this vendor?</p>
+    <div class="d-flex">
+      <button type="button" class="btn modal-cancel-btn" (click)="modalRef.hide()">Cancel</button>
+      <button type="button" class="btn modal-confirm-btn" (click)="confirmCreate()" *ngIf="!id">Create</button>
+      <button type="button" class="btn modal-confirm-btn" (click)="confirmCreate()" *ngIf="id">Update</button>
+    </div>
+  </div>
+</ng-template>

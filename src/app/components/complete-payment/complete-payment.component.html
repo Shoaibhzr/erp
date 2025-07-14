@@ -1,0 +1,326 @@
+<form (ngSubmit)="submit()"
+      [formGroup]="form">
+
+  <div class="card mb-0">
+
+    <div class="card-header align-items-center d-flex">
+
+      <h4 class="card-title mb-0 flex-grow-1">
+
+        <i class="ri-money-dollar-box-line align-bottom me-1 text-primary"></i> Payment
+
+      </h4>
+
+      <button type="button"
+              class="btn-close"
+              (click)="close()"
+              [disabled]="isCreateInProgress">
+      </button>
+
+    </div>
+
+    <div class="card-body">
+
+      <div class="row mb-4">
+
+        <div class="col-6">
+
+          <label for="username" class="form-label">Method</label>
+
+          <select class="form-select" formControlName="paymentMethod" (change)="onPaymentMethodChange($event)">
+
+            <option [value]="PaymentMethod.eCheque">{{PaymentMethod.eCheque | paymentMethod}}</option>
+            <option [value]="PaymentMethod.ach">{{PaymentMethod.ach | paymentMethod}}</option>
+            <option [value]="PaymentMethod.wire">{{PaymentMethod.wire | paymentMethod}}</option>
+            <option [value]="PaymentMethod.creditCard">{{PaymentMethod.creditCard | paymentMethod}}</option>
+            <option [value]="PaymentMethod.debitCard">{{PaymentMethod.debitCard | paymentMethod}}</option>
+            <option [value]="PaymentMethod.portal">{{PaymentMethod.portal | paymentMethod}}</option>
+            <option [value]="PaymentMethod.officeCheque">{{PaymentMethod.officeCheque | paymentMethod}}</option>
+
+          </select>
+
+        </div>
+
+        <div class="col-6">
+
+          <label for="username" class="form-label">Paid On</label>
+
+          <input type="text"
+                 class="form-control"
+                 formControlName="paymentDate"
+                 [bsConfig]="{ containerClass: 'theme-dark-blue' }"
+                 [ngClass]="{'is-invalid': form.controls && form.controls['paymentDate']?.dirty && form.controls['paymentDate']?.errors}"
+                 bsDatepicker>
+
+          <div class="invalid-feedback" *ngIf="form.controls && form.controls['paymentDate']?.dirty && form.controls['paymentDate']?.errors">
+
+            <ng-container *ngIf="form.controls['paymentDate']?.errors['required']">
+
+              Payment date is required
+
+            </ng-container>
+
+            <ng-container *ngIf="form.controls['paymentDate']?.errors['bsDate']">
+
+              Invalid date
+
+            </ng-container>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="row mb-4">
+
+        <div class="col-12">
+
+          <label for="username" class="form-label">Paid By</label>
+
+          <input type="text"
+                 class="form-control"
+                 formControlName="paidBy"
+                 [ngClass]="{'is-invalid': form.controls && form.controls['paidBy']?.dirty && form.controls['paidBy']?.errors}">
+
+          <div class="invalid-feedback" *ngIf="form.controls && form.controls['paidBy']?.dirty && form.controls['paidBy']?.errors">
+
+            <ng-container *ngIf="form.controls['paidBy']?.errors['required']">
+
+              Paid by is required
+
+            </ng-container>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="row mb-4">
+
+        <div class="col-6">
+
+          <label for="username" class="form-label">Amount</label>
+
+          <input type="number"
+                 class="form-control"
+                 formControlName="paymentAmount"
+                 [ngClass]="{'is-invalid': form.controls && form.controls['paymentAmount']?.dirty && form.controls['paymentAmount']?.errors}">
+
+          <div class="invalid-feedback" *ngIf="form.controls && form.controls['paymentAmount']?.dirty && form.controls['paymentAmount']?.errors">
+
+            <ng-container *ngIf="form.controls['paymentAmount']?.errors['required']">
+
+              Amount is required
+
+            </ng-container>
+
+            <ng-container *ngIf="form.controls['paymentAmount']?.errors['min']">
+
+              Amount cannot be less than {{form.controls['paymentAmount']?.errors['min'].min}}
+
+            </ng-container>
+
+            <ng-container *ngIf="form.controls['paymentAmount']?.errors['max']">
+
+              Amount cannot be greater than {{form.controls['paymentAmount']?.errors['max'].max}}
+
+            </ng-container>
+
+          </div>
+
+        </div>
+
+        <div class="col-6">
+
+          <label for="username" class="form-label">Remaining</label>
+
+          <input type="text"
+                 [value]="payment?.remaining"
+                 disabled
+                 class="form-control">
+
+        </div>
+
+      </div>
+
+      <ng-container *ngIf="form.get('paymentMethod').value === PaymentMethod.ach || form.get('paymentMethod').value === PaymentMethod.portal || form.get('paymentMethod').value === PaymentMethod.wire">
+
+        <div class="row mb-4">
+
+          <div class="col-12">
+
+            <label for="username" class="form-label">Reference Number</label>
+
+            <input type="text"
+                   class="form-control"
+                   formControlName="referenceNumber"
+                   [ngClass]="{'is-invalid': form.controls && form.controls['referenceNumber']?.dirty && form.controls['referenceNumber']?.errors}" />
+
+            <div class="invalid-feedback" *ngIf="form.controls && form.controls['referenceNumber']?.dirty && form.controls['referenceNumber']?.errors">
+
+              <ng-container *ngIf="form.controls['referenceNumber']?.errors['required']">
+
+                Reference number is required
+
+              </ng-container>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </ng-container>
+
+      <ng-container *ngIf="form.get('paymentMethod').value === PaymentMethod.creditCard || form.get('paymentMethod').value === PaymentMethod.debitCard">
+
+        <div class="row mb-4">
+
+          <div class="col-12">
+
+            <label for="username" class="form-label">Card Number</label>
+
+            <input type="text"
+                   class="form-control"
+                   formControlName="cardNumber"
+                   [ngClass]="{'is-invalid': form.controls && form.controls['cardNumber']?.dirty && form.controls['cardNumber']?.errors}" />
+
+            <div class="invalid-feedback" *ngIf="form.controls && form.controls['cardNumber']?.dirty && form.controls['cardNumber']?.errors">
+
+              <ng-container *ngIf="form.controls['cardNumber']?.errors['required']">
+
+                Card number is required
+
+              </ng-container>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </ng-container>
+
+      <ng-container *ngIf="form.get('paymentMethod').value === PaymentMethod.eCheque || form.get('paymentMethod').value === PaymentMethod.officeCheque">
+
+        <div class="row mb-4">
+
+          <div class="col-6">
+
+            <label class="form-label">
+
+              Cheque Number
+
+            </label>
+
+            <input type="text"
+                   class="form-control"
+                   formControlName="chequeNumber"
+                   [ngClass]="{'is-invalid': form.controls && form.controls['chequeNumber']?.dirty && form.controls['chequeNumber']?.errors}" />
+
+            <div class="invalid-feedback" *ngIf="form.controls && form.controls['chequeNumber']?.dirty && form.controls['chequeNumber']?.errors">
+
+              <ng-container *ngIf="form.controls['chequeNumber']?.errors['required']">
+
+                Cheque number is required
+
+              </ng-container>
+
+            </div>
+
+          </div>
+
+          <div class="col-6">
+
+            <label for="username" class="form-label">Cheque Cashed Date</label>
+
+            <input type="text"
+                   class="form-control"
+                   formControlName="chequeCashedDate"
+                   [bsConfig]="{ containerClass: 'theme-dark-blue' }"
+                   [ngClass]="{'is-invalid': form.controls && form.controls['chequeCashedDate']?.dirty && form.controls['chequeCashedDate']?.errors}"
+                   bsDatepicker />
+            
+            <div class="invalid-feedback" *ngIf="form.controls && form.controls['chequeCashedDate']?.dirty && form.controls['chequeCashedDate']?.errors">
+
+              <ng-container *ngIf="form.controls['chequeCashedDate']?.errors['required']">
+
+                Cheque cashed date is required
+
+              </ng-container>
+
+              <ng-container *ngIf="form.controls['chequeCashedDate']?.errors['bsDate']">
+
+                Invalid date
+
+              </ng-container>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </ng-container>
+
+      <div class="row mb-4">
+
+        <div class="col-12">
+
+          <label for="username" class="form-label">
+
+            Add some details about the payment made
+
+          </label>
+
+          <textarea class="form-control"
+                    formControlName="description"
+                    [ngClass]="{'is-invalid': form.controls && form.controls['description']?.dirty && form.controls['description']?.errors}"></textarea>
+
+          <div class="invalid-feedback" *ngIf="form.controls && form.controls['description']?.dirty && form.controls['description']?.errors">
+
+            <ng-container *ngIf="form.controls['description']?.errors['required']">
+
+              Detail is required
+
+            </ng-container>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card-footer">
+
+      <div class="d-flex justify-content-end">
+
+        <button type="button"
+                class="btn btn-light me-2"
+                (click)="close()"
+                [disabled]="isCreateInProgress">
+
+          Close
+
+        </button>
+
+        <button type="submit"
+                style="background-color: #6964E1; border:0px none;"
+                class="btn btn-primary"
+                [disabled]="isCreateInProgress || !form.valid">
+
+          Create
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</form>

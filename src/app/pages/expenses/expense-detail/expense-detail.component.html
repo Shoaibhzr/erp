@@ -1,0 +1,649 @@
+<ng-container *ngIf="serviceRequestModel$ | async as serviceRequestModel">
+
+  <div class="card w-100 mb-5"
+     *ngIf="[ServiceRequestStatus.rejected, ServiceRequestStatus.returned].includes(serviceRequestModel.status)">
+  <div class="card-header py-2"
+       [ngClass]="serviceRequestModel.status === ServiceRequestStatus.rejected ? 'rejected' : 'returned'">
+    <div class="d-flex gap-2 align-items-center">
+      <i [ngClass]="serviceRequestModel.status === ServiceRequestStatus.rejected
+          ? 'ri-close-circle-fill'
+          : 'ri-alert-fill'">
+      </i>
+      <h5 class="m-0">
+        Request {{ serviceRequestModel.status === ServiceRequestStatus.rejected ? 'Rejected' : 'Returned' }}
+      </h5>
+    </div>
+  </div>
+  <div class="card-body">
+    {{ rejectionOrReturnReason }}
+  </div>
+</div>
+
+
+  <div class="row mt-4">
+
+    <div class="col-lg-12">
+
+      <div class="card mt-n4">
+
+        <div>
+
+          <div class="card-body pb-0 px-4">
+
+            <div class="row mb-3">
+
+              <div class="col-md">
+
+                <div class="row align-items-center g-3">
+
+                  <div class="col-md-auto">
+
+                    <div class="avatar-md">
+
+                      <div class="avatar-title bg-white rounded-circle" style="border: 1px solid #E2E8F0;">
+
+                        <img [src]="serviceRequestModel?.company.logoUrl" class="avatar-xs object-fit-cover">
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div class="col-md">
+
+                    <div>
+
+                      <h4 class="fw-bold">{{serviceRequestModel?.title}}</h4>
+
+                      <div class="float-end m-0">
+
+                        <button *ngIf="serviceRequestModel?.status === ServiceRequestStatus.approved"
+                          (click)="onDownloadClicked()" style="background-color: #6964E1; border:0px none;"
+                          [disabled]="isHttpRequestInProgress" class="btn btn-primary btn-load">
+
+                          <div class="d-flex align-items-center justify-content-center">
+
+                            <i class="ri-download-2-line" style="margin-right:10px;"></i>
+
+                            Download
+
+                            <ng-container *ngIf="isHttpRequestInProgress">
+
+                              <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+                                <span class="visually-hidden">Loading...</span>
+
+                              </span>
+
+                            </ng-container>
+
+                          </div>
+
+                        </button>
+
+                      </div>
+
+                      <div class="hstack gap-3 flex-wrap" style="color: #4B5563;">
+
+                        <div>
+
+                          <i class="ri-building-line align-bottom me-1"></i> {{serviceRequestModel?.company?.name}}
+
+                        </div>
+
+                        <div class="vr">
+
+                        </div>
+
+                        <div>
+
+                          Request ID :
+
+                          <span class="fw-medium">
+
+                            {{serviceRequestModel?.store?.name}} {{serviceRequestModel | ServiceRequestNumber}}
+
+                          </span>
+
+                        </div>
+
+                        <div class="vr">
+
+                        </div>
+
+                        <div>
+
+                          Created Date : <span class="fw-medium"> {{serviceRequestModel?.createdOn | date : 'MMM d,y'}}
+                          </span>
+
+                        </div>
+
+                        <div class="vr">
+
+                        </div>
+
+                        <div>
+
+                          Due Date : <span class="fw-medium">{{serviceRequestModel?.dueOn | date : 'MMM d, y'}}</span>
+
+                        </div>
+
+                        <div class="vr">
+
+                        </div>
+
+                        <div class="badge rounded-pill fs-12 fw-medium"
+                          [ngStyle]="serviceRequestModel?.status | statusStyle">
+                          {{ serviceRequestModel?.status | ServiceRequestStatus }}
+                        </div>
+
+                        <div class="badge rounded-pill fs-12 fw-medium"
+                          [ngStyle]="{ 'background-color': serviceRequestModel?.priority === ServiceRequestPriority.critical || serviceRequestModel?.priority === ServiceRequestPriority.emergency ? '#FDE8E4' : '#E2E5ED',
+                               'color': serviceRequestModel?.priority === ServiceRequestPriority.critical || serviceRequestModel?.priority === ServiceRequestPriority.emergency ? '#F06548' : '#405189'}">
+
+                          {{serviceRequestModel?.priority | priority}}
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="col-md-auto d-none">
+
+                <div class="hstack gap-1 flex-wrap">
+
+                  <button type="button" class="btn py-0 fs-16 favourite-btn active">
+
+                    <i class="ri-star-fill"></i>
+
+                  </button>
+
+                  <button type="button" class="btn py-0 fs-16 text-body">
+
+                    <i class="ri-share-line"></i>
+
+                  </button>
+
+                  <button type="button" class="btn py-0 fs-16 text-body">
+
+                    <i class="ri-flag-line"></i>
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <ul class="nav nav-tabs-custom border-bottom-0" role="tablist">
+
+              <li class="nav-item">
+
+                <a class="nav-link fw-semibold cursor-pointer"
+                  [ngStyle]="selectedTab === ServiceRequestTab.overview ? {'color': '#6964E1'} : {'color': '#64748B'}"
+                  [class.active]="selectedTab === ServiceRequestTab.overview"
+                  (click)="selectedTab = ServiceRequestTab.overview">
+
+                  Overview
+
+                </a>
+
+              </li>
+
+              <li class="nav-item">
+
+                <a class="nav-link fw-semibold cursor-pointer"
+                  [ngStyle]="selectedTab === ServiceRequestTab.invoice ? {'color': '#6964E1'} : {'color': '#64748B'}"
+                  [class.active]="selectedTab === ServiceRequestTab.invoice"
+                  (click)="selectedTab = ServiceRequestTab.invoice">
+
+                  Items
+
+                </a>
+
+              </li>
+
+            </ul>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="row">
+
+    <div class="col-lg-12">
+
+      <div class="tab-content text-muted">
+
+        <div class="tab-pane fade" [class.show]="selectedTab === ServiceRequestTab.overview"
+          [class.active]="selectedTab === ServiceRequestTab.overview">
+
+          <div class="row">
+
+            <div class="col-xl-9 col-lg-8">
+
+              <div class="card">
+
+                <div class="card-body">
+
+                  <div class="text-muted">
+
+                    <div class="row">
+
+                      <div class="col-12">
+
+                        <h6 class="mb-3 fw-bold" style="color: #334155;">
+
+                          Description
+
+                        </h6>
+
+                        <p style="color: #525252;">
+
+                          {{ !serviceRequestModel?.description || serviceRequestModel?.description.trim().length === 0 ?
+                          'None' : serviceRequestModel?.description }}
+
+                        </p>
+
+                        <div class="d-flex gap-2 justify-content-end  mb-4">
+                          <ng-container
+                                *ngIf="(showActionButtons$ | async) &&
+                                      serviceRequestModel.status === serviceRequestStatus.pendingApproval &&
+                                      isActionNotYetPerformedByTheUser &&
+                                      !hideButtonsIfNonCriticalForAU2">
+                                <button class="btn btn-light px-4" (click)="onShowReasonDialog(true)">
+                                  <i class="ri-arrow-left-line align-bottom me-1"></i> Return
+                                </button>
+                                <button class="btn btn-outline-danger px-4" (click)="onShowReasonDialog(false)">
+                                  <i class="ri-close-circle-fill align-bottom me-1"></i> Reject
+                                </button>
+                                <button class="btn btn-primary px-4" (click)="onShowApproveDialog()"
+                                  style="background-color: #6964e1; border: 0px none">
+                                  <i class="ri-checkbox-circle-fill align-bottom me-1"></i> Approve
+                                </button>
+                              </ng-container>
+
+                          <button *ngIf="canReferToAdmin" class="btn btn-primary px-4"
+                            style="background-color: #6964e1; border: 0px none" (click)="onShowReferDialog()"
+                            [disabled]="alreadyReferredToAdmin">
+                            Refer to Company Admin</button>
+
+                        </div>
+
+
+
+                      </div>
+
+                    </div>
+
+                    <ng-container *ngIf="serviceRequestModel?.files && serviceRequestModel?.files.length > 0">
+
+                      <div class="pt-3 border-top border-top-dashed mt-4">
+
+                        <h6 class="mb-3 fw-semibold text-uppercase">
+
+                          Attachments
+
+                        </h6>
+
+                        <div class="row g-3">
+
+                          <div class="col-xxl-4 col-lg-6" *ngFor="let file of serviceRequestModel?.files">
+
+                            <div class="border rounded border-dashed p-2">
+
+                              <div class="d-flex align-items-center">
+
+                                <div class="flex-shrink-0 me-3">
+
+                                  <div class="avatar-sm">
+
+                                    <div class="avatar-title bg-light text-secondary rounded fs-24">
+
+                                      <i class="{{file.contentType | contentTypeToRiIcon}}"></i>
+
+                                    </div>
+
+                                  </div>
+
+                                </div>
+
+                                <div class="flex-grow-1 overflow-hidden">
+
+                                  <h5 class="fs-13 mb-1">
+
+                                    <a class="text-body text-truncate d-block">
+
+                                      {{file.name}}
+
+                                    </a>
+
+                                  </h5>
+
+                                  <div>
+
+                                    {{(file.size / 1000) | number}} KB
+
+                                  </div>
+
+                                </div>
+
+                                <div class="flex-shrink-0 ms-2">
+
+                                  <div class="d-flex gap-1">
+
+                                    <a [href]="file.webUrl" target="_blank"
+                                      class="btn btn-icon text-muted btn-sm fs-18">
+
+                                      <i class="ri-download-2-line"></i>
+
+                                    </a>
+
+                                  </div>
+
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </ng-container>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <comment [serviceRequestId]="id" [comments]="serviceRequestModel?.comments"></comment>
+
+            </div>
+
+            <div class="col-xl-3 col-lg-4">
+
+              <div class="card">
+
+                <div class="card-header align-items-center d-flex border-bottom-dashed">
+
+                  <h4 class="card-title mb-0 flex-grow-1">
+
+                    Approvers
+
+                  </h4>
+
+                </div>
+
+                <div class="card-body">
+
+                  <div data-simplebar class="mx-n3 px-3">
+                    <p *ngIf="!serviceRequestModel?.approvals.length" class="text-muted mb-0">No approvers yet</p>
+
+                    <div class="vstack gap-3">
+
+                      <ng-container *ngFor="let approval of serviceRequestModel?.approvals">
+
+                        <div class="d-flex align-items-center">
+
+                          <div class="flex-shrink-0 me-3">
+
+                            <ng-container *ngIf="!approval.approver.profilePictureWebUrl">
+
+                              <div class="avatar-xs">
+
+                                <div class="avatar-title bg-info-subtle text-info rounded-circle">
+
+                                  {{approval.approver | userPrefix}}
+
+                                </div>
+
+                              </div>
+
+                            </ng-container>
+
+                            <ng-container *ngIf="approval.approver.profilePictureWebUrl">
+
+                              <img [src]="approval.approver.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+
+                            </ng-container>
+
+                          </div>
+
+                          <div class="flex-grow-1">
+
+                            <h5 class="fs-13 mb-0">
+
+                              <a class="text-body d-block">
+
+                                {{approval?.role?.name}}
+
+                              </a>
+
+                            </h5>
+
+                          </div>
+
+                          <ng-container
+                            *ngIf="serviceRequestModel?.status === ServiceRequestStatus.pendingApproval || serviceRequestModel?.status === ServiceRequestStatus.rejected || serviceRequestModel?.status === ServiceRequestStatus.returned || approval.state === ApprovalState.pending || approval.state === ApprovalState.approved || approval.state === ApprovalState.rejected || approval.state === ApprovalState.returned || approval.state === ApprovalState.skipped">
+
+                            <div class="flex-shrink-0">
+
+                              <div class="d-flex align-items-center gap-1">
+
+                                <button type="button" class="btn rounded-pill btn-light btn-sm" [ngStyle]="{ 'background-color': approval?.state === ApprovalState.pending ? '#FEF4E4' :
+                                          approval?.state === ApprovalState.approved ? '#DAF4F0' :
+                                          approval?.state === ApprovalState.rejected ? '#FDE8E4' : '#f3f6f9',
+                                          'color': approval?.state === ApprovalState.pending ? '#F7B84B' :
+                                          approval?.state === ApprovalState.approved ? '#0AB39C' :
+                                          approval?.state === ApprovalState.rejected ? '#F06548' : 'black'}">
+
+                                  {{approval.state}}
+
+                                </button>
+
+                              </div>
+
+                            </div>
+
+                          </ng-container>
+
+                        </div>
+
+                      </ng-container>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <ng-container *ngIf="serviceRequestModel?.invoice && serviceRequestModel?.invoice.files">
+
+                <div class="card">
+
+                  <div class="card-header align-items-center d-flex border-bottom-dashed">
+
+                    <h4 class="card-title mb-0 flex-grow-1">
+
+                      Invoice
+
+                    </h4>
+
+                  </div>
+
+                  <div class="card-body">
+
+                    <div class="d-flex align-items-center">
+
+                      <div class="me-3">
+
+                        <div class="avatar-xs">
+
+                          <div class="avatar-title bg-light text-secondary rounded fs-24">
+
+                            <i class="{{serviceRequestModel?.invoice.files[0].contentType | contentTypeToRiIcon}}"></i>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                      <div class="overflow-hidden">
+
+                        <h5 class="fs-11 mb-1">
+
+                          <a class="text-body text-truncate d-block">
+
+                            {{serviceRequestModel?.invoice.files[0].name}}
+
+                          </a>
+
+                        </h5>
+
+                        <div class="fs-10"> {{serviceRequestModel?.invoice.files[0].size / 1000}} KB </div>
+
+                      </div>
+
+                      <div class="ms-2 ms-auto">
+
+                        <div class="d-flex gap-1">
+
+                          <a target="_blank" class="btn btn-icon text-muted btn-sm fs-18"
+                            [href]="serviceRequestModel?.invoice.files[0].webUrl">
+
+                            <i class="ri-download-2-line"></i>
+
+                          </a>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </ng-container>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="tab-pane fade" [class.show]="selectedTab === ServiceRequestTab.invoice"
+          [class.active]="selectedTab === ServiceRequestTab.invoice" *ngIf="serviceRequestModel.invoice">
+
+          <invoice [invoice]="serviceRequestModel.invoice" [invoiceType]="serviceRequestType.expense"></invoice>
+
+        </div>
+
+
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+
+  <!-- Hidden invoice template -->
+  <div style="position: absolute; top: -9999px; left: -9999px;">
+    <invoice-template #invoiceTemplateComponent [invoiceData]="serviceRequestModel">
+    </invoice-template>
+  </div>
+
+</ng-container>
+<app-spinner *ngIf="isLoading$ | async"></app-spinner>
+<ng-template #approveModal>
+  <div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold">Confirm Approval</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.hide()"></button>
+  </div>
+
+  <div class="modal-body">
+    <p>Are you sure you want to <strong>"Approve"</strong> this Account
+      Expense request?</p>
+  </div>
+
+  <div class="modal-footer border-0 pt-0 d-flex align-items-center gap-2">
+    <button class="btn btn-light px-4 flex-grow-1" (click)="modalRef.hide()">Cancel</button>
+    <button class="btn btn-primary px-4 flex-grow-1" style="background-color: #6964e1; border: 0px none"
+      (click)="onApprove()">Approve</button>
+  </div>
+</ng-template>
+
+
+<ng-template #reasonModal>
+  <div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold">{{returnRequest ? 'Returning' : 'Rejection'}} Reason</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.hide()"></button>
+  </div>
+
+  <div class="modal-body">
+    <textarea class="form-control border-light mb-2" rows="5" maxlength="512" [formControl]="reasonCtrl" #reason
+      placeholder="Write reason of {{returnRequest ? 'returning' : 'rejection'}} here..."
+      [ngClass]="{'is-invalid': reasonCtrl?.invalid && (reasonCtrl?.touched || reasonCtrl?.dirty)}"></textarea>
+    <ng-container *ngIf="reasonCtrl?.invalid && (reasonCtrl?.touched || reasonCtrl?.dirty)">
+      <div class="invalid-feedback d-inline">
+        <ng-container *ngIf="reasonCtrl?.hasError('required')">
+          Reason is required
+        </ng-container>
+        <ng-container *ngIf="reasonCtrl?.hasError('maxlength')">
+          Maximum character limit of 512 exceeded
+        </ng-container>
+      </div>
+    </ng-container>
+    <div class="float-end fs-10">{{reason?.value?.length || 0}}/512</div>
+  </div>
+
+  <div class="modal-footer border-0 pt-0 d-flex align-items-center gap-2">
+    <button class="btn btn-light px-4 flex-grow-1" (click)="modalRef.hide()">Cancel</button>
+    <button class="btn btn-primary px-4 flex-grow-1" style="background-color: #6964e1; border: 0px none"
+      (click)="onReasonDialogClose()">Submit</button>
+  </div>
+</ng-template>
+
+<ng-template #referModal>
+  <div class="modal-header border-0 pb-0">
+    <h5 class="modal-title fw-bold">Refer to Company Admin Confirmation?</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.hide()"></button>
+  </div>
+
+  <div class="modal-body">
+    <p>Are you sure you want to <strong>Submit</strong> this request to company admin?</p>
+  </div>
+
+  <div class="modal-footer border-0 pt-0 d-flex align-items-center gap-2">
+    <button class="btn btn-light px-4 flex-grow-1" (click)="modalRef.hide()">Cancel</button>
+    <button class="btn btn-primary px-4 flex-grow-1" style="background-color: #6964e1; border: 0px none"
+      (click)="onRefer()">Confirm</button>
+  </div>
+</ng-template>

@@ -1,0 +1,442 @@
+<ng-container *ngIf="isInitInProgress == undefined || isInitInProgress == true">
+
+  <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+
+    <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+      <span class="visually-hidden">Loading...</span>
+
+    </span>
+
+  </div>
+
+</ng-container>
+
+<ng-container *ngIf="isInitInProgress == false">
+
+  <ng-container *ngIf="id && !storeModel">
+
+    <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 199px)">
+
+      <div class="container-fluid">
+
+        <div class="row justify-content-center">
+
+          <div class="col-xl-4 text-center">
+
+            <div class="error-500 position-relative">
+
+              <img src="assets/images/error500.png" alt="" class="img-fluid error-500-img error-img">
+
+              <h1 class="title text-muted">500</h1>
+
+            </div>
+
+            <div>
+
+              <h4>Internal Server Error!</h4>
+
+              <p class="text-muted w-75 mx-auto">
+
+                The store you're trying to edit does not exist, or something else went wrong. Please try again later.
+
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+  <ng-container *ngIf="!id || storeModel">
+
+    <div class="row">
+
+      <div class="col-12">
+
+        <div class="page-title-box d-sm-flex align-items-center">
+          <img src="assets/images/svg/back-button-form.svg" alt="" (click)="goBack()" style="cursor: pointer;">
+          <h4 class="mb-sm-0 mx-2" style="text-transform:none;">
+
+            <ng-container *ngIf="!id">
+
+              Create
+
+            </ng-container>
+
+            <ng-container *ngIf="id">
+
+              Update
+
+            </ng-container>
+
+            Store
+
+          </h4>
+
+          <!-- <div class="page-title-right">
+
+            <ol class="breadcrumb m-0">
+
+              <li class="breadcrumb-item">
+
+                Stores
+
+              </li>
+
+              <li class="breadcrumb-item active">
+
+                <ng-container *ngIf="!id">
+
+                  Create
+
+                </ng-container>
+
+                <ng-container *ngIf="id">
+
+                  Update
+
+                </ng-container>
+
+                Store
+
+              </li>
+
+            </ol>
+
+          </div> -->
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <form (ngSubmit)="openCreateModal(createStoreModal)" [formGroup]="form">
+
+      <div class="row">
+
+        <div class="col-lg-12">
+
+          <div class="card">
+            <div class="card-header">
+
+              <h5 class="card-title mb-0">
+
+                Request Details
+
+              </h5>
+
+            </div>
+
+            <div class="card-body">
+
+              <div class="mb-3">
+
+                <label class="form-label required">
+
+                  Company
+
+                </label>
+
+                <select class="form-select" formControlName="companyId">
+
+                  <option [value]="company.id" *ngFor="let company of companies">
+
+                    {{company.name}}
+
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="mb-3">
+
+                    <label class="form-label required">
+
+                      Store Name
+
+                    </label>
+
+                    <input type="text" class="form-control" formControlName="name" placeholder="Enter store name" maxlength="50"
+                      [ngClass]="{'is-invalid': form.controls && form.controls['name']?.touched && form.controls['name']?.errors}" />
+
+                    <ng-container
+                      *ngIf="!form.controls || !form.controls['name']?.touched || !form.controls['name']?.errors">
+
+                      <small class="form-text text-muted">
+
+                        This will be used in all communications and displays.
+
+                      </small>
+
+                    </ng-container>
+
+                    <ng-container
+                      *ngIf="form.controls && form.controls['name']?.touched && form.controls['name']?.errors">
+
+                      <div class="invalid-feedback">
+
+                        <ng-container *ngIf="form.controls['name']?.errors['required']">
+
+                          Store Name is required
+
+                        </ng-container>
+
+                        <ng-container *ngIf="form.controls['name']?.errors['maxlength']">
+
+                          Please keep the name to {{form.controls['name']?.errors['maxlength'].requiredLength}}
+                          characters or less. You entered {{form.controls['name']?.errors['maxlength'].actualLength}}
+                          characters.
+
+                        </ng-container>
+
+                      </div>
+
+                    </ng-container>
+
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="mb-3">
+
+                    <label class="form-label required">
+
+                      Phone
+
+                    </label>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        formControlName="phone"
+                        placeholder="Enter phone number"
+                        maxlength="15"
+                        (keypress)="allowOnlyNumbers($event)"
+                        (paste)="sanitizePhoneInput($event)"
+                        [ngClass]="{
+                          'is-invalid':
+                            form.controls && form.controls['phone']?.touched && form.controls['phone']?.errors
+                        }"
+                      />
+
+
+                    <ng-container
+                      *ngIf="form.controls && form.controls['phone']?.touched && form.controls['phone']?.errors">
+
+                      <div class="invalid-feedback">
+
+                        <ng-container *ngIf="form.controls['phone']?.errors['required']">
+
+                          Phone is required
+
+                        </ng-container>
+
+                        <ng-container *ngIf="form.controls['phone']?.errors['maxlength']">
+
+                          Please keep the webbsite to {{form.controls['phone']?.errors['maxlength'].requiredLength}}
+                          characters or less. You entered {{form.controls['phone']?.errors['maxlength'].actualLength}}
+                          characters.
+
+                        </ng-container>
+
+                      </div>
+
+                    </ng-container>
+
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                  <div class="mb-3">
+
+                    <label class="form-label">
+
+                      Address
+
+                    </label>
+
+                    <input type="text" class="form-control" formControlName="address" placeholder="Enter address" maxlength="50"
+                       />
+
+                   
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="card">
+
+            <div class="card-header">
+
+              <h5 class="card-title mb-0">
+
+                Contact
+
+              </h5>
+
+            </div>
+
+            <div class="card-body">
+
+              <p class="text-muted">
+
+                Provide the name and email address of the primary contact person for the store. This individual will
+                serve as the main point of communication for inquiries and updates, so please ensure the information is
+                accurate and up-to-date.
+
+              </p>
+
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="mb-3">
+
+                    <label class="form-label required">
+
+                      Name
+
+                    </label>
+
+                    <input type="text" class="form-control" formControlName="contactName" placeholder="Enter name" maxlength="30"
+                      [ngClass]="{'is-invalid': form.controls && form.controls['contactName']?.touched && form.controls['contactName']?.errors}" />
+
+                    <ng-container
+                      *ngIf="form.controls && form.controls['contactName']?.touched && form.controls['contactName']?.errors">
+
+                      <div class="invalid-feedback">
+
+                        <ng-container *ngIf="form.controls['contactName']?.errors['required']">
+
+                          Contact Name is required
+
+                        </ng-container>
+                        <ng-container *ngIf="form.controls['contactName']?.errors['maxlength']">
+
+                          Please keep the name to {{form.controls['contactName']?.errors['maxlength'].requiredLength}}
+                          characters or less. You entered
+                          {{form.controls['contactName']?.errors['maxlength'].actualLength}} characters.
+
+                        </ng-container>
+
+                      </div>
+
+                    </ng-container>
+
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div>
+
+                    <label class="form-label required">Email</label>
+
+                    <input type="text" class="form-control" formControlName="contactEmail" placeholder="Enter email address" maxlength="50"
+                      [ngClass]="{'is-invalid': form.controls && form.controls['contactEmail']?.touched && form.controls['contactEmail']?.errors}" />
+
+                    <ng-container
+                          *ngIf="form.controls && form.controls['contactEmail']?.touched && form.controls['contactEmail']?.errors">
+
+                          <div class="invalid-feedback">
+
+                            <ng-container *ngIf="form.controls['contactEmail']?.errors['required']">
+                              Email is required
+                            </ng-container>
+
+                            <ng-container
+                              *ngIf="form.controls['contactEmail']?.errors['pattern'] || form.controls['contactEmail']?.errors['email']">
+                              Email is invalid
+                            </ng-container>
+
+                          </div>
+
+                        </ng-container>
+
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+
+          </div>
+
+          <div class="text-end mb-4">
+
+            <button type="button" [disabled]="isCreateRequestInProgress" class="btn btn-light waves-effect me-2"
+              routerLink="/stores/list">
+
+              Close
+
+            </button>
+
+            <button type="submit" style="background-color: #6964E1; border:0px none;"
+              [disabled]="!form.valid || isCreateRequestInProgress" class="btn btn-primary w-sm btn-load">
+
+              <div class="d-flex align-items-center justify-content-center">
+
+                <ng-container *ngIf="!id">
+
+                  Create Store
+
+                </ng-container>
+
+                <ng-container *ngIf="id">
+
+                  Update Store
+
+                </ng-container>
+
+                <ng-container *ngIf="isCreateRequestInProgress">
+
+                  <span class="spinner-border flex-shrink-0 ms-2" role="status">
+
+                    <span class="visually-hidden">Loading...</span>
+
+                  </span>
+
+                </ng-container>
+
+              </div>
+
+            </button>
+
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </form>
+
+  </ng-container>
+
+</ng-container>
+
+<ng-template #createStoreModal>
+  <div class="modal-header">
+    <h5 class="modal-title" *ngIf="!id">Store Creation Confirmation</h5>
+    <h5 class="modal-title" *ngIf="id">Store Updation Confirmation</h5>
+    <button type="button" class="btn-close" (click)="modalRef.hide()"></button>
+  </div>
+  <div class="modal-body">
+    <p *ngIf="!id">Are you sure you want to Create this store?</p>
+    <p *ngIf="id">Are you sure you want to Update this store?</p>
+    <div class="d-flex">
+      <button type="button" class="btn modal-cancel-btn" (click)="modalRef.hide()">Cancel</button>
+      <button type="button" class="btn modal-confirm-btn" (click)="confirmCreate()" *ngIf="!id">Create</button>
+      <button type="button" class="btn modal-confirm-btn" (click)="confirmCreate()" *ngIf="id">Update</button>
+    </div>
+  </div>
+</ng-template>

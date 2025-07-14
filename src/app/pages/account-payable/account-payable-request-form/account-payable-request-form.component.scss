@@ -1,0 +1,117 @@
+.custom-flex {
+    flex: 1 1 170px;
+    height: 90px;
+}
+
+table {
+    th {
+        background: #F8FAFC;
+        color: #475569;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 18px;
+    }
+
+    th:last-child {
+        width: 50px;
+    }
+
+    td {
+        color: #475569;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px;
+        max-width: 300px;
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+}
+
+
+::ng-deep .ng-select {
+    &.is-invalid .ng-select-container {
+        border-color: var(--vz-form-invalid-border-color);
+    }
+
+    &.ng-select-focused:not(.ng-select-opened)>.ng-select-container {
+        border-color: var(--vz-primary-border-subtle) !important;
+        box-shadow: none;
+    }
+}
+
+.input-group {
+    .form-control:focus {
+        border-color: var(--vz-input-border-custom);
+    }
+
+    .form-control.is-invalid:focus {
+        border-color: var(--vz-form-invalid-border-color) !important;
+    }
+
+    .input-group-append>.input-group-text,
+    .input-group-prepend>.input-group-text {
+        background-color: #fff;
+    }
+
+    .input-group-append>.input-group-text {
+        border-radius: 0 var(--vz-border-radius) var(--vz-border-radius) 0;
+    }
+
+    .input-group-prepend>.input-group-text {
+        border-radius: var(--vz-border-radius) 0 0 var(--vz-border-radius);
+    }
+
+    .input-group-text.is-invalid {
+        border-color: var(--vz-form-invalid-border-color);
+    }
+}
+
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.remaining-amount {
+    background-color: #F1F5F9;
+    border-radius: 8px;
+}
+
+.choose-file {
+    background-color: #E3E8EF !important;
+}
+
+.color-737373 {
+    color: #737373;
+}
+
+.items-container {
+    min-height: 350px;
+    position: relative;
+    padding-bottom: 50px;
+}
+
+.action-buttons {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+}
+
+.btn:disabled {
+    border: none;
+}
+
+input[type="number"][readonly] {
+    background-color: var(--vz-tertiary-bg);
+    cursor: not-allowed;
+}

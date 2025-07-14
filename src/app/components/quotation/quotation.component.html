@@ -1,0 +1,431 @@
+<div class="card">
+
+  <div class="card-body">
+
+    <div class="d-flex align-items-center mb-4">
+
+      <h5 class="card-title flex-grow-1">
+
+        Quotations
+
+      </h5>
+
+      <ng-container *ngIf="!approvedQuotation">
+
+        <button type="button" class="btn btn-primary custom-toggle btn-sm" (click)="inviteVendor()">
+
+          <i class="ri-user-add-line align-bottom me-1"></i> Invite
+
+        </button>
+
+      </ng-container>
+
+    </div>
+
+    <div class="row">
+
+      <div class="col-lg-12">
+
+        <div class="table-responsive table-card">
+
+          <ul class="list-group list-group-flush">
+
+            <ng-container *ngFor="let quotation of quotations">
+
+              <li class="list-group-item">
+
+                <div class="d-flex align-items-center">
+
+                  <div class="d-flex align-items-center"
+                       [class.cursor-pointer]="quotation.items && quotation.items.length > 0"
+                       (click)="toggle(quotation)">
+
+                    <ng-container *ngIf="!quotation.vendor.profilePictureWebUrl">
+
+                      <div class="avatar-xs flex-shrink-0">
+
+                        <div class="avatar-title bg-info-subtle text-info rounded-circle">
+
+                          {{quotation.vendor | userPrefix}}
+
+                        </div>
+
+                      </div>
+
+                    </ng-container>
+
+                    <ng-container *ngIf="quotation.vendor.profilePictureWebUrl">
+
+                      <img [src]="quotation.vendor.profilePictureWebUrl" class="avatar-xs rounded-circle" />
+
+                    </ng-container>
+
+                    <span class="text-start ms-xl-2">
+
+                      <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
+
+                        {{quotation.vendor.firstName}} {{quotation.vendor.lastName}}
+
+                      </span>
+
+                      <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text text-muted">
+
+                        Invited on {{quotation.createdOn | date}}
+
+                      </span>
+
+                    </span>
+
+                  </div>
+
+                  <div class="ms-auto  d-flex align-items-center">
+
+                    <ng-container *ngIf="!approvedQuotation">
+
+                      <span class="badge"
+                            [class.bg-warning-subtle]="quotation.status === QuotationStatus.none"
+                            [class.text-warning]="quotation.status === QuotationStatus.none"
+                            [class.bg-info-subtle]="quotation.status ===  QuotationStatus.pending"
+                            [class.text-info]="quotation.status === QuotationStatus.pending"
+                            [class.bg-success-subtle]="quotation.status === QuotationStatus.approved"
+                            [class.text-success]="quotation.status === QuotationStatus.approved"
+                            [class.bg-danger-subtle]="quotation.status === QuotationStatus.rejected"
+                            [class.text-danger]="quotation.status === QuotationStatus.rejected">
+
+                        {{quotation.status | quotationStatus}}
+
+                      </span>
+
+                    </ng-container>
+
+                    <ng-container *ngIf="approvedQuotation && quotation.status === QuotationStatus.approved">
+
+                      <span class="badge"
+                            [class.bg-success-subtle]="quotation.status === QuotationStatus.approved"
+                            [class.text-success]="quotation.status === QuotationStatus.approved">
+
+                        {{quotation.status | quotationStatus}}
+
+                      </span>
+
+                    </ng-container>
+
+                    <ng-container *ngIf="quotation.items && quotation.items.length > 0">
+
+                      <button type="button"
+                              class="btn btn-ghost-primary btn-icon material-shadow-none ms-1"
+                              (click)="toggle(quotation)">
+
+                        <ng-container *ngIf="quotation.id !== expandedQuotationId">
+
+                          <i class="ri-arrow-down-s-line"></i>
+
+                        </ng-container>
+
+                        <ng-container *ngIf="quotation.id === expandedQuotationId">
+
+                          <i class="ri-arrow-up-s-line"></i>
+
+                        </ng-container>
+
+                      </button>
+
+                    </ng-container>
+
+                  </div>
+
+                </div>
+
+                <ng-container *ngIf="quotation.id === expandedQuotationId">
+
+                  <ng-container *ngIf="quotation.files && quotation.files.length > 0">
+
+                    <div class="row mt-4">
+
+                      <h6 class="mb-3 fw-semibold">
+
+                        Attachment
+
+                      </h6>
+
+                      <div class="col-lg-3 col-md-4 col-sm-6" *ngFor="let file of quotation.files">
+
+                        <div class="border rounded border-dashed p-2">
+
+                          <div class="d-flex align-items-center">
+
+                            <div class="flex-shrink-0 me-3">
+
+                              <div class="avatar-xs">
+
+                                <div class="avatar-title bg-light text-secondary rounded fs-24">
+
+                                  <i class="ri-image-line"></i>
+
+                                </div>
+
+                              </div>
+
+                            </div>
+
+                            <div class="flex-grow-1 overflow-hidden">
+
+                              <h5 class="fs-11 mb-1">
+
+                                <a class="text-body text-truncate d-block">
+
+                                  {{file.name}}
+
+                                </a>
+
+                              </h5>
+
+                              <div class="fs-10">
+
+                                {{file.size / 1000}} KB
+
+                              </div>
+
+                            </div>
+
+                            <div class="flex-shrink-0 ms-2">
+
+                              <div class="d-flex gap-1">
+
+                                <a class="btn btn-icon text-muted btn-sm fs-18"
+                                   (click)="FileHelper.downloadFile(file.webUrl, file.name)">
+
+                                  <i class="ri-download-2-line"></i>
+
+                                </a>
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </ng-container>
+
+                  <div class="col-lg-12">
+
+                    <div class="card-body p-4">
+
+                      <div class="alert alert-info" *ngIf="quotation.description">
+
+                        <p class="mb-0">
+
+                          {{quotation.description}}
+
+                        </p>
+
+                      </div>
+
+                      <h6 class="mb-3 fw-semibold">
+
+                        Breakdown
+
+                      </h6>
+
+                      <div class="table-responsive">
+
+                        <table class="table table-borderless text-center table-nowrap align-middle mb-0">
+
+                          <thead>
+
+                            <tr class="table-active">
+
+                              <th scope="col" class="text-start" style="width: 50px;">#</th>
+
+                              <th scope="col" class="text-start">Item</th>
+
+                              <th scope="col" class="text-start">Detail</th>
+
+                              <th scope="col" class="text-end">Amount</th>
+
+                              <th scope="col" class="text-end" *ngIf="!approvedQuotation">Status</th>
+
+                              <th scope="col" class="text-end" width="92" *ngIf="!approvedQuotation">Action</th>
+
+                            </tr>
+
+                          </thead>
+
+                          <tbody>
+
+                            <tr *ngFor="let item of quotation.items; let i=index;">
+
+                              <th scope="row" class="text-start">
+
+                                {{i + 1}}
+
+                              </th>
+
+                              <td class="text-start">
+
+                                <span class="fw-medium">
+
+                                  {{item.name}}
+
+                                </span>
+
+                              </td>
+
+                              <td class="text-start">
+
+                                {{item.description}}
+
+                              </td>
+
+                              <td class="text-end">
+
+                                ${{item.amount}}
+
+                              </td>
+
+                              <td class="text-end" *ngIf="!approvedQuotation">
+
+                                <ng-container *ngIf="item.status !== QuotationStatus.none && item.status !== QuotationStatus.pending">
+
+                                  <span class="badge rounded-pill"
+                                        [class.bg-primary]="item.status === QuotationStatus.approved"
+                                        [class.bg-danger]="item.status === QuotationStatus.rejected">
+
+                                    {{item.status}}
+
+                                  </span>
+
+                                </ng-container>
+
+                              </td>
+
+                              <td class="text-start" *ngIf="!approvedQuotation">
+
+                                <div class="hstack gap-2">
+
+                                  <button class="btn btn-sm btn-soft-danger remove-list"
+                                          [disabled]="item.status === QuotationStatus.rejected"
+                                          (click)="rejectItem(quotation, item)">
+
+                                    <i class="ri-close-line align-bottom"></i>
+
+                                  </button>
+
+                                  <button class="btn btn-sm btn-soft-success edit-list"
+                                          [disabled]="item.status === QuotationStatus.approved"
+                                          (click)="approveItem(quotation, item)">
+
+                                    <i class="ri-check-line align-bottom"></i>
+
+                                  </button>
+
+                                </div>
+
+                              </td>
+
+                            </tr>
+
+                          </tbody>
+
+                        </table>
+
+                      </div>
+
+                      <div class="border-top border-top-dashed mt-2">
+
+                        <table class="table table-borderless table-nowrap align-middle mb-0 ms-auto" style="width:250px">
+
+                          <tbody>
+
+                            <tr>
+
+                              <td>Sub Total</td>
+
+                              <td class="text-end">
+
+                                ${{quotation.subTotal}}
+
+                              </td>
+
+                            </tr>
+
+                            <tr *ngIf="quotation.tax">
+
+                              <td>Estimated Tax</td>
+
+                              <td class="text-end">
+
+                                ${{quotation.tax}}
+
+                              </td>
+
+                            </tr>
+
+                            <tr class="border-top border-top-dashed fs-15">
+
+                              <th scope="row">Total Amount</th>
+
+                              <th class="text-end">
+
+                                ${{quotation.total}}
+
+                              </th>
+
+                            </tr>
+
+                          </tbody>
+
+                        </table>
+
+                      </div>
+
+                      <div class="d-flex mt-4" *ngIf="!approvedQuotation">
+
+                        <div class="d-flex ms-auto">
+
+                          <a class="btn btn-danger me-2 cursor-pointer"
+                             [class.disabled]="quotation.status === QuotationStatus.rejected"
+                             (click)="reject(quotation)">
+
+                            <i class="ri-close-line align-bottom me-1"></i> Reject
+
+                          </a>
+
+                          <a class="btn btn-primary cursor-pointer"
+                             (click)="approve(quotation)">
+
+                            <i class="ri-check-line align-bottom me-1"></i> Approve
+
+                          </a>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </ng-container>
+
+              </li>
+
+            </ng-container>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
