@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { ToastrModule } from 'ngx-toastr';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -66,10 +66,19 @@ import { OtpComponent } from './components/otp/otp.component';
 import { AttachmentsListComponent } from './components/attachments-list/attachments-list.component';
 import { PackageComponent } from './components/package/package.component';
 import { BasicInformationComponent } from './components/basic-information/basic-information.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
-  declarations: [AppComponent, AttachmentsListComponent, PackageComponent, BasicInformationComponent],
+  declarations: [
+    AppComponent,
+    AttachmentsListComponent,
+    PackageComponent,
+    BasicInformationComponent,
+  ],
   imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
@@ -278,6 +287,26 @@ import { BasicInformationComponent } from './components/basic-information/basic-
                 ],
               },
             ],
+          },
+        ],
+      },
+      {
+        path: 'packages',
+        canActivate: [IfNotLoggedInGuard],
+        children: [
+          {
+            path: '',
+            component: PackageComponent,
+          },
+        ],
+      },
+      {
+        path: 'basicInfo',
+        canActivate: [IfNotLoggedInGuard],
+        children: [
+          {
+            path: '',
+            component: BasicInformationComponent,
           },
         ],
       },
