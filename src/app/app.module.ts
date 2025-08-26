@@ -64,9 +64,11 @@ import { ApprovalProcessListViewPage } from './pages/approval-process-list-view/
 import { ApprovalProcessCreatePage } from './pages/approval-process-create/approval-process-create.page';
 import { OtpComponent } from './components/otp/otp.component';
 import { AttachmentsListComponent } from './components/attachments-list/attachments-list.component';
+import { PackageComponent } from './components/package/package.component';
+import { BasicInformationComponent } from './components/basic-information/basic-information.component';
 
 @NgModule({
-  declarations: [AppComponent, AttachmentsListComponent],
+  declarations: [AppComponent, AttachmentsListComponent, PackageComponent, BasicInformationComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
